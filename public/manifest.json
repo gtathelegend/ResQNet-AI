@@ -1,0 +1,22 @@
+{
+  "name": "ResQNet AI",
+  "short_name": "ResQNet",
+  "description": "AI-Powered Disaster Response & Resource Coordination Platform",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F4F4F4",
+  "theme_color": "#0F62FE",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/next.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}

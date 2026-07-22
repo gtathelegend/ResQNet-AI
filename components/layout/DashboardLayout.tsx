@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
 import { Footer } from "./Footer";
+import { CommandPalette } from "@/components/dashboard/CommandPalette";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,9 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="bg-background text-foreground flex min-h-screen flex-col transition-colors duration-200">
+      {/* Global Command Palette */}
+      <CommandPalette />
+
       {/* Top sticky Navbar */}
       <Navbar />
 

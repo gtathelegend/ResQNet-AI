@@ -76,3 +76,136 @@ Dark mode is built-in and respects both user system preferences and user manual 
    ```bash
    npm run build
    ```
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+graph TB
+    subgraph Users["Users"]
+        C[Citizens]
+        V[Volunteers]
+        A[Authorities / HQ]
+    end
+
+    subgraph Frontend["Next.js 15 Frontend"]
+        APP[App Router]
+        CP[Command Palette]
+        PWA[PWA / Service Worker]
+        UI[shadcn/ui Components]
+        MAP[Leaflet Live Map]
+    end
+
+    subgraph Backend["API Layer"]
+        API1[/api/analyze-incident]
+        API2[/api/recommend-resources]
+        API3[/api/recommend-volunteers]
+    end
+
+    subgraph AI["AI Services"]
+        GEMINI[Google Gemini API]
+    end
+
+    subgraph Data["Data Layer"]
+        SUPABASE[(Supabase PostgreSQL)]
+        MOCK[Mock Client<br/>Development Mode]
+    end
+
+    C -->|Report Incidents| APP
+    V -->|View Assignments| APP
+    A -->|Manage Operations| APP
+
+    APP --> CP
+    APP --> PWA
+    APP --> UI
+    APP --> MAP
+
+    APP --> API1
+    APP --> API2
+    APP --> API3
+
+    API1 --> GEMINI
+    API2 --> GEMINI
+    API3 --> GEMINI
+
+    APP --> SUPABASE
+    APP --> MOCK
+
+    style Users fill:#e1f5fe
+    style Frontend fill:#fff3e0
+    style Backend fill:#e8f5e9
+    style AI fill:#fce4ec
+    style Data fill:#f3e5f5
+```
+
+### Architecture Overview
+
+- **Citizens** report incidents and track status through the public dashboard
+- **Volunteers** receive assignments and update their availability
+- **Authorities** manage resources, dispatch teams, and analyze incidents via AI
+- **Gemini API** powers intelligent incident analysis, resource recommendations, and volunteer matching
+- **Supabase** provides PostgreSQL database, authentication, and real-time subscriptions
+- **Mock Client** enables offline development without external dependencies
+
+---
+
+## 📋 Quick Setup
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Environment Configuration
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+For development without external services, the app automatically falls back to mock data.
+
+### Mock Login Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Citizen | `citizen@resqnet.ai` | `password` |
+| Volunteer | `volunteer@resqnet.ai` | `password` |
+| Authority | `authority@resqnet.ai` | `password` |
+
+---
+
+## 🧩 Features
+
+- **Global Command Palette** — Press `Ctrl+K` or `Cmd+K` to search incidents, resources, volunteers, and navigate
+- **PWA Support** — Offline-capable with service worker caching
+- **Role-Based Dashboards** — Tailored views for Citizens, Volunteers, and Authorities
+- **Live Incident Map** — Real-time geographic visualization with Leaflet
+- **AI-Powered Analysis** — Gemini API for incident prioritization and resource recommendations
+- **Resource Allocation** — Track inventory, allocations, and history
+- **Volunteer Coordination** — Proximity-based dispatch and assignment tracking
+- **Dark Mode** — System-aware and manual theme toggling
+
+---
+
+## 📄 Documentation
+
+- [Deployment Guide](DEPLOYMENT.md) — Vercel, Supabase, and Gemini API setup
+- [Contributing Guide](CONTRIBUTING.md) — Development workflow and coding standards
+- [License](LICENSE) — Apache License 2.0
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct, development workflow, and pull request process.
+
+---
+
+## 📜 License
+
+This project is licensed under the Apache License 2.0 — see the [LICENSE](LICENSE) file for details.
