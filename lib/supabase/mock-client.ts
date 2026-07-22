@@ -516,6 +516,111 @@ class MockQueryBuilder {
       return JSON.parse(dataStr);
     }
 
+    if (this.tableName === "volunteers") {
+      const dataStr = localStorage.getItem("resqnet-volunteers");
+      if (!dataStr) {
+        const defaultVolunteers = [
+          {
+            id: "vol-1",
+            name: "John Smith",
+            email: "volunteer@resqnet.ai",
+            phone: "+1-555-0199",
+            skills: ["Medical", "Logistics", "First Aid"],
+            status: "on-duty",
+            latitude: 40.7306,
+            longitude: -73.9352,
+            locationName: "Downtown, Sector B",
+            availabilityHours: "Weekends",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "vol-2",
+            name: "Jane Miller",
+            email: "jane.miller@resqnet.ai",
+            phone: "+1-555-0188",
+            skills: ["Water Rescue", "Swimmer", "Logistics"],
+            status: "on-duty",
+            latitude: 40.7128,
+            longitude: -74.006,
+            locationName: "River Basin, Sector A",
+            availabilityHours: "24/7",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "vol-3",
+            name: "Dave Carter",
+            email: "dave.carter@resqnet.ai",
+            phone: "+1-555-0177",
+            skills: ["Debris Removal", "Heavy Equipment"],
+            status: "off-duty",
+            latitude: 40.7589,
+            longitude: -73.9851,
+            locationName: "Warehouse District, Sector C",
+            availabilityHours: "Weekdays",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "vol-4",
+            name: "Sarah Jenkins",
+            email: "sarah.jenkins@resqnet.ai",
+            phone: "+1-555-0166",
+            skills: ["Triage", "First Aid", "Psychology"],
+            status: "on-duty",
+            latitude: 40.725,
+            longitude: -73.95,
+            locationName: "Subway Station, Sector B",
+            availabilityHours: "Evenings",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "vol-5",
+            name: "Michael Chang",
+            email: "michael.chang@resqnet.ai",
+            phone: "+1-555-0155",
+            skills: ["First Aid", "Radio Operator", "Logistics"],
+            status: "assigned",
+            latitude: 40.718,
+            longitude: -74.01,
+            locationName: "Waterfront Park, Sector A",
+            availabilityHours: "24/7",
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-volunteers",
+          JSON.stringify(defaultVolunteers)
+        );
+        return defaultVolunteers;
+      }
+      return JSON.parse(dataStr);
+    }
+
+    if (this.tableName === "volunteer_assignments") {
+      const dataStr = localStorage.getItem("resqnet-volunteer-assignments");
+      if (!dataStr) {
+        const defaultAssignments = [
+          {
+            id: "val-1",
+            volunteerId: "vol-5",
+            volunteerName: "Michael Chang",
+            incidentId: "inc-1",
+            incidentType: "flooding",
+            incidentLocation: "River Basin, Sector A",
+            role: "Evacuation Guide",
+            status: "active",
+            createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+            updatedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-volunteer-assignments",
+          JSON.stringify(defaultAssignments)
+        );
+        return defaultAssignments;
+      }
+      return JSON.parse(dataStr);
+    }
+
     return [];
   }
 
@@ -533,6 +638,13 @@ class MockQueryBuilder {
       );
     } else if (this.tableName === "resource_history") {
       localStorage.setItem("resqnet-resource-history", JSON.stringify(data));
+    } else if (this.tableName === "volunteers") {
+      localStorage.setItem("resqnet-volunteers", JSON.stringify(data));
+    } else if (this.tableName === "volunteer_assignments") {
+      localStorage.setItem(
+        "resqnet-volunteer-assignments",
+        JSON.stringify(data)
+      );
     }
   }
 

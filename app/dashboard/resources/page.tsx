@@ -122,7 +122,9 @@ export default function ResourceCenterPage() {
         const incAllData = await supabase.from("incidents").select("*");
         if (incAllData.data) {
           setActiveIncidents(
-            incAllData.data.filter((i: Incident) => i.status !== "resolved") as Incident[]
+            incAllData.data.filter(
+              (i: Incident) => i.status !== "resolved"
+            ) as Incident[]
           );
         }
       }

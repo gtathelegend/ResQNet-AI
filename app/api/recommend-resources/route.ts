@@ -91,7 +91,9 @@ export async function POST(request: Request) {
 
     // Simple deterministic allocation ratios
     const getInventoryItem = (name: string) =>
-      inventory.find((i: ResourceItem) => i.name.toLowerCase() === name.toLowerCase());
+      inventory.find(
+        (i: ResourceItem) => i.name.toLowerCase() === name.toLowerCase()
+      );
 
     if (foodNeeded) {
       const foodItem = getInventoryItem("Food");
