@@ -9,6 +9,16 @@ export interface StatusHistoryItem {
   note?: string;
 }
 
+export interface AIAnalysis {
+  priority: "low" | "medium" | "high" | "critical";
+  reason: string;
+  requiredResources: string[];
+  estimatedResponseTime: string; // e.g. "30-45 minutes"
+  potentialRisks: string[];
+  summary: string;
+  approved: boolean;
+}
+
 export interface Incident {
   id: string;
   type: string; // e.g. "flooding" | "fire" | "earthquake" | "medical" | "storm" | "other"
@@ -28,4 +38,5 @@ export interface Incident {
   createdAt: string;
   updatedAt: string;
   statusHistory: StatusHistoryItem[];
+  aiAnalysis?: AIAnalysis;
 }

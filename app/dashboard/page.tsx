@@ -42,11 +42,7 @@ export default function DashboardRouterPage() {
   const renderDashboardContent = () => {
     switch (role) {
       case "authority":
-        return (
-          <AuthorityDashboard
-            user={user}
-          />
-        );
+        return <AuthorityDashboard user={user} />;
       case "volunteer":
         return (
           <VolunteerDashboard

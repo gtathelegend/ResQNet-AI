@@ -16,6 +16,8 @@ import {
   Heart,
   Droplet,
   Trash2,
+  Sparkles,
+  CheckCircle,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/hooks/use-auth";
@@ -120,6 +122,54 @@ export default function IncidentDetailsPage() {
       const errorMsg =
         err instanceof Error ? err.message : "Failed updating status.";
       toast.error("Update Error", { description: errorMsg });
+    } finally {
+      setStatusUpdating(false);
+    }
+  };
+
+  // Handle AI recommendations approval by Authority
+  const handleApproveAIRecommendations = async () => {
+    if (!incident || !user) return;
+
+    setStatusUpdating(true);
+    try {
+      const updatedAnalysis = {
+        ...incident.aiAnalysis!,
+        approved: true,
+      };
+
+      const updates = {
+        aiAnalysis: updatedAnalysis,
+        status: "active" as IncidentStatus,
+        statusNote:
+          "Approved Gemini AI tactical recommendations and initiated responder dispatch.",
+        updatedBy: user.fullName || user.email,
+      };
+
+      const { data, error } = await supabase
+        .from("incidents")
+        .update(updates)
+        .eq("id", incident.id)
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        setIncident(data as Incident);
+        setSelectedStatus("active");
+        toast.success("AI Recommendation Approved", {
+          description:
+            "Staged supply logistics are dispatched. Status set to ACTIVE.",
+        });
+      }
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : "Failed approving AI recommendation.";
+      toast.error("Approval Error", { description: errorMsg });
     } finally {
       setStatusUpdating(false);
     }
@@ -447,6 +497,142 @@ export default function IncidentDetailsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Gemini AI Incident Analysis Details */}
+            {incident.aiAnalysis && (
+              <Card className="border-border overflow-hidden">
+                <CardHeader className="bg-primary/5 border-border flex flex-row items-center justify-between border-b py-4">
+                  <div className="space-y-1">
+                    <CardTitle className="text-primary flex items-center gap-2 text-base font-bold">
+                      <Sparkles className="text-primary size-4 shrink-0 animate-pulse" />
+                      <span>Gemini AI Incident Analysis</span>
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Machine learning diagnostic of priority, safety, and
+                      supply logistics.
+                    </CardDescription>
+                  </div>
+                  <Badge
+                    variant={
+                      incident.aiAnalysis.approved ? "success" : "warning"
+                    }
+                    className="px-2 py-0.5 text-[10px] font-bold uppercase"
+                  >
+                    {incident.aiAnalysis.approved
+                      ? "Approved & Staged"
+                      : "Awaiting Command Approval"}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="space-y-6 pt-6">
+                  {/* Priority / Estimated response time grid */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="border-border space-y-1 rounded-lg border p-3">
+                      <span className="text-muted-foreground text-[10px] font-bold uppercase">
+                        AI Recommended Triage
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            incident.aiAnalysis.priority === "critical"
+                              ? "destructive"
+                              : incident.aiAnalysis.priority === "high"
+                                ? "warning"
+                                : incident.aiAnalysis.priority === "medium"
+                                  ? "info"
+                                  : "outline"
+                          }
+                          className="px-2 py-0.5 text-[10px] font-bold capitalize"
+                        >
+                          {incident.aiAnalysis.priority}
+                        </Badge>
+                        <span className="text-muted-foreground text-xs">
+                          Priority Level
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="border-border space-y-1 rounded-lg border p-3">
+                      <span className="text-muted-foreground text-[10px] font-bold uppercase">
+                        Estimated Response Window
+                      </span>
+                      <p className="text-foreground flex items-center gap-1.5 pt-0.5 text-xs font-bold">
+                        <Clock className="text-primary size-4" />
+                        <span>{incident.aiAnalysis.estimatedResponseTime}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Summary & Triage Reason */}
+                  <div className="space-y-2">
+                    <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                      AI Tactical Summary
+                    </h4>
+                    <p className="text-foreground bg-muted/30 rounded-lg border p-3 text-xs leading-relaxed font-medium">
+                      {incident.aiAnalysis.summary}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                      Triage Justification
+                    </h4>
+                    <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap">
+                      {incident.aiAnalysis.reason}
+                    </p>
+                  </div>
+
+                  {/* Resources / Risks Grid */}
+                  <div className="border-border grid gap-4 border-t pt-4 sm:grid-cols-2">
+                    <div className="space-y-2.5">
+                      <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                        Suggested Supply Logistics
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {incident.aiAnalysis.requiredResources.map(
+                          (res, idx) => (
+                            <Badge
+                              key={idx}
+                              variant="outline"
+                              className="bg-primary/5 text-primary border-primary/10 px-2 py-0.5 text-[10px]"
+                            >
+                              {res}
+                            </Badge>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                        Potential Hazard Escalations
+                      </h4>
+                      <ul className="text-muted-foreground list-disc space-y-1.5 pl-4 text-xs">
+                        {incident.aiAnalysis.potentialRisks.map((risk, idx) => (
+                          <li key={idx}>{risk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Commander Approval Button */}
+                  {role === "authority" && !incident.aiAnalysis.approved && (
+                    <div className="border-border border-t pt-4">
+                      <Button
+                        onClick={handleApproveAIRecommendations}
+                        disabled={statusUpdating}
+                        className="w-full cursor-pointer gap-2 text-xs font-bold"
+                        variant="default"
+                      >
+                        <CheckCircle className="size-4" />
+                        <span>
+                          Approve AI Recommendations & Dispatch Staged Units
+                        </span>
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Status Timeline & Update Forms */}

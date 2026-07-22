@@ -114,6 +114,23 @@ export default function CreateIncidentPage() {
 
     setSubmitting(true);
     try {
+      // 1. Fetch AI Analysis from Gemini Route
+      const response = await fetch("/api/analyze-incident", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          reportedBy: user.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("AI Triage Analysis failed.");
+      }
+
+      const { analysis } = await response.json();
+
+      // 2. Build incident data with embedded AI Analysis
       const incidentData = {
         ...values,
         imageUrl: imageBase64 || "",
@@ -121,6 +138,7 @@ export default function CreateIncidentPage() {
         reportedBy: user.email,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        aiAnalysis: analysis,
       };
 
       const { error } = await supabase.from("incidents").insert(incidentData);
@@ -147,6 +165,25 @@ export default function CreateIncidentPage() {
 
   return (
     <DashboardLayout>
+      {submitting && (
+        <div className="bg-background/95 fixed inset-0 z-55 flex flex-col items-center justify-center backdrop-blur-md">
+          <div className="relative flex size-28 items-center justify-center">
+            {/* Concentric expanding grid rings */}
+            <div className="border-primary/20 absolute inset-0 animate-ping rounded-full border" />
+            <div className="border-primary/40 absolute inset-2 animate-pulse rounded-full border" />
+            <div className="bg-primary/10 text-primary shadow-primary/15 flex size-16 animate-bounce items-center justify-center rounded-full shadow-lg">
+              <ShieldAlert className="size-8" />
+            </div>
+          </div>
+          <h3 className="text-foreground mt-6 text-lg font-bold tracking-tight">
+            ResQNet <span className="text-primary">AI Agent</span>
+          </h3>
+          <p className="text-muted-foreground mt-1.5 max-w-xs animate-pulse text-center text-xs leading-relaxed">
+            Gemini AI is analyzing disaster severity, allocating support
+            resources, and modeling escalation risks...
+          </p>
+        </div>
+      )}
       <div className="space-y-6">
         {/* Breadcrumbs */}
         <Breadcrumb>
