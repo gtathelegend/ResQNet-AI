@@ -621,6 +621,88 @@ class MockQueryBuilder {
       return JSON.parse(dataStr);
     }
 
+    if (this.tableName === "shelters") {
+      const dataStr = localStorage.getItem("resqnet-shelters");
+      if (!dataStr) {
+        const defaultShelters = [
+          {
+            id: "sh-1",
+            name: "Sector A Emergency Shelter",
+            capacity: 500,
+            currentOccupancy: 320,
+            latitude: 40.718,
+            longitude: -74.008,
+            status: "open",
+          },
+          {
+            id: "sh-2",
+            name: "Sector B Central School",
+            capacity: 800,
+            currentOccupancy: 450,
+            latitude: 40.732,
+            longitude: -73.94,
+            status: "open",
+          },
+          {
+            id: "sh-3",
+            name: "Sector C Community Hub",
+            capacity: 300,
+            currentOccupancy: 120,
+            latitude: 40.76,
+            longitude: -73.99,
+            status: "open",
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-shelters",
+          JSON.stringify(defaultShelters)
+        );
+        return defaultShelters;
+      }
+      return JSON.parse(dataStr);
+    }
+
+    if (this.tableName === "hospitals") {
+      const dataStr = localStorage.getItem("resqnet-hospitals");
+      if (!dataStr) {
+        const defaultHospitals = [
+          {
+            id: "hosp-1",
+            name: "St. Jude Disaster Clinic",
+            capacity: 150,
+            currentOccupancy: 110,
+            latitude: 40.725,
+            longitude: -73.945,
+            status: "operating",
+          },
+          {
+            id: "hosp-2",
+            name: "Sector A General Hospital",
+            capacity: 400,
+            currentOccupancy: 380,
+            latitude: 40.71,
+            longitude: -74.015,
+            status: "operating",
+          },
+          {
+            id: "hosp-3",
+            name: "Metropolitan Medical Center",
+            capacity: 600,
+            currentOccupancy: 420,
+            latitude: 40.75,
+            longitude: -73.98,
+            status: "operating",
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-hospitals",
+          JSON.stringify(defaultHospitals)
+        );
+        return defaultHospitals;
+      }
+      return JSON.parse(dataStr);
+    }
+
     return [];
   }
 
@@ -645,6 +727,10 @@ class MockQueryBuilder {
         "resqnet-volunteer-assignments",
         JSON.stringify(data)
       );
+    } else if (this.tableName === "shelters") {
+      localStorage.setItem("resqnet-shelters", JSON.stringify(data));
+    } else if (this.tableName === "hospitals") {
+      localStorage.setItem("resqnet-hospitals", JSON.stringify(data));
     }
   }
 

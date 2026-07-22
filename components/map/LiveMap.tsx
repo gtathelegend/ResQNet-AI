@@ -1,0 +1,305 @@
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Incident } from "@/types/incident";
+import { VolunteerProfile } from "@/types/volunteer";
+import { ResourceItem } from "@/types/resource";
+import { ShelterItem, HospitalItem } from "@/types/map";
+
+interface LiveMapProps {
+  incidents: Incident[];
+  volunteers: VolunteerProfile[];
+  resources: ResourceItem[];
+  shelters: ShelterItem[];
+  hospitals: HospitalItem[];
+  filterLayers: {
+    disasters: boolean;
+    shelters: boolean;
+    hospitals: boolean;
+    volunteers: boolean;
+    depots: boolean;
+  };
+  heatmapEnabled: boolean;
+}
+
+export default function LiveMap({
+  incidents,
+  volunteers,
+  resources,
+  shelters,
+  hospitals,
+  filterLayers,
+  heatmapEnabled,
+}: LiveMapProps) {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markerLayerGroupRef = useRef<L.LayerGroup | null>(null);
+  const heatmapLayerGroupRef = useRef<L.LayerGroup | null>(null);
+
+  // 1. Initialize Map (only once)
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    // Center coordinates for New York/Sectors
+    const initialMap = L.map(mapContainerRef.current, {
+      center: [40.7306, -73.9352],
+      zoom: 12.5,
+      zoomControl: true,
+    });
+
+    // Dark-mode styled tile layer or standard OpenStreetMap
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(initialMap);
+
+    mapRef.current = initialMap;
+    markerLayerGroupRef.current = L.layerGroup().addTo(initialMap);
+    heatmapLayerGroupRef.current = L.layerGroup().addTo(initialMap);
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  // 2. Redraw Markers when Filters/Data changes
+  useEffect(() => {
+    const map = mapRef.current;
+    const markerGroup = markerLayerGroupRef.current;
+    const heatmapGroup = heatmapLayerGroupRef.current;
+
+    if (!map || !markerGroup || !heatmapGroup) return;
+
+    // Clear previous drawings
+    markerGroup.clearLayers();
+    heatmapGroup.clearLayers();
+
+    // Helper: Create custom CSS icons to bypass broken leaflet pin assets
+    const createMarkerIcon = (colorClass: string, symbol: string) => {
+      return L.divIcon({
+        className: "custom-div-icon",
+        html: `
+          <div class="flex items-center justify-center size-8 rounded-full border-2 border-white shadow-md text-white text-xs font-bold transition-transform hover:scale-110 cursor-pointer ${colorClass}">
+            <span>${symbol}</span>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
+      });
+    };
+
+    // A. Add Incident Disasters
+    if (filterLayers.disasters) {
+      incidents.forEach((inc) => {
+        const color =
+          inc.severity === "critical"
+            ? "bg-red-600 animate-pulse"
+            : inc.severity === "high"
+              ? "bg-orange-500"
+              : inc.severity === "medium"
+                ? "bg-yellow-500"
+                : "bg-blue-500";
+
+        const icon = createMarkerIcon(color, "🚨");
+
+        const popupHTML = `
+          <div class="p-2 font-sans text-xs min-w-[220px]">
+            <div class="flex justify-between items-center mb-1 pb-1 border-b">
+              <span class="font-extrabold uppercase text-red-600 text-[10px]">🚨 DISASTER IN PROGRESS</span>
+              <span class="text-[9px] font-semibold text-muted-foreground">${new Date(inc.createdAt).toLocaleTimeString()}</span>
+            </div>
+            <h4 class="font-bold text-sm text-foreground capitalize mb-1">${inc.type} - Staging Sector</h4>
+            <p class="text-muted-foreground leading-relaxed mb-2">${inc.description.substring(0, 70)}...</p>
+            <div class="grid grid-cols-2 gap-1.5 text-[10.5px]">
+              <div>Severity: <strong class="text-red-500 capitalize font-bold">${inc.severity}</strong></div>
+              <div>Affected: <strong>${inc.peopleAffected}</strong></div>
+            </div>
+            <div class="mt-2 text-[9.5px] bg-muted/65 p-1 rounded font-mono">Status: <strong>${inc.status.toUpperCase()}</strong></div>
+          </div>
+        `;
+
+        L.marker([inc.latitude, inc.longitude], { icon })
+          .bindPopup(popupHTML)
+          .addTo(markerGroup);
+
+        // Draw heat circles if enabled
+        if (heatmapEnabled) {
+          const heatColor =
+            inc.severity === "critical"
+              ? "#ef4444"
+              : inc.severity === "high"
+                ? "#f97316"
+                : "#eab308";
+
+          // Radius proportional to affected population
+          const radius = Math.max(
+            200,
+            Math.min(1200, inc.peopleAffected * 1.5)
+          );
+
+          L.circle([inc.latitude, inc.longitude], {
+            radius,
+            color: heatColor,
+            fillColor: heatColor,
+            fillOpacity: 0.16,
+            stroke: true,
+            weight: 1.5,
+          }).addTo(heatmapGroup);
+        }
+      });
+    }
+
+    // B. Add Shelters
+    if (filterLayers.shelters) {
+      shelters.forEach((shelter) => {
+        const icon = createMarkerIcon("bg-blue-600", "🏠");
+        const occupancyRate = Math.round(
+          (shelter.currentOccupancy / shelter.capacity) * 100
+        );
+
+        const popupHTML = `
+          <div class="p-2 font-sans text-xs min-w-[200px]">
+            <div class="flex justify-between items-center mb-1 pb-1 border-b">
+              <span class="font-extrabold uppercase text-blue-600 text-[10px]">🏠 SHELTER</span>
+              <span class="text-[9px] font-semibold text-emerald-600">Active</span>
+            </div>
+            <h4 class="font-bold text-sm text-foreground mb-1">${shelter.name}</h4>
+            <div class="space-y-1 mt-1 text-[11px]">
+              <div>Occupancy: <strong>${shelter.currentOccupancy} / ${shelter.capacity} (${occupancyRate}%)</strong></div>
+              <div class="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                <div class="bg-blue-500 h-full" style="width: ${occupancyRate}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        L.marker([shelter.latitude, shelter.longitude], { icon })
+          .bindPopup(popupHTML)
+          .addTo(markerGroup);
+      });
+    }
+
+    // C. Add Hospitals
+    if (filterLayers.hospitals) {
+      hospitals.forEach((hosp) => {
+        const icon = createMarkerIcon("bg-indigo-600", "🏥");
+        const loadRate = Math.round(
+          (hosp.currentOccupancy / hosp.capacity) * 100
+        );
+
+        const popupHTML = `
+          <div class="p-2 font-sans text-xs min-w-[200px]">
+            <div class="flex justify-between items-center mb-1 pb-1 border-b">
+              <span class="font-extrabold uppercase text-indigo-600 text-[10px]">🏥 HOSPITAL CENTER</span>
+              <span class="text-[9px] font-semibold text-indigo-600 capitalize">${hosp.status}</span>
+            </div>
+            <h4 class="font-bold text-sm text-foreground mb-1">${hosp.name}</h4>
+            <div class="space-y-1 mt-1 text-[11px]">
+              <div>ER Capacity: <strong>${hosp.currentOccupancy} / ${hosp.capacity} Beds (${loadRate}%)</strong></div>
+              <div class="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                <div class="bg-indigo-500 h-full" style="width: ${loadRate}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        L.marker([hosp.latitude, hosp.longitude], { icon })
+          .bindPopup(popupHTML)
+          .addTo(markerGroup);
+      });
+    }
+
+    // D. Add Volunteers
+    if (filterLayers.volunteers) {
+      volunteers.forEach((vol) => {
+        const icon = createMarkerIcon("bg-orange-500", "🙋");
+
+        const popupHTML = `
+          <div class="p-2 font-sans text-xs min-w-[180px]">
+            <div class="flex justify-between items-center mb-1 pb-1 border-b">
+              <span class="font-extrabold uppercase text-orange-500 text-[10px]">🙋 VOLUNTEER</span>
+              <span class="text-[9px] font-semibold text-emerald-500 capitalize">${vol.status}</span>
+            </div>
+            <h4 class="font-bold text-sm text-foreground mb-0.5">${vol.name}</h4>
+            <div class="text-[9.5px] text-muted-foreground mb-1.5">Hours: ${vol.availabilityHours}</div>
+            <div class="flex flex-wrap gap-1">
+              ${vol.skills
+                .slice(0, 2)
+                .map(
+                  (s) =>
+                    `<span class="text-[9px] bg-orange-50 border border-orange-200 text-orange-600 px-1 py-0.5 rounded">${s}</span>`
+                )
+                .join("")}
+            </div>
+          </div>
+        `;
+
+        L.marker([vol.latitude, vol.longitude], { icon })
+          .bindPopup(popupHTML)
+          .addTo(markerGroup);
+      });
+    }
+
+    // E. Add Resources (Depots)
+    if (filterLayers.depots) {
+      // Map resources to distinct depot centers
+      const uniqueDepots = Array.from(new Set(resources.map((r) => r.depot)));
+
+      uniqueDepots.forEach((depotName) => {
+        // Geocode coordinates for depot centers
+        let lat = 40.715;
+        let lng = -74.001;
+        if (depotName.includes("Beta")) {
+          lat = 40.74;
+          lng = -73.96;
+        }
+
+        const icon = createMarkerIcon("bg-emerald-600", "📦");
+        const depotItems = resources.filter((r) => r.depot === depotName);
+
+        const itemsHTML = depotItems
+          .slice(0, 4)
+          .map(
+            (r) =>
+              `<div class="flex justify-between text-[10.5px]"><span>${r.name}:</span><strong>${r.availableStock} / ${r.totalStock}</strong></div>`
+          )
+          .join("");
+
+        const popupHTML = `
+          <div class="p-2 font-sans text-xs min-w-[200px]">
+            <div class="flex justify-between items-center mb-1.5 pb-1 border-b">
+              <span class="font-extrabold uppercase text-emerald-600 text-[10px]">📦 LOGISTICS DEPOT</span>
+              <span class="text-[9px] font-semibold text-emerald-600 font-mono">Synced</span>
+            </div>
+            <h4 class="font-bold text-sm text-foreground mb-1.5">${depotName}</h4>
+            <div class="space-y-0.5 border-t pt-1 border-dashed mt-1">
+              ${itemsHTML}
+            </div>
+          </div>
+        `;
+
+        L.marker([lat, lng], { icon }).bindPopup(popupHTML).addTo(markerGroup);
+      });
+    }
+  }, [
+    incidents,
+    volunteers,
+    resources,
+    shelters,
+    hospitals,
+    filterLayers,
+    heatmapEnabled,
+  ]);
+
+  return (
+    <div className="border-border bg-muted relative h-full min-h-[500px] w-full overflow-hidden rounded-lg border">
+      <div ref={mapContainerRef} className="z-0 h-full min-h-[500px] w-full" />
+    </div>
+  );
+}
