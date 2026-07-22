@@ -3,9 +3,20 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Bell, Menu, X, ShieldAlert, User } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  Bell,
+  Menu,
+  X,
+  ShieldAlert,
+  User,
+  LogOut,
+} from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface NavItem {
   label: string;
@@ -21,7 +32,33 @@ const navItems: NavItem[] = [
 
 export function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { user, role, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const getRoleBadge = (userRole: string | null) => {
+    switch (userRole) {
+      case "authority":
+        return (
+          <Badge variant="destructive" className="h-4 px-1.5 py-0 text-[10px]">
+            HQ
+          </Badge>
+        );
+      case "volunteer":
+        return (
+          <Badge variant="warning" className="h-4 px-1.5 py-0 text-[10px]">
+            Volunteer
+          </Badge>
+        );
+      case "citizen":
+        return (
+          <Badge variant="success" className="h-4 px-1.5 py-0 text-[10px]">
+            Citizen
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <header className="border-border bg-card/80 sticky top-0 z-40 w-full border-b backdrop-blur-md">
@@ -42,29 +79,35 @@ export function Navbar() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md px-4 py-2 text-sm font-medium transition-all"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {isAuthenticated && (
+          <nav className="hidden items-center gap-1 md:flex">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md px-4 py-2 text-sm font-medium transition-all"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* Notifications Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground relative"
-          >
-            <Bell className="size-4" />
-            <span className="bg-accent absolute top-1.5 right-1.5 size-2 rounded-full" />
-          </Button>
+          {isAuthenticated && (
+            <>
+              {/* Notifications Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground relative"
+              >
+                <Bell className="size-4" />
+                <span className="bg-accent absolute top-1.5 right-1.5 size-2 rounded-full" />
+              </Button>
+            </>
+          )}
 
           {/* Theme Toggle Button */}
           <Button
@@ -80,35 +123,61 @@ export function Navbar() {
             )}
           </Button>
 
-          {/* Profile Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-border/80 hidden items-center gap-2 sm:flex"
-          >
-            <User className="size-3.5" />
-            <span>Command Center</span>
-          </Button>
+          {isAuthenticated && user ? (
+            <>
+              {/* Profile Button */}
+              <Link href="/profile" passHref>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-border/80 hover:bg-muted/50 hidden cursor-pointer items-center gap-2 sm:flex"
+                >
+                  <User className="size-3.5" />
+                  <span className="font-semibold">{user.fullName}</span>
+                  {getRoleBadge(role)}
+                </Button>
+              </Link>
+
+              {/* Sign Out Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                className="text-muted-foreground hover:text-destructive hidden sm:flex"
+                title="Sign Out"
+              >
+                <LogOut className="size-4" />
+              </Button>
+            </>
+          ) : (
+            <Link href="/login" passHref>
+              <Button variant="default" size="sm">
+                Sign In
+              </Button>
+            </Link>
+          )}
 
           {/* Mobile Menu Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-muted-foreground hover:text-foreground md:hidden"
-          >
-            {mobileMenuOpen ? (
-              <X className="size-5" />
-            ) : (
-              <Menu className="size-5" />
-            )}
-          </Button>
+          {isAuthenticated && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-muted-foreground hover:text-foreground md:hidden"
+            >
+              {mobileMenuOpen ? (
+                <X className="size-5" />
+              ) : (
+                <Menu className="size-5" />
+              )}
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Mobile Drawer menu */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {mobileMenuOpen && isAuthenticated && (
           <motion.div
             className="border-border bg-card border-t shadow-lg md:hidden"
             initial={{ opacity: 0, height: 0 }}
@@ -127,15 +196,49 @@ export function Navbar() {
                   {item.label}
                 </Link>
               ))}
-              <div className="border-border mt-4 flex items-center justify-between border-t pt-4">
-                <span className="text-muted-foreground text-sm font-medium">
-                  Command Center profile
-                </span>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <User className="size-3.5" />
-                  View Profile
-                </Button>
-              </div>
+              {user && (
+                <div className="border-border mt-4 flex flex-col gap-3 border-t pt-4">
+                  <div className="flex items-center justify-between px-3">
+                    <div className="flex flex-col">
+                      <span className="text-foreground text-sm font-semibold">
+                        {user.fullName}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {user.email}
+                      </span>
+                    </div>
+                    {getRoleBadge(role)}
+                  </div>
+                  <div className="flex gap-2">
+                    <Link
+                      href="/profile"
+                      className="flex-1"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full gap-2"
+                      >
+                        <User className="size-3.5" />
+                        View Profile
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        logout();
+                      }}
+                      className="gap-2"
+                    >
+                      <LogOut className="size-3.5" />
+                      Sign Out
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

@@ -12,9 +12,12 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
   LucideIcon,
+  Users,
+  User,
+  Shield,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +37,38 @@ const sidebarItems: SidebarItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { role, user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Filter sidebar items based on role-based access rules
+  const visibleItems = sidebarItems.filter((item) => {
+    if (item.label === "Deployments" && role === "citizen") {
+      return false; // Evacuations / deployments tracking is authority/volunteer only
+    }
+    return true;
+  });
+
+  const getRoleIcon = () => {
+    switch (role) {
+      case "authority":
+        return <Shield className="text-destructive size-4" />;
+      case "volunteer":
+        return <Users className="text-warning size-4" />;
+      default:
+        return <User className="text-success size-4" />;
+    }
+  };
+
+  const getRoleLabel = () => {
+    switch (role) {
+      case "authority":
+        return "HQ COMMAND";
+      case "volunteer":
+        return "FIELD VOLUNTEER";
+      default:
+        return "CITIZEN ACCESS";
+    }
+  };
 
   return (
     <motion.aside
@@ -46,7 +80,7 @@ export function Sidebar() {
     >
       {/* Sidebar Items */}
       <nav className="flex-1 space-y-1 p-3">
-        {sidebarItems.map((item) => {
+        {visibleItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link key={item.label} href={item.href} passHref>
@@ -94,17 +128,17 @@ export function Sidebar() {
 
       {/* Collapse Toggle Footer */}
       <div className="border-border flex flex-col gap-3 border-t p-3">
-        {!isCollapsed && (
+        {!isCollapsed && user && (
           <div className="text-muted-foreground flex items-center gap-2 px-2 text-xs font-semibold">
-            <ShieldCheck className="text-accent size-4" />
-            <span>HQ Mode Active</span>
+            {getRoleIcon()}
+            <span>{getRoleLabel()}</span>
           </div>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-8 w-full items-center justify-center"
+          className="hover:bg-muted text-muted-foreground hover:text-foreground flex h-8 w-full items-center justify-center"
         >
           {isCollapsed ? (
             <ChevronRight className="size-4" />

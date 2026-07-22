@@ -10,7 +10,8 @@ export function useTheme() {
   useEffect(() => {
     // Determine active theme on load
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      .matches
       ? "dark"
       : "light";
     const activeTheme = savedTheme || systemTheme;
