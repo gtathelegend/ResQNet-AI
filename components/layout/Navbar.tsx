@@ -34,7 +34,7 @@ const publicNavItems: NavItem[] = [
 const dashboardNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Incidents", href: "/dashboard#incidents" },
-  { label: "Resources", href: "/dashboard#resources" },
+  { label: "Resources", href: "/dashboard/resources" },
   { label: "Deployments", href: "/dashboard#deployments" },
 ];
 

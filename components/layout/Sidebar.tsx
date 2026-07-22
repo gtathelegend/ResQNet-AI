@@ -30,7 +30,7 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Incidents", href: "/dashboard#incidents", icon: AlertTriangle },
-  { label: "Resources", href: "/dashboard#resources", icon: Package },
+  { label: "Resources", href: "/dashboard/resources", icon: Package },
   { label: "Deployments", href: "/dashboard#deployments", icon: Activity },
   { label: "Settings", href: "/dashboard#settings", icon: Settings },
 ];

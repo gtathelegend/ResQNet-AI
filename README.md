@@ -54,18 +54,6 @@ Dark mode is built-in and respects both user system preferences and user manual 
 
 ---
 
-## 🔌 Environment Configurations
-
-To configure ResQNet AI, rename `.env.example` to `.env.local` and add your settings:
-
-```bash
-# S3 Contract Service Security
-# Ensure this matches the server settings to prevent 'Invalid API key for caller service' error.
-INTER_SERVICE_SIGNING_SECRET=your_development_inter_service_signing_secret_key_here
-```
-
----
-
 ## 🚀 Running Locally
 
 1. **Install Dependencies**:

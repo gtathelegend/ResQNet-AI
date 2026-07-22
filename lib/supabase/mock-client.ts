@@ -198,6 +198,25 @@ class MockQueryBuilder {
                 note: "Barriers failed. Deploying emergency units.",
               },
             ],
+            aiAnalysis: {
+              priority: "critical",
+              reason:
+                "Breach of river basin sluice gate threatens immediate residential drowning risks and evacuations. 450 people are currently impacted.",
+              requiredResources: [
+                "Amphibious Search & Rescue Units",
+                "Sandbag Deployment Staging Vehicles",
+                "Freshwater Supply Tankers",
+              ],
+              estimatedResponseTime: "20-30 minutes",
+              potentialRisks: [
+                "Submerged grid electrocution",
+                "Sewer line contamination",
+                "Mudslides",
+              ],
+              summary:
+                "Critical flood breach in Sector A. Commenced evacuation dispatches and staging barrier logistics.",
+              approved: true,
+            },
           },
           {
             id: "inc-2",
@@ -231,6 +250,24 @@ class MockQueryBuilder {
                 note: "En route to warehouse district.",
               },
             ],
+            aiAnalysis: {
+              priority: "high",
+              reason:
+                "Chemical components present dynamic containment risks and smoke toxicity threats near neighboring commercial zones.",
+              requiredResources: [
+                "HQ Pumper Fire Engines",
+                "Smoke Inhalation Oxygen Kits",
+                "Police Blockade Units",
+              ],
+              estimatedResponseTime: "15-20 minutes",
+              potentialRisks: [
+                "Toxicity expansion",
+                "Chemical container explosions",
+              ],
+              summary:
+                "High hazard chemical fire at Sector C warehouse. First responders en route.",
+              approved: false,
+            },
           },
           {
             id: "inc-3",
@@ -258,6 +295,20 @@ class MockQueryBuilder {
                 updatedBy: "Jane Doe",
               },
             ],
+            aiAnalysis: {
+              priority: "medium",
+              reason:
+                "Subway heat levels during grid shutdown pose dehydration and collapse hazards for stranded commuters.",
+              requiredResources: [
+                "ALS Paramedic Ambulances",
+                "Drinking Water Supply crates",
+              ],
+              estimatedResponseTime: "10-15 minutes",
+              potentialRisks: ["Commuter panic", "Dehydration scaling"],
+              summary:
+                "Commuter distress logged in Sector B subway tunnels. Water dispatches initiated.",
+              approved: false,
+            },
           },
         ];
         localStorage.setItem(
@@ -268,6 +319,203 @@ class MockQueryBuilder {
       }
       return JSON.parse(dataStr);
     }
+
+    if (this.tableName === "resources") {
+      const dataStr = localStorage.getItem("resqnet-resources");
+      if (!dataStr) {
+        const defaultResources = [
+          {
+            id: "res-1",
+            name: "Food",
+            category: "supplies",
+            totalStock: 5000,
+            allocatedStock: 500,
+            availableStock: 4500,
+            unit: "rations (crates)",
+            depot: "Depot Alpha",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-2",
+            name: "Water",
+            category: "supplies",
+            totalStock: 10000,
+            allocatedStock: 1500,
+            availableStock: 8500,
+            unit: "liters",
+            depot: "Depot Alpha",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-3",
+            name: "Medicine",
+            category: "supplies",
+            totalStock: 200,
+            allocatedStock: 0,
+            availableStock: 200,
+            unit: "triage kits",
+            depot: "Depot Beta",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-4",
+            name: "Fuel",
+            category: "supplies",
+            totalStock: 1500,
+            allocatedStock: 0,
+            availableStock: 1500,
+            unit: "liters",
+            depot: "Depot Alpha",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-5",
+            name: "Blankets",
+            category: "supplies",
+            totalStock: 800,
+            allocatedStock: 0,
+            availableStock: 800,
+            unit: "units",
+            depot: "Depot Beta",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-6",
+            name: "Boats",
+            category: "vehicles",
+            totalStock: 20,
+            allocatedStock: 3,
+            availableStock: 17,
+            unit: "rescue boats",
+            depot: "Depot Alpha",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-7",
+            name: "Vehicles",
+            category: "vehicles",
+            totalStock: 30,
+            allocatedStock: 0,
+            availableStock: 30,
+            unit: "pickup trucks",
+            depot: "Depot Alpha",
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "res-8",
+            name: "Medical Teams",
+            category: "personnel",
+            totalStock: 15,
+            allocatedStock: 0,
+            availableStock: 15,
+            unit: "triage teams",
+            depot: "Depot Beta",
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-resources",
+          JSON.stringify(defaultResources)
+        );
+        return defaultResources;
+      }
+      return JSON.parse(dataStr);
+    }
+
+    if (this.tableName === "resource_allocations") {
+      const dataStr = localStorage.getItem("resqnet-resource-allocations");
+      if (!dataStr) {
+        const defaultAllocations = [
+          {
+            id: "alloc-1",
+            resourceId: "res-1",
+            resourceName: "Food",
+            incidentId: "inc-1",
+            incidentType: "flooding",
+            quantity: 500,
+            status: "delivered",
+            allocatedBy: "authority@resqnet.ai",
+            createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+            updatedAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+          },
+          {
+            id: "alloc-2",
+            resourceId: "res-2",
+            resourceName: "Water",
+            incidentId: "inc-1",
+            incidentType: "flooding",
+            quantity: 1500,
+            status: "delivered",
+            allocatedBy: "authority@resqnet.ai",
+            createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+            updatedAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+          },
+          {
+            id: "alloc-3",
+            resourceId: "res-6",
+            resourceName: "Boats",
+            incidentId: "inc-1",
+            incidentType: "flooding",
+            quantity: 3,
+            status: "en-route",
+            allocatedBy: "authority@resqnet.ai",
+            createdAt: new Date(Date.now() - 3600000 * 1).toISOString(),
+            updatedAt: new Date(Date.now() - 3600000 * 1).toISOString(),
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-resource-allocations",
+          JSON.stringify(defaultAllocations)
+        );
+        return defaultAllocations;
+      }
+      return JSON.parse(dataStr);
+    }
+
+    if (this.tableName === "resource_history") {
+      const dataStr = localStorage.getItem("resqnet-resource-history");
+      if (!dataStr) {
+        const defaultHistory = [
+          {
+            id: "hist-1",
+            resourceId: "res-1",
+            resourceName: "Food",
+            action: "allocate",
+            quantity: 500,
+            performedBy: "authority@resqnet.ai",
+            createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+            note: "Dispatched to Sector A Flooding",
+          },
+          {
+            id: "hist-2",
+            resourceId: "res-2",
+            resourceName: "Water",
+            action: "allocate",
+            quantity: 1500,
+            performedBy: "authority@resqnet.ai",
+            createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+            note: "Dispatched to Sector A Flooding",
+          },
+          {
+            id: "hist-3",
+            resourceId: "res-6",
+            resourceName: "Boats",
+            action: "allocate",
+            quantity: 3,
+            performedBy: "authority@resqnet.ai",
+            createdAt: new Date(Date.now() - 3600000 * 1).toISOString(),
+            note: "Dispatched to Sector A Flooding",
+          },
+        ];
+        localStorage.setItem(
+          "resqnet-resource-history",
+          JSON.stringify(defaultHistory)
+        );
+        return defaultHistory;
+      }
+      return JSON.parse(dataStr);
+    }
+
     return [];
   }
 
@@ -276,6 +524,15 @@ class MockQueryBuilder {
     if (typeof window === "undefined") return;
     if (this.tableName === "incidents") {
       localStorage.setItem("resqnet-incidents", JSON.stringify(data));
+    } else if (this.tableName === "resources") {
+      localStorage.setItem("resqnet-resources", JSON.stringify(data));
+    } else if (this.tableName === "resource_allocations") {
+      localStorage.setItem(
+        "resqnet-resource-allocations",
+        JSON.stringify(data)
+      );
+    } else if (this.tableName === "resource_history") {
+      localStorage.setItem("resqnet-resource-history", JSON.stringify(data));
     }
   }
 
@@ -342,22 +599,19 @@ class MockQueryBuilder {
 
     itemsToInsert.forEach((itm) => {
       if (!itm.id) {
-        itm.id = "inc-" + Math.random().toString(36).substring(2, 11);
+        const prefix =
+          this.tableName === "resources"
+            ? "res-"
+            : this.tableName === "resource_allocations"
+              ? "alloc-"
+              : "hist-";
+        itm.id = prefix + Math.random().toString(36).substring(2, 11);
       }
       if (!itm.createdAt) {
         itm.createdAt = new Date().toISOString();
       }
       if (!itm.updatedAt) {
         itm.updatedAt = new Date().toISOString();
-      }
-      if (!itm.statusHistory) {
-        itm.statusHistory = [
-          {
-            status: itm.status || "reported",
-            updatedAt: itm.createdAt,
-            updatedBy: itm.reportedBy || "Citizen",
-          },
-        ];
       }
     });
 
@@ -383,7 +637,11 @@ class MockQueryBuilder {
           updatedAt: new Date().toISOString(),
         };
 
-        if (updates.status && updates.status !== item.status) {
+        if (
+          this.tableName === "incidents" &&
+          updates.status &&
+          updates.status !== item.status
+        ) {
           const history = updated.statusHistory || [];
           updated.statusHistory = [
             ...history,
