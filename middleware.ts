@@ -7,6 +7,7 @@ export async function middleware(request: NextRequest) {
 
   // Static assets and internal next.js endpoints should be public
   const isPublicRoute =
+    pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico";
@@ -88,7 +89,7 @@ export async function middleware(request: NextRequest) {
     if (pathname === "/login") {
       // Prevent authenticated users from opening login screen
       const url = request.nextUrl.clone();
-      url.pathname = "/";
+      url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
   }

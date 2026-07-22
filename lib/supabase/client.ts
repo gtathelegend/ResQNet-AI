@@ -15,7 +15,7 @@ const isConfigured =
 // Export the active Supabase client. Fall back to mock client if not configured.
 export const supabase = isConfigured
   ? createBrowserClient(supabaseUrl, supabaseAnonKey)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  : (mockSupabaseClient as any);
+  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mockSupabaseClient as any);
 
 export default supabase;

@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         // Redirect to dashboard/home page
-        router.push("/");
+        router.push("/dashboard");
         router.refresh();
       }
     } catch (error) {

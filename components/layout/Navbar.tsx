@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
@@ -23,17 +24,31 @@ interface NavItem {
   href: string;
 }
 
-const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/" },
-  { label: "Incidents", href: "#incidents" },
-  { label: "Resources", href: "#resources" },
-  { label: "Analytics", href: "#analytics" },
+const publicNavItems: NavItem[] = [
+  { label: "Mission", href: "/#mission" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "SDG Goals", href: "/#sdgs" },
+  { label: "Features", href: "/#features" },
+];
+
+const dashboardNavItems: NavItem[] = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Incidents", href: "/dashboard#incidents" },
+  { label: "Resources", href: "/dashboard#resources" },
+  { label: "Deployments", href: "/dashboard#deployments" },
 ];
 
 export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { user, role, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Determine active navigation links based on routing context
+  const isDashboardRoute =
+    pathname?.startsWith("/dashboard") || pathname?.startsWith("/profile");
+  const navItems =
+    isDashboardRoute && isAuthenticated ? dashboardNavItems : publicNavItems;
 
   const getRoleBadge = (userRole: string | null) => {
     switch (userRole) {
@@ -79,9 +94,12 @@ export function Navbar() {
         </div>
 
         {/* Desktop Navigation */}
-        {isAuthenticated && (
-          <nav className="hidden items-center gap-1 md:flex">
-            {navItems.map((item) => (
+        <nav className="hidden items-center gap-1 md:flex">
+          {navItems.map((item) => {
+            // Filter deployments for citizen role
+            if (item.label === "Deployments" && role === "citizen") return null;
+
+            return (
               <Link
                 key={item.label}
                 href={item.href}
@@ -89,13 +107,13 @@ export function Navbar() {
               >
                 {item.label}
               </Link>
-            ))}
-          </nav>
-        )}
+            );
+          })}
+        </nav>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {isAuthenticated && (
+          {isDashboardRoute && isAuthenticated && (
             <>
               {/* Notifications Button */}
               <Button
@@ -125,7 +143,7 @@ export function Navbar() {
 
           {isAuthenticated && user ? (
             <>
-              {/* Profile Button */}
+              {/* Profile Link Button */}
               <Link href="/profile" passHref>
                 <Button
                   variant="outline"
@@ -138,16 +156,31 @@ export function Navbar() {
                 </Button>
               </Link>
 
-              {/* Sign Out Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={logout}
-                className="text-muted-foreground hover:text-destructive hidden sm:flex"
-                title="Sign Out"
-              >
-                <LogOut className="size-4" />
-              </Button>
+              {/* If on marketing page, show quick links back to app */}
+              {!isDashboardRoute && (
+                <Link href="/dashboard" passHref>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="hidden sm:flex"
+                  >
+                    Go to Dashboard
+                  </Button>
+                </Link>
+              )}
+
+              {/* Sign Out Button (Dashboard only) */}
+              {isDashboardRoute && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={logout}
+                  className="text-muted-foreground hover:text-destructive hidden sm:flex"
+                  title="Sign Out"
+                >
+                  <LogOut className="size-4" />
+                </Button>
+              )}
             </>
           ) : (
             <Link href="/login" passHref>
@@ -158,26 +191,24 @@ export function Navbar() {
           )}
 
           {/* Mobile Menu Toggle */}
-          {isAuthenticated && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-muted-foreground hover:text-foreground md:hidden"
-            >
-              {mobileMenuOpen ? (
-                <X className="size-5" />
-              ) : (
-                <Menu className="size-5" />
-              )}
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="text-muted-foreground hover:text-foreground md:hidden"
+          >
+            {mobileMenuOpen ? (
+              <X className="size-5" />
+            ) : (
+              <Menu className="size-5" />
+            )}
+          </Button>
         </div>
       </div>
 
       {/* Mobile Drawer menu */}
       <AnimatePresence>
-        {mobileMenuOpen && isAuthenticated && (
+        {mobileMenuOpen && (
           <motion.div
             className="border-border bg-card border-t shadow-lg md:hidden"
             initial={{ opacity: 0, height: 0 }}
@@ -186,17 +217,22 @@ export function Navbar() {
             transition={{ duration: 0.2 }}
           >
             <div className="space-y-1 px-4 py-3 pb-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50 block rounded-md px-3 py-2 text-base font-medium transition-all"
-                >
-                  {item.label}
-                </Link>
-              ))}
-              {user && (
+              {navItems.map((item) => {
+                if (item.label === "Deployments" && role === "citizen")
+                  return null;
+
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-muted-foreground hover:text-foreground hover:bg-muted/50 block rounded-md px-3 py-2 text-base font-medium transition-all"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+              {isAuthenticated && user ? (
                 <div className="border-border mt-4 flex flex-col gap-3 border-t pt-4">
                   <div className="flex items-center justify-between px-3">
                     <div className="flex flex-col">
@@ -209,34 +245,54 @@ export function Navbar() {
                     </div>
                     {getRoleBadge(role)}
                   </div>
-                  <div className="flex gap-2">
-                    <Link
-                      href="/profile"
-                      className="flex-1"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full gap-2"
+                  <div className="flex flex-col gap-2">
+                    {!isDashboardRoute && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
                       >
-                        <User className="size-3.5" />
-                        View Profile
+                        <Button variant="default" size="sm" className="w-full">
+                          Go to Dashboard
+                        </Button>
+                      </Link>
+                    )}
+                    <div className="flex gap-2">
+                      <Link
+                        href="/profile"
+                        className="flex-1"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full gap-2"
+                        >
+                          <User className="size-3.5" />
+                          View Profile
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          logout();
+                        }}
+                        className="gap-2"
+                      >
+                        <LogOut className="size-3.5" />
+                        Sign Out
                       </Button>
-                    </Link>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        logout();
-                      }}
-                      className="gap-2"
-                    >
-                      <LogOut className="size-3.5" />
-                      Sign Out
-                    </Button>
+                    </div>
                   </div>
+                </div>
+              ) : (
+                <div className="border-border mt-4 border-t pt-4">
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="default" className="w-full">
+                      Sign In to Platform
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
