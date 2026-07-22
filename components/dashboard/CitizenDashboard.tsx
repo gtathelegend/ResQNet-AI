@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { toast } from "sonner";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   Plus,
   BellRing,
   Compass,
   Users,
-  Send,
   FileText,
   ShieldAlert,
+  ArrowRight,
 } from "lucide-react";
 import {
   Card,
@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/modal";
 import {
   Table,
   TableBody,
@@ -31,6 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserSession } from "@/types/auth";
+import { supabase } from "@/lib/supabase/client";
+import { Incident } from "@/types/incident";
 
 interface CitizenDashboardProps {
   user: UserSession["user"];
@@ -43,7 +44,31 @@ export function CitizenDashboard({
   triggerToast,
   triggerAlertToast,
 }: CitizenDashboardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch incidents dynamically
+  useEffect(() => {
+    async function loadIncidents() {
+      try {
+        const { data, error } = await supabase
+          .from("incidents")
+          .select("*")
+          .order("createdAt", { ascending: false });
+
+        if (!error && data) {
+          setIncidents(data as Incident[]);
+        }
+      } catch (err) {
+        console.error("Error loading incidents:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadIncidents();
+  }, []);
+
+  const myReports = incidents.filter((i) => i.reportedBy === user?.email);
 
   return (
     <>
@@ -59,14 +84,12 @@ export function CitizenDashboard({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            variant="accent"
-            className="gap-2"
-          >
-            <Plus className="size-4" />
-            <span>Request Help</span>
-          </Button>
+          <Link href="/dashboard/incidents/create" passHref>
+            <Button variant="accent" size="sm" className="gap-2">
+              <Plus className="size-4" />
+              <span>Report Disaster</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -129,16 +152,18 @@ export function CitizenDashboard({
         <Card className="transition-shadow hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-muted-foreground text-sm font-semibold">
-              My Assistance Requests
+              My Active Reports
             </CardTitle>
             <FileText className="text-warning size-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{myReports.length}</div>
             <div className="mt-1 flex items-center gap-2">
-              <Badge variant="outline">No Active Tickets</Badge>
+              <Badge variant={myReports.length > 0 ? "warning" : "outline"}>
+                {myReports.length > 0 ? "Under Review" : "No active cases"}
+              </Badge>
               <span className="text-muted-foreground text-xs">
-                All resolved
+                Filed via this portal
               </span>
             </div>
           </CardContent>
@@ -147,55 +172,92 @@ export function CitizenDashboard({
 
       {/* Main Grid: Bulletins and Controller */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Bulletins Table */}
+        {/* Bulletins/Reports Table */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Community Bulletins & Alerts</CardTitle>
+            <CardTitle>My Filed Reports & Local Alerts</CardTitle>
             <CardDescription>
-              Local warnings and assistance station locations in your area.
+              Status tracking for disaster incidents reported in your area.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="border-border rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Broadcast Alert</TableHead>
-                    <TableHead>Staging Station</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      ⚠️ Severe Weather Alert: High Winds
-                    </TableCell>
-                    <TableCell>Community Hub 3</TableCell>
-                    <TableCell>
-                      <Badge variant="destructive">Active Warning</Badge>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      🥤 Drinking Water Staging Area Open
-                    </TableCell>
-                    <TableCell>Depot Sector B</TableCell>
-                    <TableCell>
-                      <Badge variant="success">Open Station</Badge>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      🚑 Emergency Evac Shuttle Route B
-                    </TableCell>
-                    <TableCell>Bus Stand Sector A</TableCell>
-                    <TableCell>
-                      <Badge variant="info">Hourly Runs</Badge>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+            {loading ? (
+              <div className="space-y-2 py-4">
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
+              </div>
+            ) : incidents.length === 0 ? (
+              <div className="text-muted-foreground rounded-lg border border-dashed py-6 text-center text-xs">
+                No active public disaster alerts posted.
+              </div>
+            ) : (
+              <div className="border-border rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Incident Type</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Severity</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {incidents.map((inc) => (
+                      <TableRow key={inc.id}>
+                        <TableCell className="flex items-center gap-1.5 font-semibold capitalize">
+                          <span
+                            className={`size-2 rounded-full ${
+                              inc.status === "active"
+                                ? "bg-destructive animate-ping"
+                                : inc.status === "resolved"
+                                  ? "bg-accent"
+                                  : "bg-warning"
+                            }`}
+                          />
+                          {inc.type}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate">
+                          {inc.location}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              inc.severity === "critical"
+                                ? "destructive"
+                                : "outline"
+                            }
+                            className="px-1.5 py-0 text-[9px] uppercase"
+                          >
+                            {inc.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] uppercase"
+                          >
+                            {inc.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link href={`/dashboard/incidents/${inc.id}`}>
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              className="cursor-pointer gap-1"
+                            >
+                              <span>View</span>
+                              <ArrowRight className="size-3" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -238,52 +300,6 @@ export function CitizenDashboard({
           </Card>
         </div>
       </div>
-
-      {/* Assistance Request Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Request Emergency Assistance"
-        description="Your location coordinates will be captured and transmitted to the command center."
-      >
-        <div className="space-y-4 py-2">
-          <div className="space-y-2 text-xs">
-            <p className="text-muted-foreground">
-              Specify what kind of help you need immediately (food/water,
-              medical evacuation, structural hazard):
-            </p>
-            <input
-              type="text"
-              placeholder="E.g., Water levels rising near house entrance."
-              className="border-border bg-background text-foreground focus:border-primary w-full rounded border p-2 outline-none"
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="gap-2"
-              onClick={() => {
-                setIsModalOpen(false);
-                toast.success("Emergency Ticket Staged", {
-                  description:
-                    "Your assistance request is dispatched to responders. Stay safe.",
-                });
-              }}
-            >
-              <Send className="size-3.5" />
-              <span>Transmit Alert</span>
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </>
   );
 }

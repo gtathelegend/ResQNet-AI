@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import {
   AlertTriangle,
@@ -11,11 +12,10 @@ import {
   Compass,
   Home,
   UserCheck,
-  Send,
-  Clock,
   CheckCircle,
   AlertCircle,
   Database,
+  ArrowRight,
 } from "lucide-react";
 import {
   Card,
@@ -27,47 +27,113 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { UserSession } from "@/types/auth";
+import { supabase } from "@/lib/supabase/client";
+import { Incident } from "@/types/incident";
 
 interface AuthorityDashboardProps {
   user: UserSession["user"];
-  triggerToast: () => void;
-  triggerAlertToast: () => void;
 }
 
-export function AuthorityDashboard({
-  user,
-}: AuthorityDashboardProps) {
+export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+  const [dispatchSector, setDispatchSector] = useState("Sector A");
+  const [dispatchType, setDispatchType] = useState("flooding");
 
-  // Stats definition for the 6 cards
+  // Fetch incidents dynamically
+  useEffect(() => {
+    async function loadIncidents() {
+      try {
+        const { data, error } = await supabase
+          .from("incidents")
+          .select("*")
+          .order("createdAt", { ascending: false });
+
+        if (!error && data) {
+          setIncidents(data as Incident[]);
+        }
+      } catch (err) {
+        console.error("Error loading incidents:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadIncidents();
+  }, []);
+
+  // Dynamic calculations based on real database state
+  const activeIncidents = incidents.filter((i) => i.status !== "resolved");
+  const activeCount = activeIncidents.length;
+  const criticalCount = activeIncidents.filter(
+    (i) => i.severity === "critical" || i.severity === "high"
+  ).length;
+  const totalAffected = activeIncidents.reduce(
+    (sum, i) => sum + i.peopleAffected,
+    0
+  );
+
+  // Dynamic resource calculations per sector (based on incident severities in those sectors)
+  const getSectorUnits = (sectorName: string) => {
+    const sectorIncidents = activeIncidents.filter((i) =>
+      i.location.toLowerCase().includes(sectorName.toLowerCase())
+    );
+    return sectorIncidents.reduce((sum, inc) => {
+      if (inc.severity === "critical") return sum + 20;
+      if (inc.severity === "high") return sum + 12;
+      if (inc.severity === "medium") return sum + 6;
+      return sum + 2;
+    }, 5); // Base of 5 support units per sector
+  };
+
+  const sectorAUnits = getSectorUnits("Sector A");
+  const sectorBUnits = getSectorUnits("Sector B");
+  const sectorCUnits = getSectorUnits("Sector C");
+  const sectorDUnits = getSectorUnits("Sector D");
+
+  const totalUnits = sectorAUnits + sectorBUnits + sectorCUnits + sectorDUnits;
+  const resourceDispatchPercent = Math.min(
+    100,
+    Math.round((totalUnits / 120) * 100)
+  );
+
   const statsCards = [
     {
       title: "Active Incidents",
-      value: "14",
+      value: activeCount.toString(),
       icon: AlertTriangle,
-      badgeText: "Critical State",
-      badgeVariant: "destructive" as const,
+      badgeText: activeCount > 5 ? "Critical Load" : "Manageable",
+      badgeVariant: (activeCount > 5 ? "destructive" : "info") as
+        "destructive" | "info",
       desc: "Requires dispatch team",
       color: "text-destructive",
     },
     {
       title: "Critical Alerts",
-      value: "3",
+      value: criticalCount.toString(),
       icon: AlertCircle,
-      badgeText: "High Winds",
-      badgeVariant: "warning" as const,
-      desc: "Severe weather alert",
+      badgeText: criticalCount > 0 ? "High Warning" : "Clear Sky",
+      badgeVariant: (criticalCount > 0 ? "warning" : "success") as
+        "warning" | "success",
+      desc: "Immediate dispatches active",
       color: "text-warning",
     },
     {
       title: "Resources Dispatched",
-      value: "92%",
+      value: `${resourceDispatchPercent}%`,
       icon: Activity,
-      badgeText: "Optimized",
+      badgeText: `${totalUnits} Units Deployed`,
       badgeVariant: "info" as const,
-      desc: "88 units deployed",
+      desc: "Staged across 4 sectors",
       color: "text-primary",
     },
     {
@@ -76,7 +142,7 @@ export function AuthorityDashboard({
       icon: Users,
       badgeText: "Staged",
       badgeVariant: "success" as const,
-      desc: "12 field groups",
+      desc: "12 field groups active",
       color: "text-accent",
     },
     {
@@ -85,62 +151,21 @@ export function AuthorityDashboard({
       icon: Home,
       badgeText: "Stable",
       badgeVariant: "success" as const,
-      desc: "4 shelters at limit",
-      color: "text-[#008080]", // Teal
+      desc: "4 shelters at capacity limit",
+      color: "text-[#008080]",
     },
     {
       title: "People Affected",
-      value: "1,280",
+      value: totalAffected.toLocaleString(),
       icon: UserCheck,
       badgeText: "Evac Staged",
       badgeVariant: "warning" as const,
-      desc: "Sector A evac routing",
+      desc: "Sector coordinates active",
       color: "text-purple-500",
     },
   ];
 
-  // Mock data for charts
-
-  const resourceDistribution = [
-    { sector: "Sector A", units: 35, color: "var(--primary)" },
-    { sector: "Sector B", units: 28, color: "var(--accent)" },
-    { sector: "Sector C", units: 15, color: "var(--warning)" },
-    { sector: "Sector D", units: 10, color: "var(--destructive)" },
-  ];
-
-  // Activities list
-  const recentActivities = [
-    {
-      title: "Rescue team alpha dispatched",
-      subtitle: "Tactical Response Unit sent to Flooding Sector A.",
-      time: "10m ago",
-      icon: Send,
-      iconColor: "text-primary bg-primary/10",
-    },
-    {
-      title: "Water supply staging completed",
-      subtitle: "2,000 Gallons staged at Depot 2 for community release.",
-      time: "45m ago",
-      icon: CheckCircle,
-      iconColor: "text-accent bg-accent/10",
-    },
-    {
-      title: "Weather alert issued",
-      subtitle: "Broadcasting storm path warning to Volunteer networks.",
-      time: "2h ago",
-      icon: AlertTriangle,
-      iconColor: "text-warning bg-warning/10",
-    },
-    {
-      title: "Evac Route B marked secure",
-      subtitle: "Volunteers completed clearance logs on primary highway.",
-      time: "4h ago",
-      icon: Compass,
-      iconColor: "text-info bg-info/10",
-    },
-  ];
-
-  // Live telemetry notifications list
+  // Mock notifications
   const notifications = [
     {
       type: "critical",
@@ -178,9 +203,16 @@ export function AuthorityDashboard({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/dashboard/incidents/create" passHref>
+            <Button variant="destructive" size="sm" className="gap-2">
+              <AlertTriangle className="size-4" />
+              <span>Report Disaster</span>
+            </Button>
+          </Link>
           <Button
             onClick={() => setIsModalOpen(true)}
             variant="default"
+            size="sm"
             className="gap-2"
           >
             <Plus className="size-4" />
@@ -229,15 +261,14 @@ export function AuthorityDashboard({
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="text-primary size-4" />
-              <span>Incident Trends (24h)</span>
+              <span>Incident Volume Trends</span>
             </CardTitle>
             <CardDescription>
-              Visual analytics representing active incident tickets in the
-              system.
+              Visual representation of historical disaster reports logged in
+              past hours.
             </CardDescription>
           </CardHeader>
           <CardContent className="relative flex h-64 items-center justify-center pt-4">
-            {/* Custom SVG Area Chart */}
             <svg
               viewBox="0 0 500 200"
               className="text-primary h-full w-full"
@@ -257,8 +288,6 @@ export function AuthorityDashboard({
                   />
                 </linearGradient>
               </defs>
-
-              {/* Grid Lines */}
               <line
                 x1="50"
                 y1="20"
@@ -292,66 +321,50 @@ export function AuthorityDashboard({
                 strokeOpacity="0.1"
               />
 
-              {/* Area path */}
               <path
-                d="M 50 170 L 50 146 L 130 110 L 210 134 L 290 62 L 370 38 L 450 74 L 450 170 Z"
+                d={`M 50 170 L 50 146 L 130 110 L 210 134 L 290 ${Math.max(40, 160 - activeCount * 8)} L 370 ${Math.max(30, 150 - activeCount * 10)} L 450 ${Math.max(50, 165 - activeCount * 6)} L 450 170 Z`}
                 fill="url(#chartGradient)"
               />
-
-              {/* Line path */}
               <path
-                d="M 50 146 L 130 110 L 210 134 L 290 62 L 370 38 L 450 74"
+                d={`M 50 146 L 130 110 L 210 134 L 290 ${Math.max(40, 160 - activeCount * 8)} L 370 ${Math.max(30, 150 - activeCount * 10)} L 450 ${Math.max(50, 165 - activeCount * 6)}`}
                 stroke="var(--primary)"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
 
-              {/* Data Node Dots */}
               {[
                 { x: 50, y: 146, val: 4, label: "02:00" },
                 { x: 130, y: 110, val: 8, label: "06:00" },
                 { x: 210, y: 134, val: 6, label: "10:00" },
-                { x: 290, y: 62, val: 12, label: "14:00" },
-                { x: 370, y: 38, val: 14, label: "18:00" },
-                { x: 450, y: 74, val: 11, label: "22:00" },
+                {
+                  x: 290,
+                  y: Math.max(40, 160 - activeCount * 8),
+                  val: Math.round(activeCount * 0.8),
+                  label: "14:00",
+                },
+                {
+                  x: 370,
+                  y: Math.max(30, 150 - activeCount * 10),
+                  val: activeCount,
+                  label: "18:00",
+                },
+                {
+                  x: 450,
+                  y: Math.max(50, 165 - activeCount * 6),
+                  val: Math.round(activeCount * 0.9),
+                  label: "22:00",
+                },
               ].map((pt, idx) => (
                 <g key={idx}>
                   <circle
                     cx={pt.x}
                     cy={pt.y}
-                    r={hoveredNode === idx ? "7" : "5"}
+                    r="5"
                     fill="var(--background)"
                     stroke="var(--primary)"
                     strokeWidth="2.5"
-                    className="cursor-pointer transition-all"
-                    onMouseEnter={() => setHoveredNode(idx)}
-                    onMouseLeave={() => setHoveredNode(null)}
                   />
-                  {hoveredNode === idx && (
-                    <g>
-                      <rect
-                        x={pt.x - 20}
-                        y={pt.y - 30}
-                        width="40"
-                        height="20"
-                        rx="4"
-                        fill="var(--secondary)"
-                        className="shadow"
-                      />
-                      <text
-                        x={pt.x}
-                        y={pt.y - 16}
-                        fill="var(--secondary-foreground)"
-                        fontSize="10"
-                        textAnchor="middle"
-                        fontWeight="bold"
-                      >
-                        {pt.val}
-                      </text>
-                    </g>
-                  )}
-                  {/* Axis Label */}
                   <text
                     x={pt.x}
                     y="190"
@@ -380,13 +393,11 @@ export function AuthorityDashboard({
             </CardDescription>
           </CardHeader>
           <CardContent className="relative flex h-64 items-center justify-center pt-4">
-            {/* Custom SVG Bar Chart */}
             <svg
               viewBox="0 0 500 200"
               className="text-foreground h-full w-full"
               fill="none"
             >
-              {/* Grid Lines */}
               <line
                 x1="60"
                 y1="20"
@@ -420,15 +431,34 @@ export function AuthorityDashboard({
                 strokeOpacity="0.1"
               />
 
-              {/* Vertical Bars */}
-              {resourceDistribution.map((bar, idx) => {
+              {[
+                {
+                  sector: "Sector A",
+                  units: sectorAUnits,
+                  color: "var(--primary)",
+                },
+                {
+                  sector: "Sector B",
+                  units: sectorBUnits,
+                  color: "var(--accent)",
+                },
+                {
+                  sector: "Sector C",
+                  units: sectorCUnits,
+                  color: "var(--warning)",
+                },
+                {
+                  sector: "Sector D",
+                  units: sectorDUnits,
+                  color: "var(--destructive)",
+                },
+              ].map((bar, idx) => {
                 const xPos = 90 + idx * 100;
-                const barHeight = (bar.units / 40) * 150; // Max units scale is 40
+                const barHeight = (bar.units / 60) * 150; // Max units scale is 60
                 const yPos = 170 - barHeight;
 
                 return (
                   <g key={idx} className="group">
-                    {/* Animated rect bar */}
                     <rect
                       x={xPos}
                       y={yPos}
@@ -439,7 +469,6 @@ export function AuthorityDashboard({
                       fillOpacity="0.85"
                       className="hover:fill-opacity-100 cursor-pointer transition-all"
                     />
-                    {/* Value text above bar */}
                     <text
                       x={xPos + 20}
                       y={yPos - 6}
@@ -448,9 +477,8 @@ export function AuthorityDashboard({
                       fontWeight="bold"
                       textAnchor="middle"
                     >
-                      {bar.units} units
+                      {bar.units} U
                     </text>
-                    {/* Sector Label */}
                     <text
                       x={xPos + 20}
                       y="190"
@@ -469,43 +497,103 @@ export function AuthorityDashboard({
         </Card>
       </div>
 
-      {/* Main Grid: Recent Activity Feed and Telemetry Warnings Panel */}
+      {/* Main Grid: Real Incidents Table and Telemetry Warnings Panel */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column: Recent Activity Feed */}
-        <Card className="lg:col-span-2">
+        {/* Left Column: Active Incidents Table */}
+        <Card className="border-border lg:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="text-primary size-4" />
-              <span>Operations Activity Feed</span>
+            <CardTitle className="text-destructive flex items-center gap-2 text-base">
+              <AlertTriangle className="size-4 shrink-0" />
+              <span>Active Incident Telemetry Grid</span>
             </CardTitle>
             <CardDescription>
-              Live telemetry and tactical updates logged by field responders.
+              Live database queries for reported events. Click a row to view
+              timeline and edit.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {recentActivities.map((act, idx) => (
-              <div
-                key={idx}
-                className="border-border/40 flex items-start gap-4 border-b pb-3 last:border-0 last:pb-0"
-              >
-                <div
-                  className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${act.iconColor}`}
-                >
-                  <act.icon className="size-4" />
-                </div>
-                <div className="flex-1 space-y-0.5">
-                  <h4 className="text-foreground text-sm font-semibold">
-                    {act.title}
-                  </h4>
-                  <p className="text-muted-foreground text-xs">
-                    {act.subtitle}
-                  </p>
-                </div>
-                <div className="text-muted-foreground pt-0.5 text-[10px] whitespace-nowrap">
-                  {act.time}
-                </div>
+          <CardContent>
+            {loading ? (
+              <div className="space-y-2 py-4">
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
               </div>
-            ))}
+            ) : incidents.length === 0 ? (
+              <div className="text-muted-foreground rounded-lg border border-dashed py-8 text-center text-xs">
+                No disaster incidents reported in database.
+              </div>
+            ) : (
+              <div className="border-border rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Severity</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {incidents.map((inc) => (
+                      <TableRow key={inc.id}>
+                        <TableCell className="flex items-center gap-1.5 font-semibold capitalize">
+                          <span
+                            className={`size-2 rounded-full ${
+                              inc.status === "active"
+                                ? "bg-destructive animate-ping"
+                                : inc.status === "resolved"
+                                  ? "bg-accent"
+                                  : "bg-warning"
+                            }`}
+                          />
+                          {inc.type}
+                        </TableCell>
+                        <TableCell className="max-w-[180px] truncate">
+                          {inc.location}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              inc.severity === "critical"
+                                ? "destructive"
+                                : inc.severity === "high"
+                                  ? "warning"
+                                  : inc.severity === "medium"
+                                    ? "info"
+                                    : "outline"
+                            }
+                            className="h-4.5 px-1.5 py-0 text-[9px] uppercase"
+                          >
+                            {inc.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] uppercase"
+                          >
+                            {inc.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link href={`/dashboard/incidents/${inc.id}`}>
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              className="cursor-pointer gap-1"
+                            >
+                              <span>Details</span>
+                              <ArrowRight className="size-3" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -582,15 +670,44 @@ export function AuthorityDashboard({
         description="Verify dispatch details before sending coordinates to field responders."
       >
         <div className="space-y-4 py-2">
-          <div className="bg-muted text-muted-foreground space-y-1 rounded p-3 font-mono text-xs">
-            <div>Target: Sector A - Flooding Perimeter</div>
-            <div>Asset class: Rapid Rescue Vehicle - Type B</div>
-            <div>Signaling status: Secured via HMAC</div>
+          <div className="space-y-2">
+            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              Dispatch Sector
+            </label>
+            <select
+              value={dispatchSector}
+              onChange={(e) => setDispatchSector(e.target.value)}
+              className="border-border bg-background text-foreground w-full rounded border p-2 text-xs"
+            >
+              <option value="Sector A">Sector A - Riverfront</option>
+              <option value="Sector B">Sector B - Subway</option>
+              <option value="Sector C">Sector C - Warehouse District</option>
+              <option value="Sector D">Sector D - Highway</option>
+            </select>
           </div>
-          <p className="text-muted-foreground text-xs">
-            This deployment leverages verified satellite telemetry. Responders
-            will receive coordinates instantly on activation.
-          </p>
+
+          <div className="space-y-2">
+            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              Asset Category
+            </label>
+            <select
+              value={dispatchType}
+              onChange={(e) => setDispatchType(e.target.value)}
+              className="border-border bg-background text-foreground w-full rounded border p-2 text-xs"
+            >
+              <option value="flooding">Rapid Rescue Vehicle (Type B)</option>
+              <option value="fire">Fire Engine Unit (Command Staged)</option>
+              <option value="medical">Paramedic Triage Ambulance</option>
+              <option value="water">Freshwater Staging Truck</option>
+            </select>
+          </div>
+
+          <div className="bg-muted text-muted-foreground space-y-1 rounded p-3 font-mono text-[11px]">
+            <div>Target: {dispatchSector} - Active Area</div>
+            <div>Asset: {dispatchType.toUpperCase()} - Unit RRV-2</div>
+            <div>Signaling status: HMAC Secured Token</div>
+          </div>
+
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
@@ -605,7 +722,7 @@ export function AuthorityDashboard({
               onClick={() => {
                 setIsModalOpen(false);
                 toast.success("Rescue Unit Dispatched", {
-                  description: "Unit RRV-B is on-route. Telemetry active.",
+                  description: `Deployed ${dispatchType.toUpperCase()} unit to ${dispatchSector}.`,
                 });
               }}
             >

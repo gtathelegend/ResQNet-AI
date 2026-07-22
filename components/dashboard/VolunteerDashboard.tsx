@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { toast } from "sonner";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   Plus,
@@ -9,6 +9,7 @@ import {
   Activity,
   Users,
   Compass,
+  ArrowRight,
 } from "lucide-react";
 import {
   Card,
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/modal";
 import {
   Table,
   TableBody,
@@ -29,6 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserSession } from "@/types/auth";
+import { supabase } from "@/lib/supabase/client";
+import { Incident } from "@/types/incident";
 
 interface VolunteerDashboardProps {
   user: UserSession["user"];
@@ -41,7 +43,34 @@ export function VolunteerDashboard({
   triggerToast,
   triggerAlertToast,
 }: VolunteerDashboardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch incidents dynamically
+  useEffect(() => {
+    async function loadIncidents() {
+      try {
+        const { data, error } = await supabase
+          .from("incidents")
+          .select("*")
+          .order("createdAt", { ascending: false });
+
+        if (!error && data) {
+          setIncidents(data as Incident[]);
+        }
+      } catch (err) {
+        console.error("Error loading incidents:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadIncidents();
+  }, []);
+
+  const activeIncidents = incidents.filter((i) => i.status !== "resolved");
+  const myAssignedCount = activeIncidents.filter(
+    (i) => i.status === "investigating"
+  ).length;
 
   return (
     <>
@@ -57,14 +86,12 @@ export function VolunteerDashboard({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            variant="accent"
-            className="gap-2"
-          >
-            <Plus className="size-4" />
-            <span>Report Status</span>
-          </Button>
+          <Link href="/dashboard/incidents/create" passHref>
+            <Button variant="accent" size="sm" className="gap-2">
+              <Plus className="size-4" />
+              <span>Report Status</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -73,16 +100,16 @@ export function VolunteerDashboard({
         <Card className="transition-shadow hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-muted-foreground text-sm font-semibold">
-              My Active Tasks
+              My Investigating Tasks
             </CardTitle>
             <Activity className="text-primary size-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
+            <div className="text-2xl font-bold">{myAssignedCount}</div>
             <div className="mt-1 flex items-center gap-2">
-              <Badge variant="warning">In Progress</Badge>
+              <Badge variant="warning">Action Needed</Badge>
               <span className="text-muted-foreground text-xs">
-                Sector B support
+                Check status details
               </span>
             </div>
           </CardContent>
@@ -114,7 +141,7 @@ export function VolunteerDashboard({
             <AlertTriangle className="text-destructive size-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
+            <div className="text-2xl font-bold">{activeIncidents.length}</div>
             <div className="mt-1 flex items-center gap-2">
               <Badge variant="destructive">Priority</Badge>
               <span className="text-muted-foreground text-xs">
@@ -150,52 +177,87 @@ export function VolunteerDashboard({
           <CardHeader>
             <CardTitle>Assigned Responder Tasks</CardTitle>
             <CardDescription>
-              Tasks currently coordinated to you for field response.
+              Emergency incident tickets active on the telemetry grid.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="border-border rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Task Detail</TableHead>
-                    <TableHead>Target Location</TableHead>
-                    <TableHead>Priority</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      Staging Depot A Stocking
-                    </TableCell>
-                    <TableCell>Warehouse Sector C</TableCell>
-                    <TableCell>
-                      <Badge variant="info">Medium</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button size="xs" variant="accent">
-                        Complete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      Flood Perimeter Sandbags
-                    </TableCell>
-                    <TableCell>Sluice Gate Sector A</TableCell>
-                    <TableCell>
-                      <Badge variant="destructive">High</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button size="xs" variant="accent">
-                        Update
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+            {loading ? (
+              <div className="space-y-2 py-4">
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
+                <div className="bg-muted h-6 w-full animate-pulse rounded" />
+              </div>
+            ) : incidents.length === 0 ? (
+              <div className="text-muted-foreground py-6 text-center text-xs">
+                No active incidents found on the grid.
+              </div>
+            ) : (
+              <div className="border-border rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Severity</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {incidents.map((inc) => (
+                      <TableRow key={inc.id}>
+                        <TableCell className="flex items-center gap-1.5 font-semibold capitalize">
+                          <span
+                            className={`size-2 rounded-full ${
+                              inc.status === "active"
+                                ? "bg-destructive animate-ping"
+                                : inc.status === "resolved"
+                                  ? "bg-accent"
+                                  : "bg-warning"
+                            }`}
+                          />
+                          {inc.type}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate">
+                          {inc.location}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              inc.severity === "critical"
+                                ? "destructive"
+                                : "outline"
+                            }
+                            className="px-1.5 py-0 text-[9px] uppercase"
+                          >
+                            {inc.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] uppercase"
+                          >
+                            {inc.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link href={`/dashboard/incidents/${inc.id}`}>
+                            <Button
+                              size="xs"
+                              variant="accent"
+                              className="cursor-pointer gap-1"
+                            >
+                              <span>Audit</span>
+                              <ArrowRight className="size-3" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -238,49 +300,6 @@ export function VolunteerDashboard({
           </Card>
         </div>
       </div>
-
-      {/* Field Report Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Report Field Telemetry"
-        description="Log local weather or unit staging status."
-      >
-        <div className="space-y-4 py-2">
-          <div className="space-y-2">
-            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-              Status Note
-            </label>
-            <textarea
-              placeholder="E.g., Staging area stocked. Rain level increasing."
-              className="border-border bg-background text-foreground focus:border-primary w-full rounded border p-2 text-xs outline-none"
-              rows={3}
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="accent"
-              size="sm"
-              onClick={() => {
-                setIsModalOpen(false);
-                toast.success("Field Log Recorded", {
-                  description:
-                    "Status successfully updated in commander operations feeds.",
-                });
-              }}
-            >
-              Submit Log
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </>
   );
 }

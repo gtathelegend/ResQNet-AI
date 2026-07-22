@@ -45,8 +45,6 @@ export default function DashboardRouterPage() {
         return (
           <AuthorityDashboard
             user={user}
-            triggerToast={triggerToast}
-            triggerAlertToast={triggerAlertToast}
           />
         );
       case "volunteer":
