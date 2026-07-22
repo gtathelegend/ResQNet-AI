@@ -16,6 +16,7 @@ import {
   User,
   Shield,
   Map,
+  BarChart3,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Live Map", href: "/dashboard/map", icon: Map },
+  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { label: "Incidents", href: "/dashboard#incidents", icon: AlertTriangle },
   { label: "Resources", href: "/dashboard/resources", icon: Package },
   { label: "Volunteers", href: "/dashboard/volunteers", icon: Users },

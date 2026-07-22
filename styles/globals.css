@@ -136,3 +136,36 @@
     @apply font-sans;
   }
 }
+
+/* Print Media CSS Overrides for PDF Analytics Export */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print,
+  nav,
+  aside,
+  header,
+  footer,
+  button,
+  .breadcrumb,
+  select,
+  .print-hide {
+    display: none !important;
+  }
+  main,
+  .print-full-width {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .card {
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+  }
+}
