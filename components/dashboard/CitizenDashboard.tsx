@@ -1,0 +1,289 @@
+"use client";
+
+import React, { useState } from "react";
+import { toast } from "sonner";
+import {
+  AlertTriangle,
+  Plus,
+  BellRing,
+  Compass,
+  Users,
+  Send,
+  FileText,
+  ShieldAlert,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { UserSession } from "@/types/auth";
+
+interface CitizenDashboardProps {
+  user: UserSession["user"];
+  triggerToast: () => void;
+  triggerAlertToast: () => void;
+}
+
+export function CitizenDashboard({
+  user,
+  triggerToast,
+  triggerAlertToast,
+}: CitizenDashboardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <>
+      {/* Title block */}
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-foreground text-2xl font-bold tracking-tight">
+            Citizen Support Center
+          </h2>
+          <p className="text-muted-foreground mt-0.5 text-xs">
+            Emergency telemetry and resources access for{" "}
+            <strong className="text-foreground">{user?.fullName}</strong>.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            variant="accent"
+            className="gap-2"
+          >
+            <Plus className="size-4" />
+            <span>Request Help</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Grid of KPI Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="transition-shadow hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-muted-foreground text-sm font-semibold">
+              Evacuation Capacity
+            </CardTitle>
+            <Compass className="text-info size-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">84%</div>
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant="info">Near Limit</Badge>
+              <span className="text-muted-foreground text-xs">
+                Evac shelter Sector C
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="transition-shadow hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-muted-foreground text-sm font-semibold">
+              Community Volunteers
+            </CardTitle>
+            <Users className="text-accent size-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">142</div>
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant="success">Active</Badge>
+              <span className="text-muted-foreground text-xs">
+                Staged in sector
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="transition-shadow hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-muted-foreground text-sm font-semibold">
+              Safe Shelters Nearby
+            </CardTitle>
+            <ShieldAlert className="text-primary size-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">3</div>
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant="success">Open</Badge>
+              <span className="text-muted-foreground text-xs">
+                Checked 5m ago
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="transition-shadow hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-muted-foreground text-sm font-semibold">
+              My Assistance Requests
+            </CardTitle>
+            <FileText className="text-warning size-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant="outline">No Active Tickets</Badge>
+              <span className="text-muted-foreground text-xs">
+                All resolved
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Grid: Bulletins and Controller */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Bulletins Table */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Community Bulletins & Alerts</CardTitle>
+            <CardDescription>
+              Local warnings and assistance station locations in your area.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="border-border rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Broadcast Alert</TableHead>
+                    <TableHead>Staging Station</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      ⚠️ Severe Weather Alert: High Winds
+                    </TableCell>
+                    <TableCell>Community Hub 3</TableCell>
+                    <TableCell>
+                      <Badge variant="destructive">Active Warning</Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      🥤 Drinking Water Staging Area Open
+                    </TableCell>
+                    <TableCell>Depot Sector B</TableCell>
+                    <TableCell>
+                      <Badge variant="success">Open Station</Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      🚑 Emergency Evac Shuttle Route B
+                    </TableCell>
+                    <TableCell>Bus Stand Sector A</TableCell>
+                    <TableCell>
+                      <Badge variant="info">Hourly Runs</Badge>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Controller */}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Platform Controller</CardTitle>
+              <CardDescription>
+                Verify micro-animations and toast notifications.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <div className="space-y-2">
+                <span className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                  Notify Feed (Sonner)
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={triggerToast}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-2"
+                  >
+                    <BellRing className="text-primary size-4" />
+                    <span>Info Toast</span>
+                  </Button>
+                  <Button
+                    onClick={triggerAlertToast}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-2"
+                  >
+                    <AlertTriangle className="text-destructive size-4" />
+                    <span>Alert Toast</span>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Assistance Request Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Request Emergency Assistance"
+        description="Your location coordinates will be captured and transmitted to the command center."
+      >
+        <div className="space-y-4 py-2">
+          <div className="space-y-2 text-xs">
+            <p className="text-muted-foreground">
+              Specify what kind of help you need immediately (food/water,
+              medical evacuation, structural hazard):
+            </p>
+            <input
+              type="text"
+              placeholder="E.g., Water levels rising near house entrance."
+              className="border-border bg-background text-foreground focus:border-primary w-full rounded border p-2 outline-none"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="gap-2"
+              onClick={() => {
+                setIsModalOpen(false);
+                toast.success("Emergency Ticket Staged", {
+                  description:
+                    "Your assistance request is dispatched to responders. Stay safe.",
+                });
+              }}
+            >
+              <Send className="size-3.5" />
+              <span>Transmit Alert</span>
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}
