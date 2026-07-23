@@ -51,9 +51,9 @@ The application will be available at `http://localhost:3000`.
 
 For local development, use the following mock credentials:
 
-| Role | Email | Password |
-|------|-------|----------|
-| Citizen | `citizen@resqnet.ai` | `password` |
+| Role      | Email                  | Password   |
+| --------- | ---------------------- | ---------- |
+| Citizen   | `citizen@resqnet.ai`   | `password` |
 | Volunteer | `volunteer@resqnet.ai` | `password` |
 | Authority | `authority@resqnet.ai` | `password` |
 
@@ -157,6 +157,20 @@ feat(command-palette): add global cmd+k search
 fix(map): resolve marker clustering issue
 docs(readme): update deployment instructions
 ```
+
+## Deployment
+
+For production deployment instructions, see the [Deployment Guide](DEPLOYMENT.md).
+
+### Quick Deployment Checklist
+
+Before deploying:
+
+- [ ] All environment variables are configured in `.env.local`
+- [ ] Supabase database schema is applied
+- [ ] Gemini API key is valid
+- [ ] `npm run build` passes locally
+- [ ] `npm run lint` passes with zero errors
 
 ## Questions?
 

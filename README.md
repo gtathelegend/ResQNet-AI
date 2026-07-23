@@ -171,9 +171,9 @@ For development without external services, the app automatically falls back to m
 
 ### Mock Login Credentials
 
-| Role | Email | Password |
-|------|-------|----------|
-| Citizen | `citizen@resqnet.ai` | `password` |
+| Role      | Email                  | Password   |
+| --------- | ---------------------- | ---------- |
+| Citizen   | `citizen@resqnet.ai`   | `password` |
 | Volunteer | `volunteer@resqnet.ai` | `password` |
 | Authority | `authority@resqnet.ai` | `password` |
 
@@ -196,7 +196,22 @@ For development without external services, the app automatically falls back to m
 
 - [Deployment Guide](DEPLOYMENT.md) — Vercel, Supabase, and Gemini API setup
 - [Contributing Guide](CONTRIBUTING.md) — Development workflow and coding standards
-- [License](LICENSE) — Apache License 2.0
+- [License](LICENSE) — MIT License
+
+---
+
+## 📸 Screenshots
+
+> Screenshots will be added here after deployment. Placeholder sections for key views:
+
+| View                       | Description                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| **Dashboard**              | Role-based overview with incident counts, resource status, and volunteer assignments |
+| **Incident Map**           | Live geographic visualization with incident markers and heatmap layers               |
+| **Command Palette**        | Global `Ctrl+K` / `Cmd+K` search overlay for incidents, resources, and navigation    |
+| **Resource Management**    | Inventory tracking, allocation history, and warehouse stock levels                   |
+| **Volunteer Coordination** | Proximity-based dispatch, assignment tracking, and availability status               |
+| **AI Analysis**            | Gemini-powered incident prioritization and resource recommendations                  |
 
 ---
 

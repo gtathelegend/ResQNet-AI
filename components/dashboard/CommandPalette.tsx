@@ -12,11 +12,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 interface CommandItem {
@@ -37,7 +33,7 @@ const MOCK_INCIDENTS: CommandItem[] = [
     title: "Flooding - Sector A",
     subtitle: "High severity · 120 people affected",
     category: "incident",
-    icon: <AlertTriangle className="size-4 text-destructive" />,
+    icon: <AlertTriangle className="text-destructive size-4" />,
     href: "/dashboard/incidents/inc-1",
     keywords: ["flood", "flooding", "sector a", "water"],
   },
@@ -46,7 +42,7 @@ const MOCK_INCIDENTS: CommandItem[] = [
     title: "Fire - Industrial Zone",
     subtitle: "Critical severity · Medical emergency",
     category: "incident",
-    icon: <AlertTriangle className="size-4 text-destructive" />,
+    icon: <AlertTriangle className="text-destructive size-4" />,
     href: "/dashboard/incidents/inc-2",
     keywords: ["fire", "industrial", "burn", "smoke"],
   },
@@ -55,7 +51,7 @@ const MOCK_INCIDENTS: CommandItem[] = [
     title: "Earthquake - Downtown",
     subtitle: "Medium severity · Structural damage",
     category: "incident",
-    icon: <AlertTriangle className="size-4 text-warning" />,
+    icon: <AlertTriangle className="text-warning size-4" />,
     href: "/dashboard/incidents/inc-3",
     keywords: ["earthquake", "downtown", "quake", "structural"],
   },
@@ -64,7 +60,7 @@ const MOCK_INCIDENTS: CommandItem[] = [
     title: "Storm - Eastern Perimeter",
     subtitle: "High severity · Power outage",
     category: "incident",
-    icon: <AlertTriangle className="size-4 text-destructive" />,
+    icon: <AlertTriangle className="text-destructive size-4" />,
     href: "/dashboard/incidents/inc-4",
     keywords: ["storm", "eastern", "wind", "power"],
   },
@@ -76,7 +72,7 @@ const MOCK_RESOURCES: CommandItem[] = [
     title: "Emergency Food Supplies",
     subtitle: "Supplies · 500 units available · Depot Alpha",
     category: "resource",
-    icon: <Package className="size-4 text-success" />,
+    icon: <Package className="text-success size-4" />,
     href: "/dashboard/resources",
     keywords: ["food", "supplies", "depot alpha", "emergency"],
   },
@@ -85,7 +81,7 @@ const MOCK_RESOURCES: CommandItem[] = [
     title: "Medical Kits",
     subtitle: "Supplies · 120 kits available · Depot Beta",
     category: "resource",
-    icon: <Package className="size-4 text-success" />,
+    icon: <Package className="text-success size-4" />,
     href: "/dashboard/resources",
     keywords: ["medical", "kits", "health", "depot beta"],
   },
@@ -94,7 +90,7 @@ const MOCK_RESOURCES: CommandItem[] = [
     title: "Rescue Boats",
     subtitle: "Vehicles · 8 units available · Depot Alpha",
     category: "resource",
-    icon: <Package className="size-4 text-success" />,
+    icon: <Package className="text-success size-4" />,
     href: "/dashboard/resources",
     keywords: ["boat", "rescue", "water", "vehicle"],
   },
@@ -103,7 +99,7 @@ const MOCK_RESOURCES: CommandItem[] = [
     title: "Search & Rescue Teams",
     subtitle: "Personnel · 15 teams on standby",
     category: "resource",
-    icon: <Package className="size-4 text-success" />,
+    icon: <Package className="text-success size-4" />,
     href: "/dashboard/resources",
     keywords: ["team", "personnel", "search", "rescue"],
   },
@@ -115,7 +111,7 @@ const MOCK_VOLUNTEERS: CommandItem[] = [
     title: "Sarah Chen",
     subtitle: "Medical · On-duty · Sector B",
     category: "volunteer",
-    icon: <Users className="size-4 text-primary" />,
+    icon: <Users className="text-primary size-4" />,
     href: "/dashboard/volunteers",
     keywords: ["sarah", "chen", "medical", "sector b"],
   },
@@ -124,7 +120,7 @@ const MOCK_VOLUNTEERS: CommandItem[] = [
     title: "Mike Ross",
     subtitle: "Search & Rescue · Assigned · Industrial Zone",
     category: "volunteer",
-    icon: <Users className="size-4 text-primary" />,
+    icon: <Users className="text-primary size-4" />,
     href: "/dashboard/volunteers",
     keywords: ["mike", "ross", "search", "rescue"],
   },
@@ -133,7 +129,7 @@ const MOCK_VOLUNTEERS: CommandItem[] = [
     title: "Aisha Patel",
     subtitle: "Logistics · On-duty · Depot Alpha",
     category: "volunteer",
-    icon: <Users className="size-4 text-primary" />,
+    icon: <Users className="text-primary size-4" />,
     href: "/dashboard/volunteers",
     keywords: ["aisha", "patel", "logistics", "depot"],
   },
@@ -145,7 +141,7 @@ const NAVIGATION_ITEMS: CommandItem[] = [
     title: "Dashboard",
     subtitle: "Go to main dashboard",
     category: "navigation",
-    icon: <LayoutDashboard className="size-4 text-muted-foreground" />,
+    icon: <LayoutDashboard className="text-muted-foreground size-4" />,
     href: "/dashboard",
     keywords: ["dashboard", "home", "main"],
   },
@@ -154,7 +150,7 @@ const NAVIGATION_ITEMS: CommandItem[] = [
     title: "Live Map",
     subtitle: "View real-time incident map",
     category: "navigation",
-    icon: <Map className="size-4 text-muted-foreground" />,
+    icon: <Map className="text-muted-foreground size-4" />,
     href: "/dashboard/map",
     keywords: ["map", "live", "location", "geo"],
   },
@@ -163,7 +159,7 @@ const NAVIGATION_ITEMS: CommandItem[] = [
     title: "Analytics",
     subtitle: "View response analytics and reports",
     category: "navigation",
-    icon: <BarChart3 className="size-4 text-muted-foreground" />,
+    icon: <BarChart3 className="text-muted-foreground size-4" />,
     href: "/dashboard/analytics",
     keywords: ["analytics", "reports", "charts", "stats"],
   },
@@ -172,7 +168,7 @@ const NAVIGATION_ITEMS: CommandItem[] = [
     title: "Resource Center",
     subtitle: "Manage inventory and allocations",
     category: "navigation",
-    icon: <Package className="size-4 text-muted-foreground" />,
+    icon: <Package className="text-muted-foreground size-4" />,
     href: "/dashboard/resources",
     keywords: ["resources", "inventory", "supplies", "stock"],
   },
@@ -181,7 +177,7 @@ const NAVIGATION_ITEMS: CommandItem[] = [
     title: "Volunteers",
     subtitle: "Coordinate volunteer assignments",
     category: "navigation",
-    icon: <Users className="size-4 text-muted-foreground" />,
+    icon: <Users className="text-muted-foreground size-4" />,
     href: "/dashboard/volunteers",
     keywords: ["volunteers", "people", "team", "dispatch"],
   },
@@ -190,7 +186,7 @@ const NAVIGATION_ITEMS: CommandItem[] = [
     title: "Profile",
     subtitle: "View and edit your profile",
     category: "navigation",
-    icon: <User className="size-4 text-muted-foreground" />,
+    icon: <User className="text-muted-foreground size-4" />,
     href: "/profile",
     keywords: ["profile", "account", "settings", "user"],
   },
@@ -315,7 +311,9 @@ export function CommandPalette() {
       setSelectedIndex((prev) => (prev + 1) % flatItems.length);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + flatItems.length) % flatItems.length);
+      setSelectedIndex(
+        (prev) => (prev - 1 + flatItems.length) % flatItems.length
+      );
     } else if (e.key === "Enter") {
       e.preventDefault();
       if (flatItems[validSelectedIndex]) {
@@ -365,7 +363,7 @@ export function CommandPalette() {
 
               return (
                 <div key={cat} className="px-2">
-                  <div className="text-muted-foreground px-2 py-1.5 text-xs font-semibold uppercase tracking-wider">
+                  <div className="text-muted-foreground px-2 py-1.5 text-xs font-semibold tracking-wider uppercase">
                     {CATEGORY_LABELS[cat]}
                   </div>
                   {items.map((item) => {
@@ -390,9 +388,7 @@ export function CommandPalette() {
                         <span
                           className={cn(
                             "flex size-8 shrink-0 items-center justify-center rounded-md",
-                            isSelected
-                              ? "bg-primary-foreground/20"
-                              : "bg-muted"
+                            isSelected ? "bg-primary-foreground/20" : "bg-muted"
                           )}
                         >
                           {item.icon}
@@ -434,19 +430,19 @@ export function CommandPalette() {
         </div>
 
         {/* Footer */}
-        <div className="border-border bg-muted/50 flex items-center justify-between border-t px-4 py-2 text-xs text-muted-foreground">
+        <div className="border-border bg-muted/50 text-muted-foreground flex items-center justify-between border-t px-4 py-2 text-xs">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-background px-1 py-0.5 ring-1 ring-inset ring-border">
+              <kbd className="bg-background ring-border rounded px-1 py-0.5 ring-1 ring-inset">
                 ↑
               </kbd>
-              <kbd className="rounded bg-background px-1 py-0.5 ring-1 ring-inset ring-border">
+              <kbd className="bg-background ring-border rounded px-1 py-0.5 ring-1 ring-inset">
                 ↓
               </kbd>
               <span>to navigate</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-background px-1 py-0.5 ring-1 ring-inset ring-border">
+              <kbd className="bg-background ring-border rounded px-1 py-0.5 ring-1 ring-inset">
                 ↵
               </kbd>
               <span>to select</span>
