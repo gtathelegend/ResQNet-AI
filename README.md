@@ -99,9 +99,9 @@ graph TB
     end
 
     subgraph Backend["API Layer"]
-        API1[/api/analyze-incident]
-        API2[/api/recommend-resources]
-        API3[/api/recommend-volunteers]
+        API1["/api/analyze-incident"]
+        API2["/api/recommend-resources"]
+        API3["/api/recommend-volunteers"]
     end
 
     subgraph AI["AI Services"]
