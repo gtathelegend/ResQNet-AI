@@ -124,18 +124,18 @@ export default function LoginPage() {
           <div className="bg-primary flex size-12 items-center justify-center rounded-lg text-white">
             <ShieldAlert className="size-6" />
           </div>
-          <h2 className="text-foreground mt-4 text-2xl font-bold tracking-tight">
+          <h2 className="text-[#0F172A] mt-4 text-2xl font-bold tracking-tight">
             ResQNet AI Command
           </h2>
-          <p className="text-muted-foreground mt-1 text-xs max-w-xs leading-relaxed">
+          <p className="text-[#475569] mt-1 text-xs max-w-xs leading-relaxed font-semibold">
             Emergency Operations & Resource Coordination Command Center
           </p>
         </div>
 
         {/* Auth form Card */}
-        <Card className="border border-border bg-white shadow-sm overflow-hidden">
+        <Card className="border border-[#CBD5E1] bg-white shadow-sm overflow-hidden">
           {/* Tabs header */}
-          <div className="grid w-full grid-cols-2 border-b border-border bg-slate-50/50">
+          <div className="grid w-full grid-cols-2 border-b border-[#CBD5E1] bg-[#F1F5F9]/50">
             <button
               type="button"
               onClick={() => {
@@ -144,8 +144,8 @@ export default function LoginPage() {
               }}
               className={`py-3 text-center text-xs font-bold uppercase tracking-wider transition-all ${
                 mode === "login"
-                  ? "bg-white border-b border-transparent text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/50 border-r border-border"
+                  ? "bg-white border-b border-transparent text-[#2563EB]"
+                  : "text-[#475569] hover:text-[#0F172A] hover:bg-[#F1F5F9] border-r border-[#CBD5E1]"
               }`}
             >
               Sign In
@@ -158,8 +158,8 @@ export default function LoginPage() {
               }}
               className={`py-3 text-center text-xs font-bold uppercase tracking-wider transition-all ${
                 mode === "register"
-                  ? "bg-white border-b border-transparent text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/50 border-l border-border"
+                  ? "bg-white border-b border-transparent text-[#2563EB]"
+                  : "text-[#475569] hover:text-[#0F172A] hover:bg-[#F1F5F9] border-l border-[#CBD5E1]"
               }`}
             >
               Register
@@ -167,10 +167,10 @@ export default function LoginPage() {
           </div>
 
           <CardHeader className="pb-4">
-            <CardTitle className="text-base font-semibold">
+            <CardTitle className="text-base font-bold text-[#0F172A]">
               {mode === "login" ? "Access Command Center" : "Register Profile"}
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs text-[#475569] font-medium">
               {mode === "login"
                 ? "Enter your credentials to access operations dashboard."
                 : "Create a coordination profile for disaster dispatch."}
@@ -178,7 +178,7 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             {formError && (
-              <div className="bg-destructive/10 text-destructive rounded p-3 text-xs font-semibold mb-4 border border-destructive/10">
+              <div className="bg-destructive/10 text-destructive rounded p-3 text-xs font-bold mb-4 border border-destructive/10">
                 {formError}
               </div>
             )}
@@ -187,20 +187,20 @@ export default function LoginPage() {
               <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="space-y-4">
                 {/* Email Input */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <Mail className="text-[#64748B] absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <input
                       type="email"
                       placeholder="name@agency.gov"
-                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                       {...registerLogin("email")}
                     />
                   </div>
                   {errorsLogin.email && (
-                    <p className="text-destructive mt-1 text-xs">
+                    <p className="text-destructive mt-1 text-xs font-semibold">
                       {errorsLogin.email.message}
                     </p>
                   )}
@@ -208,20 +208,20 @@ export default function LoginPage() {
 
                 {/* Password Input */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Security Token (Password)
                   </label>
                   <div className="relative">
-                    <Lock className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <Lock className="text-[#64748B] absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <input
                       type="password"
                       placeholder="••••••••"
-                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                       {...registerLogin("password")}
                     />
                   </div>
                   {errorsLogin.password && (
-                    <p className="text-destructive mt-1 text-xs">
+                    <p className="text-destructive mt-1 text-xs font-semibold">
                       {errorsLogin.password.message}
                     </p>
                   )}
@@ -231,7 +231,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="mt-2 h-9 w-full gap-2 text-xs font-semibold cursor-pointer"
+                  className="mt-2 h-9 w-full gap-2 text-xs font-bold cursor-pointer bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
                 >
                   {isLoading ? (
                     <>
@@ -247,20 +247,20 @@ export default function LoginPage() {
               <form onSubmit={handleSubmitSignUp(onSignUpSubmit)} className="space-y-4">
                 {/* Full Name Input */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <User className="text-[#64748B] absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <input
                       type="text"
                       placeholder="Jane Doe"
-                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                       {...registerSignUp("fullName")}
                     />
                   </div>
                   {errorsSignUp.fullName && (
-                    <p className="text-destructive mt-1 text-xs">
+                    <p className="text-destructive mt-1 text-xs font-semibold">
                       {errorsSignUp.fullName.message}
                     </p>
                   )}
@@ -268,20 +268,20 @@ export default function LoginPage() {
 
                 {/* Email Input */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <Mail className="text-[#64748B] absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <input
                       type="email"
                       placeholder="name@agency.gov"
-                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                       {...registerSignUp("email")}
                     />
                   </div>
                   {errorsSignUp.email && (
-                    <p className="text-destructive mt-1 text-xs">
+                    <p className="text-destructive mt-1 text-xs font-semibold">
                       {errorsSignUp.email.message}
                     </p>
                   )}
@@ -289,20 +289,20 @@ export default function LoginPage() {
 
                 {/* Password Input */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Password (Security Token)
                   </label>
                   <div className="relative">
-                    <Lock className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <Lock className="text-[#64748B] absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <input
                       type="password"
                       placeholder="Min 6 characters"
-                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                       {...registerSignUp("password")}
                     />
                   </div>
                   {errorsSignUp.password && (
-                    <p className="text-destructive mt-1 text-xs">
+                    <p className="text-destructive mt-1 text-xs font-semibold">
                       {errorsSignUp.password.message}
                     </p>
                   )}
@@ -310,19 +310,19 @@ export default function LoginPage() {
 
                 {/* Role Selection */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Account Type / Role
                   </label>
                   <select
-                    className="border border-border bg-background text-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                    className="border border-[#CBD5E1] bg-background text-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                     {...registerSignUp("role")}
                   >
-                    <option value="citizen">Citizen (Report Incidents)</option>
-                    <option value="volunteer">Volunteer (Accept Dispatches)</option>
-                    <option value="authority">Authority (Operations Command)</option>
+                    <option value="citizen font-medium">Citizen (Report Incidents)</option>
+                    <option value="volunteer font-medium">Volunteer (Accept Dispatches)</option>
+                    <option value="authority font-medium">Authority (Operations Command)</option>
                   </select>
                   {errorsSignUp.role && (
-                    <p className="text-destructive mt-1 text-xs">
+                    <p className="text-destructive mt-1 text-xs font-semibold">
                       {errorsSignUp.role.message}
                     </p>
                   )}
@@ -331,25 +331,25 @@ export default function LoginPage() {
                 {selectedRole === "volunteer" && (
                   <>
                     <div className="space-y-1">
-                      <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                      <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                         Phone Number
                       </label>
                       <input
                         type="tel"
                         placeholder="+1 (555) 000-0000"
-                        className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                        className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                         {...registerSignUp("phone")}
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                      <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                         Skills (Comma-separated)
                       </label>
                       <input
                         type="text"
                         placeholder="Medical, Logistics, Rescue, Swimmer"
-                        className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                        className="border border-[#CBD5E1] bg-background text-foreground placeholder:text-[#64748B] w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary font-medium"
                         {...registerSignUp("skills")}
                       />
                     </div>
@@ -360,7 +360,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="mt-2 h-9 w-full gap-2 text-xs font-semibold cursor-pointer"
+                  className="mt-2 h-9 w-full gap-2 text-xs font-bold cursor-pointer bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
                 >
                   {isLoading ? (
                     <>
@@ -377,9 +377,9 @@ export default function LoginPage() {
 
           {/* Quick mock selectors (Only visible during Sign In) */}
           {mode === "login" && (
-            <CardFooter className="border-t border-border bg-slate-50/50 flex flex-col gap-3 pt-4">
+            <CardFooter className="border-t border-[#CBD5E1] bg-[#F1F5F9]/50 flex flex-col gap-3 pt-4">
               <div className="w-full space-y-2">
-                <span className="text-muted-foreground block text-center text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-[#475569] block text-center text-[10px] font-bold tracking-wider uppercase">
                   Development Quick Login (Offline Mode)
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -387,13 +387,13 @@ export default function LoginPage() {
                     onClick={() => handleQuickLogin("citizen@resqnet.ai")}
                     variant="outline"
                     size="sm"
-                    className="border border-border bg-white hover:bg-slate-50 flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer"
+                    className="border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer font-bold"
                   >
-                    <User className="text-muted-foreground size-4 mb-0.5" />
+                    <User className="text-[#475569] size-4 mb-0.5" />
                     <span className="text-[10px] font-bold text-foreground">Citizen</span>
                     <Badge
                       variant="outline"
-                      className="border-border text-[8px] bg-slate-50 px-1 py-0 scale-90"
+                      className="border-[#CBD5E1] text-[8px] bg-white px-1 py-0 scale-90 text-[#475569] font-bold"
                     >
                       Jane
                     </Badge>
@@ -402,13 +402,13 @@ export default function LoginPage() {
                     onClick={() => handleQuickLogin("volunteer@resqnet.ai")}
                     variant="outline"
                     size="sm"
-                    className="border border-border bg-white hover:bg-slate-50 flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer"
+                    className="border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer font-bold"
                   >
-                    <Users className="text-muted-foreground size-4 mb-0.5" />
+                    <Users className="text-[#475569] size-4 mb-0.5" />
                     <span className="text-[10px] font-bold text-foreground">Volunteer</span>
                     <Badge
                       variant="outline"
-                      className="border-border text-[8px] bg-slate-50 px-1 py-0 scale-90"
+                      className="border-[#CBD5E1] text-[8px] bg-white px-1 py-0 scale-90 text-[#475569] font-bold"
                     >
                       John
                     </Badge>
@@ -417,21 +417,21 @@ export default function LoginPage() {
                     onClick={() => handleQuickLogin("authority@resqnet.ai")}
                     variant="outline"
                     size="sm"
-                    className="border border-border bg-white hover:bg-slate-50 flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer"
+                    className="border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer font-bold"
                   >
-                    <ShieldCheck className="text-muted-foreground size-4 mb-0.5" />
+                    <ShieldCheck className="text-[#475569] size-4 mb-0.5" />
                     <span className="text-[10px] font-bold text-foreground">Authority</span>
                     <Badge
                       variant="outline"
-                      className="border-border text-[8px] bg-slate-50 px-1 py-0 scale-90"
+                      className="border-[#CBD5E1] text-[8px] bg-white px-1 py-0 scale-90 text-[#475569] font-bold"
                     >
                       Command
                     </Badge>
                   </Button>
                 </div>
               </div>
-              <p className="text-muted-foreground text-center text-[10px] leading-relaxed">
-                Mock logins bypass external API. Password is <strong className="font-semibold text-foreground">password</strong>.
+              <p className="text-[#64748B] text-center text-[10px] leading-relaxed font-semibold">
+                Mock logins bypass external API. Password is <strong className="font-bold text-[#0F172A]">password</strong>.
               </p>
             </CardFooter>
           )}

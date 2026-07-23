@@ -110,19 +110,19 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[220px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
-              <span class="font-extrabold uppercase text-red-600 text-[9px]">🚨 DISASTER IN PROGRESS</span>
-              <span class="text-[9px] font-semibold text-muted-foreground">${new Date(inc.createdAt).toLocaleDateString()}</span>
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-[#E2E8F0]">
+              <span class="font-extrabold uppercase text-[#DC2626] text-[9px]">🚨 DISASTER IN PROGRESS</span>
+              <span class="text-[9px] font-bold text-[#64748B]">${new Date(inc.createdAt).toLocaleDateString()}</span>
             </div>
-            <h4 class="font-bold text-sm text-foreground capitalize mb-1">${inc.type}</h4>
-            <p class="text-muted-foreground leading-relaxed mb-2">${inc.description.substring(0, 70)}...</p>
-            <div class="grid grid-cols-2 gap-1 text-[10.5px] border-t border-border pt-1.5 mt-1.5">
-              <div>Severity: <strong class="text-red-500 capitalize">${inc.severity}</strong></div>
-              <div>Affected: <strong>${inc.peopleAffected}</strong></div>
+            <h4 class="font-bold text-sm text-[#0F172A] capitalize mb-1">${inc.type}</h4>
+            <p class="text-[#475569] font-semibold leading-relaxed mb-2">${inc.description.substring(0, 70)}...</p>
+            <div class="grid grid-cols-2 gap-1 text-[10.5px] border-t border-[#E2E8F0] pt-1.5 mt-1.5 font-bold">
+              <div>Severity: <strong class="text-[#DC2626] capitalize">${inc.severity}</strong></div>
+              <div>Affected: <strong class="text-[#0F172A]">${inc.peopleAffected}</strong></div>
             </div>
             <div class="mt-2.5 flex items-center justify-between">
-              <span class="text-[9px] bg-muted px-1.5 py-0.5 rounded font-mono font-medium">${inc.status.toUpperCase()}</span>
-              <a href="/dashboard/incidents/${inc.id}" class="text-primary hover:underline font-semibold text-[10px]">View Details &rarr;</a>
+              <span class="text-[9px] bg-[#FEF2F2] text-[#DC2626] border border-[#DC2626]/20 px-1.5 py-0.5 rounded font-mono font-bold">${inc.status.toUpperCase()}</span>
+              <a href="/dashboard/incidents/${inc.id}" class="text-[#2563EB] hover:underline font-bold text-[10px]">View Details &rarr;</a>
             </div>
           </div>
         `;
@@ -168,19 +168,19 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[200px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
-              <span class="font-extrabold uppercase text-blue-600 text-[9px]">🏠 SHELTER</span>
-              <span class="text-[9px] font-semibold text-success">Open</span>
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-[#E2E8F0]">
+              <span class="font-extrabold uppercase text-[#2563EB] text-[9px]">🏠 SHELTER</span>
+              <span class="text-[9px] font-bold text-[#16A34A]">Open</span>
             </div>
-            <h4 class="font-bold text-sm text-foreground mb-1">${shelter.name}</h4>
-            <div class="space-y-1 mt-1 text-[11px]">
-              <div>Occupancy: <strong>${shelter.currentOccupancy} / ${shelter.capacity} (${occupancyRate}%)</strong></div>
-              <div class="w-full bg-muted rounded-full h-1 overflow-hidden">
-                <div class="bg-blue-500 h-full" style="width: ${occupancyRate}%"></div>
+            <h4 class="font-bold text-sm text-[#0F172A] mb-1">${shelter.name}</h4>
+            <div class="space-y-1 mt-1 text-[11px] font-bold">
+              <div>Occupancy: <strong class="text-[#0F172A]">${shelter.currentOccupancy} / ${shelter.capacity} (${occupancyRate}%)</strong></div>
+              <div class="w-full bg-[#F1F5F9] rounded-full h-1.5 overflow-hidden">
+                <div class="bg-[#2563EB] h-full" style="width: ${occupancyRate}%"></div>
               </div>
             </div>
             <div class="mt-2 text-right">
-              <a href="/dashboard/shelters" class="text-primary hover:underline font-semibold text-[10px]">View Directory &rarr;</a>
+              <a href="/dashboard/shelters" class="text-[#2563EB] hover:underline font-bold text-[10px]">View Directory &rarr;</a>
             </div>
           </div>
         `;
@@ -201,15 +201,15 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[200px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-[#E2E8F0]">
               <span class="font-extrabold uppercase text-indigo-600 text-[9px]">🏥 HOSPITAL CENTER</span>
-              <span class="text-[9px] font-semibold text-indigo-600 capitalize">${hosp.status}</span>
+              <span class="text-[9px] font-bold text-indigo-600 capitalize">${hosp.status}</span>
             </div>
-            <h4 class="font-bold text-sm text-foreground mb-1">${hosp.name}</h4>
-            <div class="space-y-1 mt-1 text-[11px]">
-              <div>ER Capacity: <strong>${hosp.currentOccupancy} / ${hosp.capacity} Beds (${loadRate}%)</strong></div>
-              <div class="w-full bg-muted rounded-full h-1 overflow-hidden">
-                <div class="bg-indigo-500 h-full" style="width: ${loadRate}%"></div>
+            <h4 class="font-bold text-sm text-[#0F172A] mb-1">${hosp.name}</h4>
+            <div class="space-y-1 mt-1 text-[11px] font-bold">
+              <div>ER Capacity: <strong class="text-[#0F172A]">${hosp.currentOccupancy} / ${hosp.capacity} Beds (${loadRate}%)</strong></div>
+              <div class="w-full bg-[#F1F5F9] rounded-full h-1.5 overflow-hidden">
+                <div class="bg-indigo-600 h-full" style="width: ${loadRate}%"></div>
               </div>
             </div>
           </div>
@@ -228,23 +228,23 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[180px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-[#E2E8F0]">
               <span class="font-extrabold uppercase text-orange-500 text-[9px]">🙋 VOLUNTEER</span>
-              <span class="text-[9px] font-semibold text-success capitalize">${vol.status}</span>
+              <span class="text-[9px] font-bold text-[#16A34A] capitalize">${vol.status}</span>
             </div>
-            <h4 class="font-bold text-sm text-foreground mb-0.5">${vol.name}</h4>
-            <div class="text-[9.5px] text-muted-foreground mb-1.5">Hours: ${vol.availabilityHours}</div>
+            <h4 class="font-bold text-sm text-[#0F172A] mb-0.5">${vol.name}</h4>
+            <div class="text-[9.5px] text-[#475569] mb-1.5 font-bold">Hours: ${vol.availabilityHours}</div>
             <div class="flex flex-wrap gap-1 mb-2">
               ${vol.skills
                 .slice(0, 2)
                 .map(
                   (s) =>
-                    `<span class="text-[9px] bg-secondary text-foreground px-1 py-0.5 rounded font-medium">${s}</span>`
+                    `<span class="text-[9px] bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-1 py-0.5 rounded font-bold">${s}</span>`
                 )
                 .join("")}
             </div>
-            <div class="mt-2 text-right border-t border-border pt-1.5">
-              <a href="/dashboard/volunteers" class="text-primary hover:underline font-semibold text-[10px]">View Directory &rarr;</a>
+            <div class="mt-2 text-right border-t border-[#E2E8F0] pt-1.5">
+              <a href="/dashboard/volunteers" class="text-[#2563EB] hover:underline font-bold text-[10px]">View Directory &rarr;</a>
             </div>
           </div>
         `;
@@ -274,22 +274,22 @@ export default function LiveMap({
           .slice(0, 4)
           .map(
             (r) =>
-              `<div class="flex justify-between text-[10.5px]"><span>${r.name}:</span><strong>${r.availableStock} / ${r.totalStock}</strong></div>`
+              `<div class="flex justify-between text-[10.5px] font-bold text-[#475569]"><span>${r.name}:</span><strong class="text-[#0F172A] font-extrabold">${r.availableStock} / ${r.totalStock}</strong></div>`
           )
           .join("");
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[200px]">
-            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-border">
+            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-[#E2E8F0]">
               <span class="font-extrabold uppercase text-emerald-600 text-[9px]">📦 LOGISTICS DEPOT</span>
-              <span class="text-[9px] font-semibold text-emerald-600 font-mono">Synced</span>
+              <span class="text-[9px] font-bold text-emerald-600 font-mono">Synced</span>
             </div>
-            <h4 class="font-bold text-sm text-foreground mb-1.5">${depotName}</h4>
-            <div class="space-y-0.5 border-t pt-1 border-dashed mt-1 mb-2">
+            <h4 class="font-bold text-sm text-[#0F172A] mb-1.5">${depotName}</h4>
+            <div class="space-y-0.5 border-t pt-1 border-[#E2E8F0] border-dashed mt-1 mb-2">
               ${itemsHTML}
             </div>
-            <div class="mt-2 text-right border-t border-border pt-1.5">
-              <a href="/dashboard/resources" class="text-primary hover:underline font-semibold text-[10px]">View Resources &rarr;</a>
+            <div class="mt-2 text-right border-t border-[#E2E8F0] pt-1.5">
+              <a href="/dashboard/resources" class="text-[#2563EB] hover:underline font-bold text-[10px]">View Resources &rarr;</a>
             </div>
           </div>
         `;

@@ -155,12 +155,12 @@ export default function CreateIncidentPage() {
   return (
     <DashboardLayout>
       {submitting && (
-        <div className="bg-background/95 fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <h3 className="text-foreground mt-4 text-base font-semibold">
+        <div className="bg-white/95 fixed inset-0 z-50 flex flex-col items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[#2563EB]" />
+          <h3 className="text-[#0F172A] mt-4 text-base font-bold">
             Analyzing Incident
           </h3>
-          <p className="text-muted-foreground mt-1 max-w-xs text-center text-xs">
+          <p className="text-[#475569] mt-1 max-w-xs text-center text-xs font-semibold">
             Emergency telemetry is being parsed and triage risk levels evaluated...
           </p>
         </div>
@@ -171,11 +171,11 @@ export default function CreateIncidentPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[#475569] font-semibold">Overview</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Report Incident</BreadcrumbPage>
+                <BreadcrumbPage className="text-[#0F172A] font-bold">Report Incident</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -184,7 +184,7 @@ export default function CreateIncidentPage() {
               variant="outline"
               size="sm"
               onClick={() => router.push("/dashboard")}
-              className="cursor-pointer h-8 px-3 text-xs"
+              className="cursor-pointer h-8 px-3 text-xs font-bold"
             >
               <ArrowLeft className="size-3.5 mr-1" />
               Back
@@ -193,13 +193,13 @@ export default function CreateIncidentPage() {
         </div>
 
         {/* Form Card */}
-        <Card className="border-border mx-auto max-w-3xl shadow-none">
+        <Card className="border-[#E2E8F0] bg-white mx-auto max-w-3xl shadow-none">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
-              <ShieldAlert className="size-5 shrink-0 text-muted-foreground" />
+            <CardTitle className="text-xl font-bold flex items-center gap-2 text-[#0F172A]">
+              <ShieldAlert className="size-5 shrink-0 text-[#475569]" />
               <span>Report Incident</span>
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs text-[#475569] font-medium">
               Provide incident details below. Transmission triggers an immediate AI-supported threat assessment.
             </CardDescription>
           </CardHeader>
@@ -209,12 +209,12 @@ export default function CreateIncidentPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Disaster Type */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                     Disaster Type
                   </label>
                   <select
                     {...register("type")}
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   >
                     <option value="">Select Category...</option>
                     <option value="flooding">Severe Flooding</option>
@@ -225,7 +225,7 @@ export default function CreateIncidentPage() {
                     <option value="other">Other / General Hazard</option>
                   </select>
                   {errors.type && (
-                    <span className="text-destructive mt-0.5 block text-[10px]">
+                    <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                       {errors.type.message}
                     </span>
                   )}
@@ -233,12 +233,12 @@ export default function CreateIncidentPage() {
 
                 {/* Severity Level */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                     Severity Level
                   </label>
                   <select
                     {...register("severity")}
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   >
                     <option value="low">Low - Minor Hazard</option>
                     <option value="medium">Medium - Staging Required</option>
@@ -246,25 +246,25 @@ export default function CreateIncidentPage() {
                     <option value="critical">Critical - Command Center Trigger</option>
                   </select>
                   {errors.severity && (
-                    <span className="text-destructive mt-0.5 block text-[10px]">
+                    <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                       {errors.severity.message}
                     </span>
                   )}
                 </div>
 
-                {/* Location Name */}
+                {/* Location Description */}
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                     Location Description
                   </label>
                   <input
                     type="text"
                     {...register("location")}
                     placeholder="E.g., Sector A, Riverfront Boulevard"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1 placeholder:text-[#64748B]"
                   />
                   {errors.location && (
-                    <span className="text-destructive mt-0.5 block text-[10px]">
+                    <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                       {errors.location.message}
                     </span>
                   )}
@@ -273,13 +273,13 @@ export default function CreateIncidentPage() {
                 {/* Coordinate Fields */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                    <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                       Latitude
                     </label>
                     <button
                       type="button"
                       onClick={useMockCoordinates}
-                      className="text-primary text-[10px] font-semibold hover:underline"
+                      className="text-[#2563EB] text-[10px] font-bold hover:underline"
                     >
                       Fill Mock Coordinates
                     </button>
@@ -288,27 +288,27 @@ export default function CreateIncidentPage() {
                     type="text"
                     {...register("latitude")}
                     placeholder="E.g. 40.7128"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1 placeholder:text-[#64748B]"
                   />
                   {errors.latitude && (
-                    <span className="text-destructive mt-0.5 block text-[10px]">
+                    <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                       {errors.latitude.message}
                     </span>
                   )}
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                     Longitude
                   </label>
                   <input
                     type="text"
                     {...register("longitude")}
                     placeholder="E.g. -74.0060"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1 placeholder:text-[#64748B]"
                   />
                   {errors.longitude && (
-                    <span className="text-destructive mt-0.5 block text-[10px]">
+                    <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                       {errors.longitude.message}
                     </span>
                   )}
@@ -316,17 +316,17 @@ export default function CreateIncidentPage() {
 
                 {/* People Affected */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                     People Affected
                   </label>
                   <input
                     type="number"
                     {...register("peopleAffected")}
                     placeholder="E.g. 150"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1 placeholder:text-[#64748B]"
                   />
                   {errors.peopleAffected && (
-                    <span className="text-destructive mt-0.5 block text-[10px]">
+                    <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                       {errors.peopleAffected.message}
                     </span>
                   )}
@@ -334,20 +334,20 @@ export default function CreateIncidentPage() {
 
                 {/* Photo Upload */}
                 <div className="space-y-1">
-                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                     Incident Photo
                   </label>
-                  <div className="border-border bg-background hover:bg-muted/30 relative flex h-[38px] items-center justify-center overflow-hidden rounded-md border border-dashed p-2 transition-colors">
+                  <div className="border-[#CBD5E1] bg-white hover:bg-slate-50 relative flex h-[38px] items-center justify-center overflow-hidden rounded-md border border-dashed p-2 transition-colors">
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     />
-                    <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
+                    <div className="text-[#475569] flex items-center gap-2 text-xs font-bold">
                       {imageName ? (
                         <>
-                          <Check className="text-success size-4 shrink-0" />
+                          <Check className="text-[#16A34A] size-4 shrink-0" />
                           <span className="max-w-[180px] truncate">{imageName}</span>
                         </>
                       ) : (
@@ -362,80 +362,80 @@ export default function CreateIncidentPage() {
               </div>
 
               {/* Resource checklist */}
-              <div className="border-border space-y-2 border-t pt-4">
-                <span className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+              <div className="border-[#E2E8F0] space-y-2 border-t pt-4">
+                <span className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                   Support Resources Required
                 </span>
                 <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
                   {/* Medical */}
-                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
+                  <label className="border-[#CBD5E1] bg-white hover:bg-slate-50 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none font-bold">
                     <input
                       type="checkbox"
                       {...register("medicalEmergency")}
-                      className="accent-primary size-4 shrink-0 rounded"
+                      className="accent-[#2563EB] size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-medium">Medical Assistance</span>
+                    <span className="text-[#0F172A] text-xs font-semibold">Medical Assistance</span>
                   </label>
 
                   {/* Water */}
-                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
+                  <label className="border-[#CBD5E1] bg-white hover:bg-slate-50 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none font-bold">
                     <input
                       type="checkbox"
                       {...register("waterNeeded")}
-                      className="accent-primary size-4 shrink-0 rounded"
+                      className="accent-[#2563EB] size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-medium">Drinking Water</span>
+                    <span className="text-[#0F172A] text-xs font-semibold">Drinking Water</span>
                   </label>
 
                   {/* Food */}
-                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
+                  <label className="border-[#CBD5E1] bg-white hover:bg-slate-50 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none font-bold">
                     <input
                       type="checkbox"
                       {...register("foodNeeded")}
-                      className="accent-primary size-4 shrink-0 rounded"
+                      className="accent-[#2563EB] size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-medium">Food Supplies</span>
+                    <span className="text-[#0F172A] text-xs font-semibold">Food Supplies</span>
                   </label>
 
                   {/* Shelter */}
-                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
+                  <label className="border-[#CBD5E1] bg-white hover:bg-slate-50 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none font-bold">
                     <input
                       type="checkbox"
                       {...register("shelterNeeded")}
-                      className="accent-primary size-4 shrink-0 rounded"
+                      className="accent-[#2563EB] size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-medium">Temporary Shelter</span>
+                    <span className="text-[#0F172A] text-xs font-semibold">Temporary Shelter</span>
                   </label>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="border-border space-y-1 border-t pt-4">
-                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+              <div className="border-[#E2E8F0] space-y-1 border-t pt-4">
+                <label className="text-[#0F172A] block text-xs font-bold uppercase tracking-wider">
                   Incident Description
                 </label>
                 <textarea
                   {...register("description")}
                   placeholder="Provide a description of the event including current hazards, blockages, or urgent needs."
                   rows={4}
-                  className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border p-3 text-xs outline-none focus:ring-1"
+                  className="border-[#CBD5E1] bg-white text-[#0F172A] font-semibold focus:border-primary focus:ring-primary w-full rounded-md border p-3 text-xs outline-none focus:ring-1 placeholder:text-[#64748B]"
                 />
                 {errors.description && (
-                  <span className="text-destructive mt-0.5 block text-[10px]">
+                  <span className="text-[#DC2626] mt-0.5 block text-[10px] font-bold">
                     {errors.description.message}
                   </span>
                 )}
               </div>
 
               {/* Submit triggers */}
-              <div className="border-border flex justify-end gap-2 border-t pt-4">
+              <div className="border-[#E2E8F0] flex justify-end gap-2 border-t pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => router.push("/dashboard")}
                   disabled={submitting}
-                  className="cursor-pointer text-xs"
+                  className="cursor-pointer text-xs font-bold"
                 >
                   Cancel
                 </Button>
@@ -444,7 +444,7 @@ export default function CreateIncidentPage() {
                   variant="default"
                   size="sm"
                   disabled={submitting}
-                  className="cursor-pointer text-xs"
+                  className="cursor-pointer text-xs font-bold"
                 >
                   {submitting ? "Submitting Report..." : "Submit Incident Report"}
                 </Button>

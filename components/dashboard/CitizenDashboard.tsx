@@ -71,16 +71,16 @@ export function CitizenDashboard({
       {/* Title block */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
             Citizen Support Center
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Emergency telemetry and safety resources access for <span className="font-semibold text-foreground">{user?.fullName}</span>.
+          <p className="text-sm text-[#475569] font-medium">
+            Emergency telemetry and safety resources access for <span className="font-bold text-[#0F172A]">{user?.fullName}</span>.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/dashboard/incidents/create" passHref>
-            <Button variant="default" size="sm" className="h-9 px-4 text-xs font-semibold cursor-pointer">
+            <Button variant="default" size="sm" className="h-9 px-4 text-xs font-bold cursor-pointer">
               Report Incident
             </Button>
           </Link>
@@ -95,14 +95,14 @@ export function CitizenDashboard({
           { title: "Safe Shelters Nearby", value: "3", desc: "Currently open" },
           { title: "My Reports", value: myReports.length, desc: "Filed via this account" },
         ].map((card, idx) => (
-          <div key={idx} className="border border-border bg-card rounded-lg p-5">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+          <div key={idx} className="border border-[#E2E8F0] bg-white rounded-lg p-5">
+            <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
               {card.title}
             </span>
-            <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+            <span className="text-2xl font-extrabold tracking-tight text-[#0F172A] block">
               {card.value}
             </span>
-            <span className="text-xs text-muted-foreground mt-1.5 block">
+            <span className="text-xs text-[#475569] mt-1.5 block font-medium">
               {card.desc}
             </span>
           </div>
@@ -112,10 +112,10 @@ export function CitizenDashboard({
       {/* Main Grid: Bulletins and Controller */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Bulletins/Reports Table */}
-        <Card className="lg:col-span-2 shadow-none border-border">
+        <Card className="lg:col-span-2 shadow-none border-[#E2E8F0] bg-white">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Filed Reports & Local Alerts</CardTitle>
-            <CardDescription className="text-xs text-muted-foreground">
+            <CardTitle className="text-base font-bold text-[#0F172A]">Filed Reports & Local Alerts</CardTitle>
+            <CardDescription className="text-xs text-[#475569] font-medium">
               Status tracking for disaster incidents reported in your area.
             </CardDescription>
           </CardHeader>
@@ -126,19 +126,19 @@ export function CitizenDashboard({
                 <div className="bg-muted h-6 w-full animate-pulse rounded" />
               </div>
             ) : incidents.length === 0 ? (
-              <div className="text-muted-foreground rounded-lg border border-dashed py-8 text-center text-xs bg-muted/5">
+              <div className="text-[#475569] rounded-lg border border-dashed py-8 text-center text-xs bg-slate-50 font-medium">
                 No active public disaster alerts posted.
               </div>
             ) : (
-              <div className="border border-border rounded-md overflow-hidden bg-card">
+              <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-muted/10">
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Incident Type</TableHead>
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Location</TableHead>
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Severity</TableHead>
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
-                      <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Action</th>
+                    <TableRow className="bg-slate-50">
+                      <TableHead className="font-bold text-xs text-[#475569]">Incident Type</TableHead>
+                      <TableHead className="font-bold text-xs text-[#475569]">Location</TableHead>
+                      <TableHead className="font-bold text-xs text-[#475569]">Severity</TableHead>
+                      <TableHead className="font-bold text-xs text-[#475569]">Status</TableHead>
+                      <th className="p-3 text-right font-bold text-xs text-[#475569]">Action</th>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -152,36 +152,38 @@ export function CitizenDashboard({
                             : "outline";
 
                       return (
-                        <tr key={inc.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                          <td className="p-3 font-semibold text-foreground capitalize flex items-center gap-2">
+                        <tr key={inc.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                          <td className="p-3 font-bold text-[#0F172A] capitalize flex items-center gap-2">
                             <span
-                              className={`h-2 w-2 rounded-full ${
+                              className={`h-2.5 w-2.5 rounded-full ${
                                 inc.status === "active"
-                                  ? "bg-destructive animate-pulse"
+                                  ? "bg-[#DC2626] animate-pulse"
                                   : inc.status === "resolved"
-                                    ? "bg-success"
-                                    : "bg-warning"
+                                    ? "bg-[#16A34A]"
+                                    : "bg-[#EA580C]"
                               }`}
                             />
                             {inc.type}
                           </td>
-                          <td className="p-3 text-muted-foreground max-w-[150px] truncate">
+                          <td className="p-3 text-[#475569] font-medium max-w-[150px] truncate">
                             {inc.location}
                           </td>
                           <td className="p-3">
                             <Badge
                               variant={severityColor}
-                              className="h-4.5 px-1.5 py-0 text-[9px] uppercase font-semibold tracking-wider"
+                              className="h-5 px-2 py-0 text-[9px] uppercase font-bold tracking-wider flex items-center gap-1"
                             >
-                              {inc.severity}
+                              <span>●</span>
+                              <span>{inc.severity}</span>
                             </Badge>
                           </td>
                           <td className="p-3">
                             <Badge
-                              variant="outline"
-                              className="h-4.5 px-1.5 py-0 text-[9px] uppercase font-medium"
+                              variant={inc.status === "active" ? "destructive" : inc.status === "resolved" ? "success" : "warning"}
+                              className="h-5 px-2 py-0 text-[9px] uppercase font-bold tracking-wider flex items-center gap-1"
                             >
-                              {inc.status}
+                              <span>●</span>
+                              <span>{inc.status}</span>
                             </Badge>
                           </td>
                           <td className="p-3 text-right">
@@ -189,7 +191,7 @@ export function CitizenDashboard({
                               <Button
                                 size="xs"
                                 variant="outline"
-                                className="cursor-pointer h-7 text-xs px-2.5"
+                                className="cursor-pointer h-7 text-xs px-2.5 font-bold"
                               >
                                 View
                                 <ArrowRight className="h-3 w-3 ml-1" />
@@ -208,16 +210,16 @@ export function CitizenDashboard({
 
         {/* Controller */}
         <div className="space-y-4">
-          <Card className="shadow-none border-border">
+          <Card className="shadow-none border-[#E2E8F0] bg-white">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">Ops Diagnostics</CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
+              <CardTitle className="text-base font-bold text-[#0F172A]">Ops Diagnostics</CardTitle>
+              <CardDescription className="text-xs text-[#475569] font-medium">
                 Verify micro-animations and system toast alerts.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               <div className="space-y-1.5">
-                <span className="text-muted-foreground block text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-[#475569] block text-[10px] font-bold tracking-wider uppercase">
                   Trigger Alert Feed
                 </span>
                 <div className="flex gap-2">
@@ -225,7 +227,7 @@ export function CitizenDashboard({
                     onClick={triggerToast}
                     variant="outline"
                     size="sm"
-                    className="flex-1 text-xs h-8 cursor-pointer"
+                    className="flex-1 text-xs h-8 cursor-pointer font-bold"
                   >
                     Info Toast
                   </Button>
@@ -233,7 +235,7 @@ export function CitizenDashboard({
                     onClick={triggerAlertToast}
                     variant="outline"
                     size="sm"
-                    className="flex-1 text-xs h-8 cursor-pointer"
+                    className="flex-1 text-xs h-8 cursor-pointer font-bold"
                   >
                     Alert Toast
                   </Button>

@@ -79,7 +79,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="border-border bg-card/80 sticky top-0 z-40 w-full border-b backdrop-blur-md">
+    <header className="border-b border-[#E2E8F0] bg-white sticky top-0 z-40 w-full">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo Section */}
         <div className="flex items-center gap-2">
@@ -87,35 +87,39 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2 transition-opacity hover:opacity-90"
           >
-            <div className="bg-primary shadow-primary/30 flex size-10 items-center justify-center rounded-lg text-white shadow-md">
+            <div className="bg-[#2563EB] flex size-10 items-center justify-center rounded-lg text-white">
               <ShieldAlert className="size-5" />
             </div>
-            <span className="text-foreground text-xl font-bold tracking-tight sm:block">
-              ResQNet <span className="text-primary">AI</span>
+            <span className="text-[#0F172A] text-xl font-bold tracking-tight sm:block">
+              ResQNet <span className="text-[#2563EB]">AI</span>
             </span>
           </Link>
         </div>
 
         {/* Desktop Navigation / Breadcrumbs */}
         {isDashboardRoute ? (
-          <div className="text-muted-foreground hidden items-center gap-2 text-xs md:flex select-none">
-            <span className="font-medium text-foreground/80">Command Center</span>
-            <span className="text-muted-foreground/40">/</span>
-            <span className="capitalize text-muted-foreground font-normal">
+          <div className="text-[#475569] hidden items-center gap-2 text-xs md:flex select-none font-medium">
+            <span className="font-semibold text-[#0F172A]">Command Center</span>
+            <span className="text-[#CBD5E1]">/</span>
+            <span className="capitalize text-[#475569] font-semibold">
               {pathname === "/dashboard" ? "Overview" : pathname.split("/").pop()?.replace(/-/g, " ") || "Overview"}
             </span>
           </div>
         ) : (
           <nav className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => {
-              // Filter deployments for citizen role
               if (item.label === "Deployments" && role === "citizen") return null;
 
+              const isActive = pathname === item.href || (item.href.startsWith("/#") && pathname === "/");
               return (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md px-4 py-2 text-sm font-medium transition-all"
+                  className={`rounded-md px-4 py-2 text-sm font-semibold transition-all ${
+                    isActive
+                      ? "text-[#2563EB]"
+                      : "text-[#475569] hover:text-[#0F172A] hover:bg-[#F1F5F9]"
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -132,27 +136,13 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-foreground relative"
+                className="text-[#475569] hover:text-[#0F172A] relative"
               >
                 <Bell className="size-4" />
-                <span className="bg-accent absolute top-1.5 right-1.5 size-2 rounded-full" />
+                <span className="bg-[#2563EB] absolute top-1.5 right-1.5 size-2 rounded-full" />
               </Button>
             </>
           )}
-
-          {/* Theme Toggle Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            {theme === "dark" ? (
-              <Sun className="size-4" />
-            ) : (
-              <Moon className="size-4" />
-            )}
-          </Button>
 
           {isAuthenticated && user ? (
             <>
@@ -161,7 +151,7 @@ export function Navbar() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-border/80 hover:bg-muted/50 hidden cursor-pointer items-center gap-2 sm:flex"
+                  className="border-[#CBD5E1] bg-white text-[#334155] hover:bg-[#F8FAFC] hidden cursor-pointer items-center gap-2 sm:flex"
                 >
                   <User className="size-3.5" />
                   <span className="font-semibold">{user.fullName}</span>
@@ -175,7 +165,7 @@ export function Navbar() {
                   <Button
                     variant="default"
                     size="sm"
-                    className="hidden sm:flex"
+                    className="hidden sm:flex bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
                   >
                     Go to Dashboard
                   </Button>
@@ -188,7 +178,7 @@ export function Navbar() {
                   variant="ghost"
                   size="icon"
                   onClick={logout}
-                  className="text-muted-foreground hover:text-destructive hidden sm:flex"
+                  className="text-[#475569] hover:text-[#DC2626] hidden sm:flex"
                   title="Sign Out"
                 >
                   <LogOut className="size-4" />
@@ -197,7 +187,7 @@ export function Navbar() {
             </>
           ) : (
             <Link href="/login" passHref>
-              <Button variant="default" size="sm">
+              <Button variant="default" size="sm" className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-semibold cursor-pointer">
                 Sign In
               </Button>
             </Link>
@@ -208,7 +198,7 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-muted-foreground hover:text-foreground md:hidden"
+            className="text-[#475569] hover:text-[#0F172A] md:hidden"
           >
             {mobileMenuOpen ? (
               <X className="size-5" />

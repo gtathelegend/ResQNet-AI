@@ -118,29 +118,29 @@ export default function LiveDisasterMapPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[#475569] font-semibold">Overview</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Live Map</BreadcrumbPage>
+                <BreadcrumbPage className="text-[#0F172A] font-bold">Live Map</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
               Live Map
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#475569] font-medium">
               Geographic Command Panel mapping active hazards, shelter vacancies, hospital capacities, and deployed resources.
             </p>
           </div>
         </div>
 
         {/* Main Map Container with Floating Control Panel */}
-        <div className="relative border border-border bg-card rounded-lg overflow-hidden h-[620px] shadow-sm w-full">
+        <div className="relative border border-[#CBD5E1] bg-white rounded-lg overflow-hidden h-[620px] shadow-sm w-full">
           {loading ? (
-            <div className="bg-muted flex h-full w-full items-center justify-center">
-              <Loader2 className="text-primary size-9 animate-spin" />
+            <div className="bg-[#F8FAFC] flex h-full w-full items-center justify-center">
+              <Loader2 className="text-[#2563EB] size-9 animate-spin" />
             </div>
           ) : (
             <LiveMapCanvas
@@ -155,12 +155,12 @@ export default function LiveDisasterMapPage() {
           )}
 
           {/* Minimal Floating Layer Control & Stats Panel */}
-          <div className="absolute top-4 right-4 z-[1000] w-64 bg-card/95 backdrop-blur-md border border-border rounded-lg shadow-lg p-4 space-y-4 max-h-[calc(100%-2rem)] overflow-y-auto">
+          <div className="absolute top-4 right-4 z-[1000] w-64 bg-white border border-[#CBD5E1] rounded-lg shadow-lg p-4 space-y-4 max-h-[calc(100%-2rem)] overflow-y-auto">
             {/* Layers Section */}
             <div className="space-y-2">
-              <div className="flex items-center gap-1.5 pb-2 border-b border-border">
-                <Filter className="size-3.5 text-muted-foreground" />
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              <div className="flex items-center gap-1.5 pb-2 border-b border-[#E2E8F0]">
+                <Filter className="size-3.5 text-[#475569]" />
+                <span className="text-[10px] font-bold text-[#475569] uppercase tracking-wider">
                   Layer Controls
                 </span>
               </div>
@@ -170,31 +170,31 @@ export default function LiveDisasterMapPage() {
                   {
                     id: "disasters",
                     label: "Active Incidents",
-                    color: "text-red-500",
+                    color: "text-[#DC2626]",
                     icon: ShieldAlert,
                   },
                   {
                     id: "shelters",
                     label: "Emergency Shelters",
-                    color: "text-blue-500",
+                    color: "text-[#2563EB]",
                     icon: Home,
                   },
                   {
                     id: "hospitals",
                     label: "Hospitals & Clinics",
-                    color: "text-indigo-500",
+                    color: "text-indigo-600",
                     icon: Activity,
                   },
                   {
                     id: "volunteers",
                     label: "Responders On-Duty",
-                    color: "text-orange-500",
+                    color: "text-[#EA580C]",
                     icon: Users,
                   },
                   {
                     id: "depots",
                     label: "Supply Depots",
-                    color: "text-emerald-500",
+                    color: "text-[#16A34A]",
                     icon: Database,
                   },
                 ].map((layer) => {
@@ -203,10 +203,10 @@ export default function LiveDisasterMapPage() {
                     <button
                       key={layer.id}
                       onClick={() => toggleLayer(layer.id as keyof typeof filterLayers)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-2 text-xs font-semibold transition-all ${
+                      className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-2 text-xs font-bold transition-all ${
                         isVisible
-                          ? "bg-primary/5 border-primary/20 text-foreground"
-                          : "border-border text-muted-foreground hover:bg-muted/5 bg-background"
+                          ? "bg-[#EFF6FF] border-[#2563EB]/30 text-[#0F172A]"
+                          : "border-[#CBD5E1] text-[#475569] hover:bg-[#F8FAFC] bg-white"
                       }`}
                     >
                       <span className="flex items-center gap-2">
@@ -214,9 +214,9 @@ export default function LiveDisasterMapPage() {
                         <span>{layer.label}</span>
                       </span>
                       {isVisible ? (
-                        <Eye className="text-primary size-3.5" />
+                        <Eye className="text-[#2563EB] size-3.5" />
                       ) : (
-                        <EyeOff className="text-muted-foreground/60 size-3.5" />
+                        <EyeOff className="text-[#64748B] size-3.5" />
                       )}
                     </button>
                   );
@@ -225,25 +225,25 @@ export default function LiveDisasterMapPage() {
             </div>
 
             {/* Heatmap Section */}
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-[#E2E8F0] pt-3">
               <button
                 onClick={() => setHeatmapEnabled(!heatmapEnabled)}
                 className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-2 text-xs font-bold transition-all ${
                   heatmapEnabled
-                    ? "border-orange-500/20 bg-orange-500/5 text-orange-600 dark:text-orange-400"
-                    : "border-border text-muted-foreground hover:bg-muted/5 bg-background"
+                    ? "border-[#EA580C]/30 bg-[#FFF7ED] text-[#EA580C]"
+                    : "border-[#CBD5E1] text-[#475569] hover:bg-[#F8FAFC] bg-white"
                 }`}
               >
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 font-bold">
                   <EmergencyIcon className="size-3.5" />
                   <span>Severity Heatmap</span>
                 </span>
                 {heatmapEnabled ? (
-                  <span className="rounded bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase">
+                  <span className="rounded bg-[#FFF7ED] text-[#EA580C] border border-[#EA580C]/20 px-1.5 py-0.5 text-[9px] font-bold uppercase">
                     On
                   </span>
                 ) : (
-                  <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase">
+                  <span className="bg-[#F1F5F9] text-[#475569] rounded px-1.5 py-0.5 text-[9px] font-bold uppercase">
                     Off
                   </span>
                 )}
@@ -251,27 +251,27 @@ export default function LiveDisasterMapPage() {
             </div>
 
             {/* Staging Metrics Section */}
-            <div className="border-t border-border pt-3 space-y-2">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+            <div className="border-t border-[#E2E8F0] pt-3 space-y-2">
+              <span className="text-[10px] font-bold text-[#475569] uppercase tracking-wider block">
                 Staging Metrics
               </span>
 
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Active Incidents:</span>
-                  <span className="font-semibold text-red-500">{activeDisasters}</span>
+                  <span className="text-[#475569] font-semibold">Active Incidents:</span>
+                  <span className="font-bold text-[#DC2626]">{activeDisasters}</span>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Shelter Occupancy:</span>
-                    <span className="font-semibold font-mono text-[10.5px]">
+                    <span className="text-[#475569] font-semibold">Shelter Occupancy:</span>
+                    <span className="font-bold font-mono text-[10.5px] text-[#0F172A]">
                       {currentShelterOccupancy} / {totalShelterCapacity}
                     </span>
                   </div>
-                  <div className="bg-muted h-1 w-full overflow-hidden rounded-full">
+                  <div className="bg-[#F1F5F9] h-1.5 w-full overflow-hidden rounded-full border border-[#E2E8F0]">
                     <div
-                      className="h-full bg-blue-500"
+                      className="h-full bg-[#2563EB]"
                       style={{
                         width: `${
                           totalShelterCapacity > 0
@@ -284,13 +284,13 @@ export default function LiveDisasterMapPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Operating Hospitals:</span>
-                  <span className="font-semibold text-indigo-600">{activeHospitals}</span>
+                  <span className="text-[#475569] font-semibold">Operating Hospitals:</span>
+                  <span className="font-bold text-indigo-700">{activeHospitals}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">On-Duty Responders:</span>
-                  <span className="font-semibold text-orange-500">{activeResponders}</span>
+                  <span className="text-[#475569] font-semibold">On-Duty Responders:</span>
+                  <span className="font-bold text-[#EA580C]">{activeResponders}</span>
                 </div>
               </div>
             </div>

@@ -65,13 +65,13 @@
   --muted-foreground: #64748b;
   --accent: #2563eb;
   --accent-foreground: #ffffff;
-  --destructive: #ef4444;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --success: #22c55e;
+  --success: #16a34a;
   --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-foreground: #0f172a;
-  --info: #3b82f6;
+  --warning: #ea580c;
+  --warning-foreground: #ffffff;
+  --info: #2563eb;
   --info-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;

@@ -80,12 +80,12 @@ export default function LandingPage() {
                   Emergency Staging & Telemetry Platform
                 </Badge>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05]">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-[1.05]">
                   Coordinated Emergency <br />
-                  <span className="text-primary font-bold">Response Grid.</span>
+                  <span className="text-[#2563EB] font-bold">Response Grid.</span>
                 </h1>
 
-                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
+                <p className="text-[#475569] text-sm sm:text-base leading-relaxed max-w-lg font-medium">
                   ResQNet AI connects citizens, volunteer responders, and dispatch authorities under a single telemetry matrix to prioritize incidents, track depot resources, and accelerate disaster recovery.
                 </p>
 
@@ -126,49 +126,49 @@ export default function LandingPage() {
               {/* Graphic Node Network Map (Leaflet Staging Area Visualizer) */}
               <motion.div
                 className="relative flex items-center justify-center lg:h-[400px]"
-                initial={{ opacity: 0, scale: 0.98 }}
+                initial={{ opacity: 1, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className="border border-border rounded-lg bg-[#F8FAFC] p-4 shadow-sm w-full max-w-[420px] aspect-square relative overflow-hidden flex flex-col justify-between">
+                <div className="border border-[#CBD5E1] rounded-lg bg-[#FFFFFF] p-4 shadow-sm w-full max-w-[420px] aspect-square relative overflow-hidden flex flex-col justify-between">
                   {/* Clean schematic grid */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] opacity-40" />
+                  <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:16px_16px] opacity-25" />
                   
                   {/* Staging Nodes */}
-                  <div className="z-10 flex justify-between items-center text-[10px] text-muted-foreground border-b border-border pb-2 bg-[#F8FAFC]/80 backdrop-blur-sm">
-                    <span className="font-bold tracking-wider uppercase">Active Telemetry Grid</span>
-                    <span className="font-mono text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-1.5 py-0.5">Live Sync</span>
+                  <div className="z-10 flex justify-between items-center text-[10px] text-[#64748B] border-b border-[#E2E8F0] pb-2 bg-[#FFFFFF]/90 backdrop-blur-sm font-bold">
+                    <span className="tracking-wider uppercase">Active Telemetry Grid</span>
+                    <span className="font-mono text-[9px] font-bold text-[#16A34A] bg-[#F0FDF4] border border-[#16A34A]/20 rounded px-1.5 py-0.5">Live Sync</span>
                   </div>
 
                   <div className="z-10 relative flex-1 flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" className="w-4/5 h-4/5 text-primary/20">
-                      <line x1="50" y1="50" x2="20" y2="30" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1" />
-                      <line x1="50" y1="50" x2="80" y2="30" stroke="currentColor" strokeWidth="0.5" />
-                      <line x1="50" y1="50" x2="50" y2="80" stroke="currentColor" strokeWidth="0.5" />
+                    <svg viewBox="0 0 100 100" className="w-4/5 h-4/5 text-[#CBD5E1]">
+                      <line x1="50" y1="50" x2="20" y2="30" stroke="#CBD5E1" strokeWidth="0.75" strokeDasharray="1.5" />
+                      <line x1="50" y1="50" x2="80" y2="30" stroke="#CBD5E1" strokeWidth="0.75" />
+                      <line x1="50" y1="50" x2="50" y2="80" stroke="#CBD5E1" strokeWidth="0.75" />
                       {/* Center */}
-                      <circle cx="50" cy="50" r="4" fill="var(--primary)" className="animate-ping" />
-                      <circle cx="50" cy="50" r="3" fill="var(--primary)" />
-                      {/* Node A */}
-                      <circle cx="20" cy="30" r="3" fill="#ef4444" />
-                      {/* Node B */}
-                      <circle cx="80" cy="30" r="3" fill="#f97316" />
-                      {/* Node C */}
-                      <circle cx="50" cy="80" r="3" fill="#3b82f6" />
+                      <circle cx="50" cy="50" r="4" fill="#2563EB" className="opacity-20 animate-ping" />
+                      <circle cx="50" cy="50" r="3" fill="#2563EB" />
+                      {/* Node A (Critical) */}
+                      <circle cx="20" cy="30" r="3.5" fill="#DC2626" />
+                      {/* Node B (Warning) */}
+                      <circle cx="80" cy="30" r="3.5" fill="#EA580C" />
+                      {/* Node C (Success) */}
+                      <circle cx="50" cy="80" r="3.5" fill="#16A34A" />
                     </svg>
                   </div>
 
-                  <div className="z-10 border-t border-border pt-2 grid grid-cols-3 gap-2 text-center text-[9px] font-semibold bg-[#F8FAFC]/80 backdrop-blur-sm">
+                  <div className="z-10 border-t border-[#E2E8F0] pt-2 grid grid-cols-3 gap-2 text-center text-[9px] font-bold bg-[#FFFFFF]/90 backdrop-blur-sm">
                     <div>
-                      <span className="text-muted-foreground block uppercase">Authorities</span>
-                      <strong className="text-foreground text-[10.5px]">Command HQ</strong>
+                      <span className="text-[#64748B] block uppercase tracking-wider">Authorities</span>
+                      <strong className="text-[#0F172A] text-[10.5px]">Command HQ</strong>
                     </div>
                     <div>
-                      <span className="text-muted-foreground block uppercase">Responders</span>
-                      <strong className="text-foreground text-[10.5px]">On-Duty Units</strong>
+                      <span className="text-[#64748B] block uppercase tracking-wider">Responders</span>
+                      <strong className="text-[#0F172A] text-[10.5px]">On-Duty Units</strong>
                     </div>
                     <div>
-                      <span className="text-muted-foreground block uppercase">Logistics</span>
-                      <strong className="text-foreground text-[10.5px]">Depot Stock</strong>
+                      <span className="text-[#64748B] block uppercase tracking-wider">Logistics</span>
+                      <strong className="text-[#0F172A] text-[10.5px]">Depot Stock</strong>
                     </div>
                   </div>
                 </div>
@@ -194,10 +194,10 @@ export default function LandingPage() {
                 <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                   Decentralization slows disaster response.
                 </h2>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-[#475569] text-sm leading-relaxed font-medium">
                   During emergency responses, coordinating multiple entities is highly complex. Isolated communication channels leave citizens stranded, field volunteers without clear directions, and area commanders blind to active ground levels.
                 </p>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-[#475569] text-sm leading-relaxed font-medium">
                   ResQNet AI bridges this gap. By centralizing incident reports, resource logs, and live maps, we ensure that dispatch data is accurate, volunteer matching is immediate, and critical resources are allocated where they are needed most.
                 </p>
               </motion.div>
@@ -212,7 +212,7 @@ export default function LandingPage() {
                   <div key={idx} className="border border-border bg-white rounded-lg p-5">
                     <item.icon className="size-5 text-primary mb-2.5" />
                     <h3 className="text-sm font-semibold text-foreground mb-1">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                    <p className="text-xs text-[#475569] font-medium leading-relaxed">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -236,7 +236,7 @@ export default function LandingPage() {
               <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                 Coordinated Emergency Lifecycle
               </h2>
-              <p className="text-muted-foreground mx-auto max-w-2xl text-xs sm:text-sm">
+              <p className="text-[#475569] font-medium mx-auto max-w-2xl text-xs sm:text-sm">
                 A structured, synchronized loop bringing ground-level reports into high-level tactical deployments.
               </p>
             </motion.div>
@@ -272,7 +272,7 @@ export default function LandingPage() {
                   key={idx}
                   className="border border-border bg-[#F8FAFC] relative rounded-lg p-5 hover:border-primary/30 transition-colors"
                 >
-                  <div className="text-muted-foreground/10 absolute top-4 right-4 font-mono text-2xl font-bold">
+                  <div className="text-[#64748B]/20 absolute top-4 right-4 font-mono text-2xl font-bold">
                     {item.step}
                   </div>
                   <div className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary mb-3">
@@ -281,7 +281,7 @@ export default function LandingPage() {
                   <h3 className="text-sm font-semibold text-foreground mb-1.5">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-[#475569] font-medium leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -301,10 +301,10 @@ export default function LandingPage() {
                 <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                   Reducing Disaster Impact & Protecting Communities
                 </h2>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-[#475569] text-sm leading-relaxed font-medium">
                   Sustainable Development Goal 11 aims to make cities and human settlements inclusive, safe, resilient, and sustainable. Under target 11.5, the global mandate is to significantly reduce the number of deaths and the number of people affected by disasters.
                 </p>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-[#475569] text-sm leading-relaxed font-medium">
                   ResQNet AI directly advances this mandate by providing emergency coordination tools. By optimizing volunteer response routes, managing emergency shelter occupancies, and tracking regional dispatch levels, the platform decreases staging delays and stabilizes disaster areas.
                 </p>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#F99D1C]/10 text-[#F99D1C] text-[10px] font-bold uppercase tracking-wider">
@@ -344,7 +344,7 @@ export default function LandingPage() {
               <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                 Modern Operations Architecture
               </h2>
-              <p className="text-muted-foreground mx-auto max-w-2xl text-xs sm:text-sm">
+              <p className="text-[#475569] font-medium mx-auto max-w-2xl text-xs sm:text-sm">
                 Engineered for strict environments that demand secure transmission and sub-second data synchronization.
               </p>
             </motion.div>
@@ -360,7 +360,7 @@ export default function LandingPage() {
                     <tech.icon className="size-4.5" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground mb-1">{tech.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{tech.desc}</p>
+                  <p className="text-xs text-[#475569] font-medium leading-relaxed">{tech.desc}</p>
                 </div>
               ))}
             </div>
@@ -377,7 +377,7 @@ export default function LandingPage() {
                 Join the Tactical Operations Grid
               </h2>
 
-              <p className="text-muted-foreground mx-auto max-w-lg text-xs sm:text-sm leading-relaxed">
+              <p className="text-[#475569] font-medium mx-auto max-w-lg text-xs sm:text-sm leading-relaxed">
                 Connect your local community, register volunteer profiles, and access coordinated disaster response networks. The built-in offline simulation mode allows full testing without configuration.
               </p>
 

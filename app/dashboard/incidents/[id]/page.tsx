@@ -228,13 +228,13 @@ export default function IncidentDetailsPage() {
   const getSeverityBadge = (severity: IncidentSeverity) => {
     switch (severity) {
       case "low":
-        return <Badge variant="outline" className="text-[10px]">Low Priority</Badge>;
+        return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase bg-[#EFF6FF] text-[#2563EB] border-[#2563EB]/20">● Low Priority</span>;
       case "medium":
-        return <Badge variant="warning" className="text-[10px]">Medium Severity</Badge>;
+        return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20">● Medium Severity</span>;
       case "high":
-        return <Badge variant="warning" className="text-[10px]">High Severity</Badge>;
+        return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase bg-[#FFF7ED] text-[#EA580C] border-[#EA580C]/20">● High Severity</span>;
       case "critical":
-        return <Badge variant="destructive" className="text-[10px]">Critical Emergency</Badge>;
+        return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/20">● Critical Emergency</span>;
     }
   };
 
@@ -242,10 +242,10 @@ export default function IncidentDetailsPage() {
     return (
       <DashboardLayout>
         <div className="space-y-6">
-          <div className="bg-muted h-8 w-1/4 animate-pulse rounded" />
+          <div className="bg-[#F8FAFC] h-8 w-1/4 animate-pulse rounded border border-[#E2E8F0]" />
           <div className="grid gap-6 md:grid-cols-3">
-            <div className="bg-muted h-96 animate-pulse rounded md:col-span-2" />
-            <div className="bg-muted h-96 animate-pulse rounded" />
+            <div className="bg-[#F8FAFC] h-96 animate-pulse rounded border border-[#E2E8F0] md:col-span-2" />
+            <div className="bg-[#F8FAFC] h-96 animate-pulse rounded border border-[#E2E8F0]" />
           </div>
         </div>
       </DashboardLayout>
@@ -255,17 +255,17 @@ export default function IncidentDetailsPage() {
   if (!incident) {
     return (
       <DashboardLayout>
-        <div className="flex min-h-[50vh] flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
-          <AlertTriangle className="text-destructive mb-3 size-10" />
-          <h3 className="text-lg font-semibold">Incident Not Found</h3>
-          <p className="text-muted-foreground mt-1 max-w-xs text-xs">
+        <div className="flex min-h-[50vh] flex-col items-center justify-center rounded-lg border border-[#CBD5E1] border-dashed p-6 text-center bg-white">
+          <AlertTriangle className="text-[#DC2626] mb-3 size-10" />
+          <h3 className="text-lg font-bold text-[#0F172A]">Incident Not Found</h3>
+          <p className="text-[#475569] mt-1 max-w-xs text-xs font-semibold">
             This incident ID does not exist or has been removed from the system.
           </p>
           <Button
             variant="default"
             size="sm"
             onClick={() => router.push("/dashboard")}
-            className="mt-4"
+            className="mt-4 font-bold"
           >
             Return to Dashboard
           </Button>
@@ -284,11 +284,11 @@ export default function IncidentDetailsPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[#475569] font-semibold">Overview</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Incident Details</BreadcrumbPage>
+                <BreadcrumbPage className="text-[#0F172A] font-bold">Incident Details</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -297,7 +297,7 @@ export default function IncidentDetailsPage() {
               variant="outline"
               size="sm"
               onClick={() => router.push("/dashboard")}
-              className="w-fit cursor-pointer h-8 px-3 text-xs"
+              className="w-fit cursor-pointer h-8 px-3 text-xs font-bold"
             >
               <ArrowLeft className="size-3.5 mr-1" />
               Back
@@ -308,7 +308,7 @@ export default function IncidentDetailsPage() {
                 variant="destructive"
                 size="sm"
                 onClick={handleIncidentDelete}
-                className="w-fit cursor-pointer h-8 px-3 text-xs"
+                className="w-fit cursor-pointer h-8 px-3 text-xs font-bold"
               >
                 <Trash2 className="size-3.5 mr-1" />
                 Cancel Report
@@ -322,31 +322,31 @@ export default function IncidentDetailsPage() {
           {/* Main Info Columns */}
           <div className="space-y-6 md:col-span-2">
             {/* Incident Details Card */}
-            <Card className="border-border shadow-none">
+            <Card className="border-[#E2E8F0] bg-white shadow-none">
               <CardHeader className="pb-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-extrabold border uppercase ${
                     incident.status === "active" 
-                      ? "bg-destructive/10 text-destructive"
+                      ? "bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/20"
                       : incident.status === "resolved"
-                        ? "bg-success/10 text-success"
-                        : "bg-warning/10 text-warning"
+                        ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20"
+                        : "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
                   }`}>
                     <span className={`h-1.5 w-1.5 rounded-full ${
                       incident.status === "active" 
-                        ? "bg-destructive" 
+                        ? "bg-[#DC2626]" 
                         : incident.status === "resolved" 
-                          ? "bg-success" 
-                          : "bg-warning"
+                          ? "bg-[#16A34A]" 
+                          : "bg-[#D97706]"
                     }`} />
                     {statusConfig.label}
                   </span>
                   {getSeverityBadge(incident.severity)}
                 </div>
-                <CardTitle className="pt-2 text-2xl font-extrabold capitalize text-foreground">
+                <CardTitle className="pt-2 text-2xl font-extrabold capitalize text-[#0F172A]">
                   {incident.type} Incident
                 </CardTitle>
-                <CardDescription className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <CardDescription className="flex items-center gap-1 text-xs text-[#475569] mt-1 font-semibold">
                   <Clock className="size-3" />
                   Reported on {new Date(incident.createdAt).toLocaleString()}
                 </CardDescription>
@@ -354,7 +354,7 @@ export default function IncidentDetailsPage() {
               <CardContent className="space-y-6 pt-2">
                 {/* Scene image if present */}
                 {incident.imageUrl && (
-                  <div className="border border-border bg-muted/20 flex max-h-[300px] w-full items-center justify-center overflow-hidden rounded-md">
+                  <div className="border border-[#E2E8F0] bg-slate-50 flex max-h-[300px] w-full items-center justify-center overflow-hidden rounded-md">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={incident.imageUrl}
@@ -366,38 +366,38 @@ export default function IncidentDetailsPage() {
 
                 {/* Situation Description */}
                 <div className="space-y-1.5">
-                  <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                  <span className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Situation Description
                   </span>
-                  <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap font-normal">
+                  <p className="text-[#0F172A] text-sm leading-relaxed whitespace-pre-wrap font-semibold">
                     {incident.description}
                   </p>
                 </div>
 
                 {/* Geospatial Coordinates and Affected Stats */}
-                <div className="border-t border-border grid gap-4 pt-4 sm:grid-cols-2">
+                <div className="border-t border-[#E2E8F0] grid gap-4 pt-4 sm:grid-cols-2">
                   <div className="flex items-start gap-3">
-                    <MapPin className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <MapPin className="size-4 text-[#475569] shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                      <span className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                         Location Coordinates
                       </span>
-                      <p className="text-foreground text-xs font-semibold mt-0.5">
+                      <p className="text-[#0F172A] text-xs font-bold mt-0.5">
                         {incident.location}
                       </p>
-                      <p className="text-muted-foreground font-mono text-[9px] mt-0.5">
+                      <p className="text-[#475569] font-mono text-[9px] mt-0.5 font-bold">
                         GPS: {incident.latitude.toFixed(4)}, {incident.longitude.toFixed(4)}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Users className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <Users className="size-4 text-[#475569] shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                      <span className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                         Estimated Affected
                       </span>
-                      <p className="text-foreground text-sm font-bold mt-0.5">
+                      <p className="text-[#0F172A] text-sm font-extrabold mt-0.5">
                         {incident.peopleAffected} People
                       </p>
                     </div>
@@ -405,8 +405,8 @@ export default function IncidentDetailsPage() {
                 </div>
 
                 {/* Support Requests list */}
-                <div className="border-t border-border space-y-3 pt-4">
-                  <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                <div className="border-t border-[#E2E8F0] space-y-3 pt-4">
+                  <span className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                     Emergency Support Requests
                   </span>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -436,13 +436,13 @@ export default function IncidentDetailsPage() {
                         key={idx}
                         className={`flex items-center gap-3 rounded-md border p-3 text-xs leading-relaxed transition-colors ${
                           item.check
-                            ? "border-border bg-card"
-                            : "border-border/40 bg-muted/10 opacity-40 select-none"
+                            ? "border-[#CBD5E1] bg-white text-[#0F172A] font-bold"
+                            : "border-[#E2E8F0] bg-slate-50 text-[#64748B] opacity-50 select-none"
                         }`}
                       >
-                        <item.icon className={`size-4 shrink-0 ${item.check ? "text-primary" : "text-muted-foreground"}`} />
-                        <span className="font-semibold">{item.text}</span>
-                        <span className="text-[9px] font-bold uppercase tracking-wider ml-auto text-muted-foreground">
+                        <item.icon className={`size-4 shrink-0 ${item.check ? "text-[#2563EB]" : "text-[#64748B]"}`} />
+                        <span className="font-bold">{item.text}</span>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider ml-auto ${item.check ? "text-[#2563EB]" : "text-[#64748B]"}`}>
                           {item.check ? "Requested" : "None"}
                         </span>
                       </div>
@@ -451,11 +451,11 @@ export default function IncidentDetailsPage() {
                 </div>
 
                 {/* Reporter information */}
-                <div className="border-t border-border text-muted-foreground flex flex-col gap-2 pt-4 text-[11px] sm:flex-row sm:justify-between">
+                <div className="border-t border-[#E2E8F0] text-[#475569] flex flex-col gap-2 pt-4 text-[11px] sm:flex-row sm:justify-between font-semibold">
                   <span className="flex items-center gap-1">
                     <User className="size-3.5" />
                     <span>
-                      Reported by: <strong className="text-foreground">{incident.reportedBy}</strong>
+                      Reported by: <strong className="text-[#0F172A] font-extrabold">{incident.reportedBy}</strong>
                     </span>
                   </span>
                   <span>
@@ -467,42 +467,43 @@ export default function IncidentDetailsPage() {
 
             {/* AI Assessment (Calm Decision-Support Representation) */}
             {incident.aiAnalysis && (
-              <Card className="border-border shadow-none">
-                <CardHeader className="pb-3 border-b border-border">
+              <Card className="border-[#E2E8F0] bg-white shadow-none">
+                <CardHeader className="pb-3 border-b border-[#E2E8F0]">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-base font-semibold text-foreground">
+                      <CardTitle className="text-base font-bold text-[#0F172A]">
                         AI Decision Support Assessment
                       </CardTitle>
-                      <CardDescription className="text-xs">
+                      <CardDescription className="text-xs text-[#475569] font-medium">
                         Triage suggestion, resource modeling, and hazard escalation forecast.
                       </CardDescription>
                     </div>
-                    <Badge
-                      variant={incident.aiAnalysis.approved ? "success" : "warning"}
-                      className="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider"
-                    >
-                      {incident.aiAnalysis.approved ? "Approved" : "Awaiting Command"}
-                    </Badge>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold border uppercase ${
+                      incident.aiAnalysis.approved 
+                        ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20" 
+                        : "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
+                    }`}>
+                      ● {incident.aiAnalysis.approved ? "Approved" : "Awaiting Command"}
+                    </span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-4">
                   {/* Recommended Priority / Response time */}
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="border border-border bg-muted/5 rounded-md p-3">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                    <div className="border border-[#E2E8F0] bg-[#F8FAFC] rounded-md p-3">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
                         Recommended Triage
                       </span>
-                      <span className="text-sm font-semibold capitalize text-foreground">
+                      <span className="text-sm font-bold capitalize text-[#0F172A]">
                         {incident.aiAnalysis.priority} Priority
                       </span>
                     </div>
 
-                    <div className="border border-border bg-muted/5 rounded-md p-3">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                    <div className="border border-[#E2E8F0] bg-[#F8FAFC] rounded-md p-3">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
                         Estimated Response Window
                       </span>
-                      <span className="text-sm font-semibold text-foreground">
+                      <span className="text-sm font-bold text-[#0F172A]">
                         {incident.aiAnalysis.estimatedResponseTime}
                       </span>
                     </div>
@@ -510,28 +511,28 @@ export default function IncidentDetailsPage() {
 
                   {/* Tactical Summary */}
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[#0F172A] uppercase tracking-wider">
                       Assessment Summary
                     </span>
-                    <p className="text-xs text-foreground bg-muted/20 border border-border p-3 rounded-md leading-relaxed font-normal">
+                    <p className="text-xs text-[#0F172A] bg-slate-50 border border-[#CBD5E1] p-3 rounded-md leading-relaxed font-semibold">
                       {incident.aiAnalysis.summary}
                     </p>
                   </div>
 
                   {/* Justification details */}
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[#0F172A] uppercase tracking-wider">
                       Triage Rationales
                     </span>
-                    <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                    <p className="text-xs text-[#475569] leading-relaxed whitespace-pre-wrap font-semibold">
                       {incident.aiAnalysis.reason}
                     </p>
                   </div>
 
                   {/* Supplies & Hazards Grid */}
-                  <div className="border-t border-border grid gap-4 pt-4 sm:grid-cols-2">
+                  <div className="border-t border-[#E2E8F0] grid gap-4 pt-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-[#0F172A] uppercase tracking-wider block">
                         Suggested Supply Logistics
                       </span>
                       <div className="flex flex-wrap gap-1.5">
@@ -539,7 +540,7 @@ export default function IncidentDetailsPage() {
                           <Badge
                             key={idx}
                             variant="secondary"
-                            className="text-[10px] font-medium"
+                            className="text-[10px] font-bold bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0]"
                           >
                             {res}
                           </Badge>
@@ -548,10 +549,10 @@ export default function IncidentDetailsPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-[#0F172A] uppercase tracking-wider block">
                         Potential Hazard Escalations
                       </span>
-                      <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
+                      <ul className="list-disc pl-4 text-xs text-[#475569] space-y-1 font-semibold">
                         {incident.aiAnalysis.potentialRisks.map((risk, idx) => (
                           <li key={idx} className="leading-relaxed">{risk}</li>
                         ))}
@@ -561,11 +562,11 @@ export default function IncidentDetailsPage() {
 
                   {/* Commander approval triggers */}
                   {role === "authority" && !incident.aiAnalysis.approved && (
-                    <div className="border-t border-border pt-4">
+                    <div className="border-t border-[#E2E8F0] pt-4">
                       <Button
                         onClick={handleApproveAIRecommendations}
                         disabled={statusUpdating}
-                        className="w-full cursor-pointer h-9 text-xs font-semibold"
+                        className="w-full cursor-pointer h-9 text-xs font-bold"
                         variant="default"
                       >
                         Approve Triage & Dispatch Units
@@ -581,25 +582,25 @@ export default function IncidentDetailsPage() {
           <div className="space-y-6">
             {/* Status updates panel */}
             {(role === "authority" || role === "volunteer") && (
-              <Card className="border-border shadow-none">
+              <Card className="border-[#E2E8F0] bg-white shadow-none">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                  <CardTitle className="text-sm font-bold uppercase tracking-wider text-[#0F172A]">
                     Telemetry Dispatch Log
                   </CardTitle>
-                  <CardDescription className="text-xs">
+                  <CardDescription className="text-xs text-[#475569] font-medium">
                     Log dispatcher progress reports and status updates.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleStatusUpdate} className="space-y-4">
                     <div className="space-y-1">
-                      <label className="text-muted-foreground block text-[10px] font-bold uppercase">
+                      <label className="text-[#0F172A] block text-[10px] font-bold uppercase">
                         Operational Status
                       </label>
                       <select
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value as IncidentStatus)}
-                        className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
+                        className="border-[#CBD5E1] bg-white text-[#0F172A] focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs font-semibold outline-none focus:ring-1"
                       >
                         <option value="reported">Reported</option>
                         <option value="investigating">Investigating</option>
@@ -609,14 +610,14 @@ export default function IncidentDetailsPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-muted-foreground block text-[10px] font-bold uppercase">
+                      <label className="text-[#0F172A] block text-[10px] font-bold uppercase">
                         Progress Notes
                       </label>
                       <textarea
                         value={statusNote}
                         onChange={(e) => setStatusNote(e.target.value)}
                         placeholder="E.g., Safety perimeter staging set up. Operations on-duty."
-                        className="border-border bg-background text-foreground focus:border-primary w-full rounded-md border p-2.5 text-xs outline-none focus:ring-1"
+                        className="border-[#CBD5E1] bg-white text-[#0F172A] focus:border-primary w-full rounded-md border p-2.5 text-xs font-semibold outline-none focus:ring-1"
                         rows={3}
                         required
                       />
@@ -626,7 +627,7 @@ export default function IncidentDetailsPage() {
                       type="submit"
                       variant="default"
                       size="sm"
-                      className="w-full text-xs cursor-pointer h-9"
+                      className="w-full text-xs font-bold cursor-pointer h-9"
                       disabled={statusUpdating}
                     >
                       Update State
@@ -637,49 +638,49 @@ export default function IncidentDetailsPage() {
             )}
 
             {/* Status timeline audit history */}
-            <Card className="border-border shadow-none">
+            <Card className="border-[#E2E8F0] bg-white shadow-none">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-[#0F172A]">
                   Audit Timeline
                 </CardTitle>
-                <CardDescription className="text-xs">
+                <CardDescription className="text-xs text-[#475569] font-medium">
                   Chronological logs of tactical changes.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="border-border relative ml-2.5 space-y-6 border-l py-2 pl-4">
+                <div className="border-[#E2E8F0] relative ml-2.5 space-y-6 border-l py-2 pl-4">
                   {incident.statusHistory?.map((hist, idx) => {
                     const conf = getStatusConfig(hist.status);
 
                     return (
                       <div key={idx} className="group relative">
                         {/* Bullet node */}
-                        <div className="bg-background border-border group-last:border-primary absolute top-1.5 -left-[24px] flex h-3 w-3 items-center justify-center rounded-full border">
+                        <div className="bg-white border-[#E2E8F0] group-last:border-primary absolute top-1.5 -left-[24px] flex h-3 w-3 items-center justify-center rounded-full border">
                           <div className={`h-1.5 w-1.5 rounded-full ${
                             hist.status === "active" 
-                              ? "bg-destructive" 
+                              ? "bg-[#DC2626]" 
                               : hist.status === "resolved" 
-                                ? "bg-success" 
-                                : "bg-warning"
+                                ? "bg-[#16A34A]" 
+                                : "bg-[#D97706]"
                           }`} />
                         </div>
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center justify-between gap-1">
-                            <span className="text-foreground text-xs font-bold capitalize">
+                            <span className="text-[#0F172A] text-xs font-bold capitalize">
                               {conf.label}
                             </span>
-                            <span className="text-muted-foreground font-mono text-[9px]">
+                            <span className="text-[#64748B] font-mono text-[9px] font-semibold">
                               {new Date(hist.updatedAt).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
                               })}
                             </span>
                           </div>
-                          <p className="text-muted-foreground text-[10px]">
+                          <p className="text-[#475569] text-[10px] font-semibold">
                             Logged by: {hist.updatedBy}
                           </p>
                           {hist.note && (
-                            <div className="bg-muted/30 text-foreground mt-1 rounded border border-border p-2.5 text-xs font-normal leading-relaxed italic">
+                            <div className="bg-[#F8FAFC] text-[#0F172A] mt-1 rounded border border-[#E2E8F0] p-2.5 text-xs font-semibold leading-relaxed italic">
                               {hist.note}
                             </div>
                           )}

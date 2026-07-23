@@ -225,10 +225,10 @@ export default function AnalyticsDashboardPage() {
           </Breadcrumb>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-                Analytics
+              <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
+                HQ Decision Telemetry
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#475569] font-medium">
                 Operational metrics, response times, shelter occupancy, and staging analysis.
               </p>
             </div>
@@ -237,7 +237,7 @@ export default function AnalyticsDashboardPage() {
                 onClick={handleExportCSV}
                 variant="outline"
                 size="sm"
-                className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                className="h-9 px-4 text-xs font-bold cursor-pointer"
               >
                 Export CSV
               </Button>
@@ -245,7 +245,7 @@ export default function AnalyticsDashboardPage() {
                 onClick={handleExportPDF}
                 variant="default"
                 size="sm"
-                className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                className="h-9 px-4 text-xs font-bold cursor-pointer"
               >
                 Export PDF Report
               </Button>
@@ -254,16 +254,16 @@ export default function AnalyticsDashboardPage() {
         </div>
 
         {/* Filters Panel (Print Hidden) */}
-        <Card className="border-border shadow-none print:hidden">
+        <Card className="border-[#E2E8F0] shadow-none bg-white print:hidden">
           <CardContent className="grid gap-4 pt-4 sm:grid-cols-3">
             <div className="space-y-1">
-              <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+              <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                 Sector Area
               </label>
               <select
                 value={selectedSector}
                 onChange={(e) => setSelectedSector(e.target.value as any)}
-                className="border border-border bg-background text-foreground w-full rounded-md px-3 py-1.5 text-xs outline-none"
+                className="border border-[#CBD5E1] bg-white text-[#0F172A] w-full rounded-md px-3 py-1.5 text-xs font-semibold outline-none"
               >
                 <option value="all">All Sectors</option>
                 <option value="Sector A">Sector A - East</option>
@@ -273,13 +273,13 @@ export default function AnalyticsDashboardPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+              <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                 Hazard Severity
               </label>
               <select
                 value={selectedSeverity}
                 onChange={(e) => setSelectedSeverity(e.target.value as any)}
-                className="border border-border bg-background text-foreground w-full rounded-md px-3 py-1.5 text-xs outline-none"
+                className="border border-[#CBD5E1] bg-white text-[#0F172A] w-full rounded-md px-3 py-1.5 text-xs font-semibold outline-none"
               >
                 <option value="all">All Severities</option>
                 <option value="critical">Critical Severity</option>
@@ -290,13 +290,13 @@ export default function AnalyticsDashboardPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+              <label className="text-[#0F172A] block text-[10px] font-bold uppercase tracking-wider">
                 Staging Window
               </label>
               <select
                 value={selectedTimeframe}
                 onChange={(e) => setSelectedTimeframe(e.target.value as any)}
-                className="border border-border bg-background text-foreground w-full rounded-md px-3 py-1.5 text-xs outline-none"
+                className="border border-[#CBD5E1] bg-white text-[#0F172A] w-full rounded-md px-3 py-1.5 text-xs font-semibold outline-none"
               >
                 <option value="24h">Last 24 Hours</option>
                 <option value="7d">Last 7 Days</option>
@@ -314,14 +314,14 @@ export default function AnalyticsDashboardPage() {
             { title: "Shelter Occupancy Rate", value: `${shelterOccupancyRate}%`, desc: `${currentShelterOccupancy.toLocaleString()} / ${totalShelterCapacity.toLocaleString()} spaces occupied` },
             { title: "Resource Dispatch Rate", value: `${resourceUsageRate}%`, desc: `${allocatedStockAmount.toLocaleString()} / ${totalStockAmount.toLocaleString()} units deployed` },
           ].map((card, idx) => (
-            <div key={idx} className="border border-border bg-card rounded-lg p-5">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+            <div key={idx} className="border border-[#E2E8F0] bg-white rounded-lg p-5">
+              <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
                 {card.title}
               </span>
-              <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+              <span className="text-2xl font-extrabold tracking-tight text-[#0F172A] block">
                 {card.value}
               </span>
-              <span className="text-xs text-muted-foreground mt-1.5 block">
+              <span className="text-xs text-[#475569] mt-1.5 block font-medium">
                 {card.desc}
               </span>
             </div>
@@ -354,7 +354,7 @@ export default function AnalyticsDashboardPage() {
                       cx="60"
                       cy="60"
                       r="40"
-                      stroke="#ef4444"
+                      stroke="#dc2626"
                       strokeWidth="12"
                       strokeDasharray="251"
                       strokeDashoffset={251 - (251 * critPercent) / 100}
@@ -366,7 +366,7 @@ export default function AnalyticsDashboardPage() {
                       cx="60"
                       cy="60"
                       r="40"
-                      stroke="#f97316"
+                      stroke="#ea580c"
                       strokeWidth="12"
                       strokeDasharray="251"
                       strokeDashoffset={251 - (251 * highPercent) / 100}
@@ -378,7 +378,7 @@ export default function AnalyticsDashboardPage() {
                       cx="60"
                       cy="60"
                       r="40"
-                      stroke="#facc15"
+                      stroke="#d97706"
                       strokeWidth="12"
                       strokeDasharray="251"
                       strokeDashoffset={251 - (251 * medPercent) / 100}
@@ -390,7 +390,7 @@ export default function AnalyticsDashboardPage() {
                       cx="60"
                       cy="60"
                       r="40"
-                      stroke="#3b82f6"
+                      stroke="#2563eb"
                       strokeWidth="12"
                       strokeDasharray="251"
                       strokeDashoffset={251 - (251 * lowPercent) / 100}
@@ -402,31 +402,31 @@ export default function AnalyticsDashboardPage() {
                   <div className="flex-1 space-y-1.5 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-red-500" />
+                        <span className="h-2 w-2 rounded-full bg-[#dc2626]" />
                         <span>Critical</span>
                       </span>
-                      <strong className="font-semibold text-foreground">{critPercent}%</strong>
+                      <strong className="font-bold text-[#0F172A]">{critPercent}%</strong>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-orange-500" />
+                        <span className="h-2 w-2 rounded-full bg-[#ea580c]" />
                         <span>High</span>
                       </span>
-                      <strong className="font-semibold text-foreground">{highPercent}%</strong>
+                      <strong className="font-bold text-[#0F172A]">{highPercent}%</strong>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-yellow-400" />
+                        <span className="h-2 w-2 rounded-full bg-[#d97706]" />
                         <span>Medium</span>
                       </span>
-                      <strong className="font-semibold text-foreground">{medPercent}%</strong>
+                      <strong className="font-bold text-[#0F172A]">{medPercent}%</strong>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-blue-500" />
+                        <span className="h-2 w-2 rounded-full bg-[#2563eb]" />
                         <span>Low</span>
                       </span>
-                      <strong className="font-semibold text-foreground">{lowPercent}%</strong>
+                      <strong className="font-bold text-[#0F172A]">{lowPercent}%</strong>
                     </div>
                   </div>
                 </div>
@@ -610,23 +610,23 @@ export default function AnalyticsDashboardPage() {
         </div>
 
         {/* Data summary table */}
-        <Card className="border border-border bg-card shadow-none">
+        <Card className="border border-[#E2E8F0] bg-white shadow-none">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Incident Response Ledger</CardTitle>
-            <CardDescription className="text-xs">
+            <CardTitle className="text-base font-bold text-[#0F172A]">Incident Response Ledger</CardTitle>
+            <CardDescription className="text-xs text-[#475569] font-medium">
               Detailed operations ledger matching current filter criteria.
             </CardDescription>
           </CardHeader>
           <CardContent>
             {filteredIncidents.length === 0 ? (
-              <div className="text-muted-foreground py-6 text-center text-xs">
+              <div className="text-[#475569] py-6 text-center text-xs font-semibold">
                 No incidents match search filters.
               </div>
             ) : (
-              <div className="border border-border rounded-md overflow-hidden bg-card">
+              <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-muted/10 text-muted-foreground font-semibold text-[10px] uppercase tracking-wider">
-                    <tr className="border-b border-border">
+                  <thead className="bg-slate-50 text-[#475569] font-bold text-[10px] uppercase tracking-wider">
+                    <tr className="border-b border-[#CBD5E1]">
                       <th className="p-3">Disaster Type</th>
                       <th className="p-3">Location Area</th>
                       <th className="p-3">Severity</th>
@@ -635,35 +635,37 @@ export default function AnalyticsDashboardPage() {
                       <th className="p-3">Reported Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-[#E2E8F0]">
                     {filteredIncidents.map((inc) => (
-                      <tr key={inc.id} className="hover:bg-muted/5 transition-colors text-foreground">
-                        <td className="p-3 font-semibold capitalize">{inc.type}</td>
-                        <td className="p-3 text-muted-foreground">{inc.location}</td>
+                      <tr key={inc.id} className="hover:bg-slate-50 transition-colors text-[#0F172A]">
+                        <td className="p-3 font-bold capitalize">{inc.type}</td>
+                        <td className="p-3 text-[#475569] font-semibold">{inc.location}</td>
                         <td className="p-3">
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border ${
                             inc.severity === "critical" 
-                              ? "bg-destructive/10 text-destructive"
+                              ? "bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/20"
                               : inc.severity === "high"
-                                ? "bg-warning/10 text-warning"
-                                : "bg-muted text-muted-foreground border border-border"
+                                ? "bg-[#FFF7ED] text-[#EA580C] border-[#EA580C]/20"
+                                : inc.severity === "medium"
+                                  ? "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
+                                  : "bg-[#EFF6FF] text-[#2563EB] border-[#2563EB]/20"
                           }`}>
-                            {inc.severity}
+                            ● {inc.severity}
                           </span>
                         </td>
-                        <td className="p-3 font-mono text-muted-foreground">{inc.peopleAffected} People</td>
+                        <td className="p-3 font-mono text-[#475569] font-semibold">{inc.peopleAffected} People</td>
                         <td className="p-3">
-                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold border ${
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-extrabold border uppercase ${
                             inc.status === "active" 
-                              ? "bg-destructive/5 text-destructive border-destructive/10" 
+                              ? "bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/20" 
                               : inc.status === "resolved" 
-                                ? "bg-success/5 text-success border-success/10" 
-                                : "bg-muted text-muted-foreground border-border"
+                                ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20" 
+                                : "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
                           }`}>
-                            {inc.status}
+                            ● {inc.status}
                           </span>
                         </td>
-                        <td className="p-3 text-muted-foreground">{new Date(inc.createdAt).toLocaleString()}</td>
+                        <td className="p-3 text-[#475569] font-semibold">{new Date(inc.createdAt).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>

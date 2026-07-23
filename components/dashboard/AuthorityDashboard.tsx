@@ -158,16 +158,16 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
       {/* Title block */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
             HQ Command Hub
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Tactical oversight and situational awareness briefing for Director <span className="font-semibold text-foreground">{user?.fullName}</span>.
+          <p className="text-sm text-[#475569] font-medium">
+            Tactical oversight and situational awareness briefing for Director <span className="font-semibold text-[#0F172A]">{user?.fullName}</span>.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/dashboard/incidents/create" passHref>
-            <Button variant="destructive" size="sm" className="h-9 px-4 text-xs font-semibold cursor-pointer">
+            <Button variant="destructive" size="sm" className="h-9 px-4 text-xs font-bold cursor-pointer">
               Report Disaster
             </Button>
           </Link>
@@ -175,7 +175,7 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
             onClick={() => setIsModalOpen(true)}
             variant="default"
             size="sm"
-            className="h-9 px-4 text-xs font-semibold cursor-pointer"
+            className="h-9 px-4 text-xs font-bold cursor-pointer"
           >
             Deploy Unit
           </Button>
@@ -193,17 +193,17 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
         ].map((card, idx) => (
           <div
             key={idx}
-            className={`border border-border bg-card rounded-lg p-5 transition-shadow duration-150 hover:shadow-sm ${
-              card.isCritical ? "border-l-4 border-l-destructive" : ""
+            className={`border border-[#E2E8F0] bg-white rounded-lg p-5 transition-shadow duration-150 hover:shadow-sm ${
+              card.isCritical ? "border-l-4 border-l-[#DC2626]" : ""
             }`}
           >
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+            <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
               {card.title}
             </span>
-            <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+            <span className="text-2xl font-extrabold tracking-tight text-[#0F172A] block">
               {card.value}
             </span>
-            <span className="text-xs text-muted-foreground mt-1.5 block">
+            <span className="text-xs text-[#475569] mt-1.5 block font-medium">
               {card.desc}
             </span>
           </div>
@@ -342,13 +342,13 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
       {/* Main Grid: Active Incidents Table and Alerts */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column: Active Incidents Table */}
-        <Card className="border-border lg:col-span-2 shadow-none">
+        <Card className="border-[#E2E8F0] bg-white lg:col-span-2 shadow-none">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <AlertTriangle className="text-foreground h-4 w-4 shrink-0" />
+            <CardTitle className="text-base font-bold flex items-center gap-2 text-[#0F172A]">
+              <AlertTriangle className="text-[#0F172A] h-4 w-4 shrink-0" />
               Active Incident Staging Feed
             </CardTitle>
-            <CardDescription className="text-xs text-muted-foreground">
+            <CardDescription className="text-xs text-[#475569] font-semibold">
               Emergency reports logged in database. Click to view full dashboard details.
             </CardDescription>
           </CardHeader>
@@ -359,24 +359,23 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
                 <div className="bg-muted h-6 w-full animate-pulse rounded" />
               </div>
             ) : incidents.length === 0 ? (
-              <div className="text-muted-foreground rounded-lg border border-dashed py-8 text-center text-xs bg-muted/5">
+              <div className="text-[#475569] rounded-lg border border-dashed py-8 text-center text-xs bg-slate-50 font-medium">
                 No active incidents reported.
               </div>
             ) : (
-              <div className="border border-border rounded-md overflow-hidden bg-card">
+              <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-muted/10">
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Type</TableHead>
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Location</TableHead>
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Severity</TableHead>
-                      <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
-                      <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>
+                    <TableRow className="bg-slate-50">
+                      <TableHead className="font-bold text-xs text-[#475569]">Type</TableHead>
+                      <TableHead className="font-bold text-xs text-[#475569]">Location</TableHead>
+                      <TableHead className="font-bold text-xs text-[#475569]">Severity</TableHead>
+                      <TableHead className="font-bold text-xs text-[#475569]">Status</TableHead>
+                      <th className="p-3 text-right font-bold text-xs text-[#475569]">Actions</th>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {incidents.map((inc) => {
-                      const isCritical = inc.severity === "critical" || inc.severity === "high";
                       const severityColor = inc.severity === "critical" 
                         ? "destructive" 
                         : inc.severity === "high" 
@@ -386,36 +385,38 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
                             : "outline";
                             
                       return (
-                        <tr key={inc.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                          <td className="p-3 font-semibold text-foreground capitalize flex items-center gap-2">
+                        <tr key={inc.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                          <td className="p-3 font-bold text-[#0F172A] capitalize flex items-center gap-2">
                             <span
-                              className={`h-2 w-2 rounded-full ${
+                              className={`h-2.5 w-2.5 rounded-full ${
                                 inc.status === "active"
-                                  ? "bg-destructive animate-pulse"
+                                  ? "bg-[#DC2626] animate-pulse"
                                   : inc.status === "resolved"
-                                    ? "bg-success"
-                                    : "bg-warning"
+                                    ? "bg-[#16A34A]"
+                                    : "bg-[#EA580C]"
                               }`}
                             />
                             {inc.type}
                           </td>
-                          <td className="p-3 text-muted-foreground max-w-[160px] truncate">
+                          <td className="p-3 text-[#475569] font-medium max-w-[160px] truncate">
                             {inc.location}
                           </td>
                           <td className="p-3">
                             <Badge
                               variant={severityColor}
-                              className="h-4.5 px-1.5 py-0 text-[9px] uppercase font-semibold tracking-wider"
+                              className="h-5 px-2 py-0 text-[9px] uppercase font-bold tracking-wider flex items-center gap-1"
                             >
-                              {inc.severity}
+                              <span>●</span>
+                              <span>{inc.severity}</span>
                             </Badge>
                           </td>
                           <td className="p-3">
                             <Badge
-                              variant="outline"
-                              className="h-4.5 px-1.5 py-0 text-[9px] uppercase font-medium"
+                              variant={inc.status === "active" ? "destructive" : inc.status === "resolved" ? "success" : "warning"}
+                              className="h-5 px-2 py-0 text-[9px] uppercase font-bold tracking-wider flex items-center gap-1"
                             >
-                              {inc.status}
+                              <span>●</span>
+                              <span>{inc.status}</span>
                             </Badge>
                           </td>
                           <td className="p-3 text-right">
@@ -423,7 +424,7 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
                               <Button
                                 size="xs"
                                 variant="outline"
-                                className="cursor-pointer h-7 text-xs px-2.5"
+                                className="cursor-pointer h-7 text-xs px-2.5 font-bold"
                               >
                                 Details
                                 <ArrowRight className="h-3 w-3 ml-1" />
@@ -442,13 +443,13 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
 
         {/* Right Column: Telemetry Notifications Center */}
         <div className="space-y-4">
-          <Card className="border-border bg-card shadow-none">
+          <Card className="border-[#E2E8F0] bg-white shadow-none">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <BellRing className="text-foreground h-4 w-4" />
+              <CardTitle className="text-base font-bold flex items-center gap-2 text-[#0F172A]">
+                <BellRing className="text-[#0F172A] h-4 w-4" />
                 Notification Feed
               </CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
+              <CardDescription className="text-xs text-[#475569] font-medium">
                 Tactical operations center logs.
               </CardDescription>
             </CardHeader>
@@ -457,24 +458,24 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
                 const getAlertStatusClass = (type: string) => {
                   switch (type) {
                     case "critical":
-                      return "bg-destructive/5 border-destructive/10 text-destructive";
+                      return "bg-[#FEF2F2] border-[#DC2626]/20 text-[#DC2626]";
                     case "warning":
-                      return "bg-warning/5 border-warning/10 text-warning";
+                      return "bg-[#FFFBEB] border-[#D97706]/20 text-[#D97706]";
                     case "success":
-                      return "bg-success/5 border-success/10 text-success";
+                      return "bg-[#F0FDF4] border-[#16A34A]/20 text-[#16A34A]";
                     default:
-                      return "bg-primary/5 border-primary/10 text-primary";
+                      return "bg-[#EFF6FF] border-[#2563EB]/20 text-[#2563EB]";
                   }
                 };
 
                 return (
                   <div
                     key={idx}
-                    className={`flex items-center justify-between rounded-md border p-3 text-xs leading-relaxed ${getAlertStatusClass(
+                    className={`flex items-center justify-between rounded-md border p-3 text-xs leading-relaxed font-bold ${getAlertStatusClass(
                       notif.type
                     )}`}
                   >
-                    <div className="flex items-center gap-2 font-medium">
+                    <div className="flex items-center gap-2 font-bold">
                       {notif.type === "critical" && (
                         <AlertTriangle className="size-3.5 shrink-0" />
                       )}
@@ -492,8 +493,8 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
                       </span>
                     </div>
                     <Badge
-                      variant="outline"
-                      className="bg-card text-muted-foreground border-border ml-1 h-4 shrink-0 px-1 py-0 text-[8px]"
+                      variant="secondary"
+                      className="bg-white text-[#475569] border-[#CBD5E1] ml-1 h-5 shrink-0 px-1.5 py-0 text-[8px] font-bold"
                     >
                       {notif.status}
                     </Badge>
@@ -514,13 +515,13 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
       >
         <div className="space-y-4 py-2">
           <div className="space-y-1.5">
-            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+            <label className="text-[#0F172A] block text-xs font-bold tracking-wider uppercase">
               Dispatch Sector
             </label>
             <select
               value={dispatchSector}
               onChange={(e) => setDispatchSector(e.target.value)}
-              className="border-border bg-background text-foreground w-full rounded border p-2 text-xs"
+              className="border-[#CBD5E1] bg-white text-[#0F172A] w-full rounded border p-2 text-xs font-semibold outline-none"
             >
               <option value="Sector A">Sector A - Riverfront</option>
               <option value="Sector B">Sector B - Subway</option>
@@ -530,13 +531,13 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+            <label className="text-[#0F172A] block text-xs font-bold tracking-wider uppercase">
               Asset Category
             </label>
             <select
               value={dispatchType}
               onChange={(e) => setDispatchType(e.target.value)}
-              className="border-border bg-background text-foreground w-full rounded border p-2 text-xs"
+              className="border-[#CBD5E1] bg-white text-[#0F172A] w-full rounded border p-2 text-xs font-semibold outline-none"
             >
               <option value="flooding">Rapid Rescue Vehicle (Type B)</option>
               <option value="fire">Fire Engine Unit (Command Staged)</option>
@@ -545,7 +546,7 @@ export function AuthorityDashboard({ user }: AuthorityDashboardProps) {
             </select>
           </div>
 
-          <div className="bg-muted text-muted-foreground space-y-1 rounded p-3 font-mono text-[11px]">
+          <div className="bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] space-y-1 rounded p-3 font-mono text-[11px] font-bold">
             <div>Target: {dispatchSector} - Active Area</div>
             <div>Asset: {dispatchType.toUpperCase()} - Unit RRV-2</div>
             <div>Signaling status: HMAC Secured Token</div>

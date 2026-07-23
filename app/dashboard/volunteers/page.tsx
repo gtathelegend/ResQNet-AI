@@ -304,20 +304,20 @@ export default function VolunteerCenterPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[#475569] font-semibold">Overview</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Volunteers</BreadcrumbPage>
+                <BreadcrumbPage className="text-[#0F172A] font-bold">Volunteers</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
                 Volunteers
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#475569] font-medium">
                 Coordinate on-duty personnel, view regional dispatch areas, and manage field assignments.
               </p>
             </div>
@@ -327,7 +327,7 @@ export default function VolunteerCenterPage() {
                   onClick={() => setDispatchOpen(true)}
                   variant="default"
                   size="sm"
-                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                  className="h-9 px-4 text-xs font-bold cursor-pointer"
                 >
                   Dispatch Responder
                 </Button>
@@ -335,7 +335,7 @@ export default function VolunteerCenterPage() {
                   onClick={() => setNewVolunteerOpen(true)}
                   variant="outline"
                   size="sm"
-                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                  className="h-9 px-4 text-xs font-bold cursor-pointer"
                 >
                   Register Profile
                 </Button>
@@ -352,14 +352,14 @@ export default function VolunteerCenterPage() {
             { title: "Field Deployed", value: `${assignedCount} Assigned`, desc: "Currently in disaster sectors" },
             { title: "Active Missions", value: activeAssignmentsCount, desc: "Sectors currently coordinated" },
           ].map((card, idx) => (
-            <div key={idx} className="border border-border bg-card rounded-lg p-5">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+            <div key={idx} className="border border-[#E2E8F0] bg-white rounded-lg p-5">
+              <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
                 {card.title}
               </span>
-              <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+              <span className="text-2xl font-extrabold tracking-tight text-[#0F172A] block">
                 {card.value}
               </span>
-              <span className="text-xs text-muted-foreground mt-1.5 block">
+              <span className="text-xs text-[#475569] mt-1.5 block font-medium">
                 {card.desc}
               </span>
             </div>
@@ -367,22 +367,22 @@ export default function VolunteerCenterPage() {
         </div>
 
         {/* Proximity Matcher Card */}
-        <Card className="border border-border bg-card shadow-none">
-          <CardHeader className="pb-3 border-b border-border">
-            <CardTitle className="text-base font-semibold">Proximity & Skill Matcher</CardTitle>
-            <CardDescription className="text-xs">
+        <Card className="border border-[#E2E8F0] bg-white shadow-none">
+          <CardHeader className="pb-3 border-b border-[#E2E8F0]">
+            <CardTitle className="text-base font-bold text-[#0F172A]">Proximity & Skill Matcher</CardTitle>
+            <CardDescription className="text-xs text-[#475569] font-medium">
               Select an active incident location to filter the nearest available volunteers on-duty.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             <div className="max-w-md space-y-1.5">
-              <label className="text-muted-foreground block text-[10px] font-bold uppercase">
+              <label className="text-[#0F172A] block text-[10px] font-bold uppercase">
                 Active Incident Coordinates
               </label>
               <select
                 value={proximityIncidentId}
                 onChange={(e) => setProximityIncidentId(e.target.value)}
-                className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1"
+                className="border border-[#CBD5E1] bg-white text-[#0F172A] focus:border-primary w-full rounded-md px-3 py-2 text-xs font-semibold outline-none focus:ring-1"
               >
                 <option value="">Choose incident area...</option>
                 {activeIncidents.map((inc) => (
@@ -395,40 +395,40 @@ export default function VolunteerCenterPage() {
 
             {proximityIncidentId ? (
               proximityVolunteers.length === 0 ? (
-                <div className="text-muted-foreground py-4 text-xs italic">
+                <div className="text-[#475569] py-4 text-xs font-semibold italic">
                   No on-duty volunteers available for proximity calculation.
                 </div>
               ) : (
-                <div className="border border-border rounded-md overflow-hidden bg-card">
+                <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-muted/10">
-                        <TableHead className="font-semibold text-xs text-muted-foreground">Responder Name</TableHead>
-                        <TableHead className="font-semibold text-xs text-muted-foreground">Skills</TableHead>
-                        <TableHead className="font-semibold text-xs text-muted-foreground">Location Base</TableHead>
-                        <TableHead className="font-semibold text-xs text-muted-foreground">Estimated Proximity</TableHead>
-                        {isAuthority && <th className="p-3 text-right font-semibold text-xs text-muted-foreground font-medium">Quick Dispatch</th>}
+                      <TableRow className="bg-slate-50 border-b border-[#CBD5E1]">
+                        <TableHead className="font-bold text-xs text-[#475569]">Responder Name</TableHead>
+                        <TableHead className="font-bold text-xs text-[#475569]">Skills</TableHead>
+                        <TableHead className="font-bold text-xs text-[#475569]">Location Base</TableHead>
+                        <TableHead className="font-bold text-xs text-[#475569]">Estimated Proximity</TableHead>
+                        {isAuthority && <th className="p-3 text-right font-bold text-xs text-[#475569]">Quick Dispatch</th>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {proximityVolunteers.map((vol) => (
-                        <tr key={vol.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                          <td className="p-3 font-semibold text-foreground">{vol.name}</td>
+                        <tr key={vol.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                          <td className="p-3 font-bold text-[#0F172A]">{vol.name}</td>
                           <td className="p-3">
                             <div className="flex flex-wrap gap-1">
                               {vol.skills.slice(0, 2).map((s, idx) => (
                                 <Badge
                                   key={idx}
                                   variant="secondary"
-                                  className="text-[9.5px] px-1.5 py-0"
+                                  className="text-[9.5px] px-1.5 py-0 bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] font-bold"
                                 >
                                   {s}
                                 </Badge>
                               ))}
                             </div>
                           </td>
-                          <td className="p-3 text-muted-foreground text-xs">{vol.locationName}</td>
-                          <td className="p-3 text-foreground font-mono text-xs font-semibold">
+                          <td className="p-3 text-[#475569] text-xs font-semibold">{vol.locationName}</td>
+                          <td className="p-3 text-[#0F172A] font-mono text-xs font-bold">
                             {vol.distance === 0 ? "Under 0.5 km" : `${vol.distance} km away`}
                           </td>
                           {isAuthority && (
@@ -437,7 +437,7 @@ export default function VolunteerCenterPage() {
                                 size="xs"
                                 variant="outline"
                                 onClick={() => setDispatchOpen(true)}
-                                className="h-7 text-xs px-2.5 cursor-pointer"
+                                className="h-7 text-xs px-2.5 font-bold cursor-pointer"
                               >
                                 Deploy
                               </Button>
@@ -450,9 +450,9 @@ export default function VolunteerCenterPage() {
                 </div>
               )
             ) : (
-              <div className="border border-border border-dashed text-muted-foreground flex flex-col items-center justify-center rounded-md py-8 text-center text-xs bg-muted/5">
-                <AlertTriangle className="text-muted-foreground mb-2 size-5" />
-                <p className="max-w-xs leading-relaxed">
+              <div className="border border-[#CBD5E1] border-dashed text-[#475569] flex flex-col items-center justify-center rounded-md py-8 text-center text-xs bg-slate-50">
+                <AlertTriangle className="text-[#64748B] mb-2 size-5" />
+                <p className="max-w-xs leading-relaxed font-semibold">
                   Please select an incident area above to display the proximity matching grid.
                 </p>
               </div>
@@ -462,7 +462,7 @@ export default function VolunteerCenterPage() {
 
         {/* Tab Selection */}
         <div className="space-y-4">
-          <div className="border-b border-border flex gap-2">
+          <div className="border-b border-[#CBD5E1] flex gap-2">
             {[
               { id: "directory", label: "Responder directory", icon: Users },
               { id: "assignments", label: "Missions & Assignments", icon: Briefcase },
@@ -470,10 +470,10 @@ export default function VolunteerCenterPage() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id as "directory" | "assignments")}
-                className={`flex cursor-pointer items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-all ${
+                className={`flex cursor-pointer items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
                   selectedTab === tab.id
-                    ? "border-primary text-foreground"
-                    : "text-muted-foreground hover:text-foreground border-transparent"
+                    ? "border-[#2563EB] text-[#2563EB]"
+                    : "text-[#475569] hover:text-[#0F172A] border-transparent"
                 }`}
               >
                 <tab.icon className="size-3.5" />
@@ -485,39 +485,39 @@ export default function VolunteerCenterPage() {
           {/* Tab Content Panel */}
           {loading ? (
             <div className="space-y-2 py-4">
-              <div className="bg-muted h-6 w-full animate-pulse rounded" />
-              <div className="bg-muted h-6 w-full animate-pulse rounded" />
+              <div className="bg-[#F8FAFC] h-6 w-full animate-pulse rounded" />
+              <div className="bg-[#F8FAFC] h-6 w-full animate-pulse rounded" />
             </div>
           ) : (
-            <div className="bg-card border border-border overflow-hidden rounded-md">
+            <div className="bg-white border border-[#E2E8F0] overflow-hidden rounded-md">
               {/* TAB 1: VOLUNTEERS DIRECTORY */}
               {selectedTab === "directory" && (
                 <div className="space-y-4 p-4">
                   <div>
-                    <h3 className="text-foreground text-sm font-semibold font-semibold">Active Directory</h3>
-                    <p className="text-muted-foreground text-xs mt-0.5 font-medium">Volunteer profiles registered in database.</p>
+                    <h3 className="text-[#0F172A] text-sm font-bold">Active Directory</h3>
+                    <p className="text-[#475569] text-xs mt-0.5 font-semibold">Volunteer profiles registered in database.</p>
                   </div>
 
-                  <div className="border border-border rounded-md overflow-hidden bg-card">
+                  <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-muted/10">
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Name</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Skills</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Availability</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Depot Location</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
-                          <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>
+                        <TableRow className="bg-slate-50 border-b border-[#CBD5E1]">
+                          <TableHead className="font-bold text-xs text-[#475569]">Name</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Skills</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Availability</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Depot Location</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Status</TableHead>
+                          <th className="p-3 text-right font-bold text-xs text-[#475569]">Actions</th>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {volunteers.map((vol) => {
                           const canToggle = isAuthority || user?.email === vol.email;
                           return (
-                            <tr key={vol.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                            <tr key={vol.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
                               <td className="p-3">
-                                <div className="text-foreground font-semibold">{vol.name}</div>
-                                <div className="text-muted-foreground flex items-center gap-1 text-[10px] mt-0.5">
+                                <div className="text-[#0F172A] font-bold">{vol.name}</div>
+                                <div className="text-[#475569] flex items-center gap-1 text-[10px] mt-0.5 font-semibold">
                                   <Phone className="size-2.5" />
                                   <span>{vol.phone}</span>
                                 </div>
@@ -528,24 +528,24 @@ export default function VolunteerCenterPage() {
                                     <Badge
                                       key={idx}
                                       variant="secondary"
-                                      className="px-1.5 py-0 text-[9px] font-medium"
+                                      className="px-1.5 py-0 text-[9px] bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] font-bold"
                                     >
                                       {s}
                                     </Badge>
                                   ))}
                                 </div>
                               </td>
-                              <td className="p-3 text-muted-foreground text-xs font-semibold">{vol.availabilityHours}</td>
-                              <td className="p-3 text-foreground text-xs font-medium">{vol.locationName}</td>
+                              <td className="p-3 text-[#475569] text-xs font-bold">{vol.availabilityHours}</td>
+                              <td className="p-3 text-[#0F172A] text-xs font-bold">{vol.locationName}</td>
                               <td className="p-3">
-                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase ${
                                   vol.status === "on-duty"
-                                    ? "bg-success/10 text-success"
+                                    ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20"
                                     : vol.status === "assigned"
-                                      ? "bg-warning/10 text-warning"
-                                      : "bg-muted text-muted-foreground border border-border"
+                                      ? "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
+                                      : "bg-[#F8FAFC] text-[#475569] border-[#CBD5E1]"
                                 }`}>
-                                  {vol.status.replace("-", " ")}
+                                  ● {vol.status.replace("-", " ")}
                                 </span>
                               </td>
                               <td className="p-3 text-right">
@@ -554,12 +554,12 @@ export default function VolunteerCenterPage() {
                                     size="xs"
                                     variant="outline"
                                     onClick={() => handleToggleAvailability(vol.id)}
-                                    className="cursor-pointer h-7 text-xs px-2.5"
+                                    className="cursor-pointer h-7 text-xs px-2.5 font-bold text-[#475569] hover:text-[#0F172A]"
                                   >
                                     Toggle Duty
                                   </Button>
                                 ) : (
-                                  <span className="text-muted-foreground text-[10px] italic">Restricted</span>
+                                  <span className="text-[#64748B] text-[10px] italic font-semibold">Restricted</span>
                                 )}
                               </td>
                             </tr>
@@ -575,24 +575,24 @@ export default function VolunteerCenterPage() {
               {selectedTab === "assignments" && (
                 <div className="space-y-4 p-4">
                   <div>
-                    <h3 className="text-foreground text-sm font-semibold">Field Deployments</h3>
-                    <p className="text-muted-foreground text-xs mt-0.5">Track personnel dispatched to operational sectors.</p>
+                    <h3 className="text-[#0F172A] text-sm font-bold">Field Deployments</h3>
+                    <p className="text-[#475569] text-xs mt-0.5 font-semibold">Track personnel dispatched to operational sectors.</p>
                   </div>
 
                   {assignments.length === 0 ? (
-                    <div className="text-muted-foreground py-8 text-center text-xs bg-muted/5 rounded-md">
+                    <div className="text-[#475569] py-8 text-center text-xs font-semibold bg-slate-50 border border-dashed border-[#CBD5E1] rounded-md">
                       No volunteer assignments currently active.
                     </div>
                   ) : (
-                    <div className="border border-border rounded-md overflow-hidden bg-card">
+                    <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-muted/10">
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Volunteer</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Staging Incident</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Assigned Role</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
-                            {!isAuthority && <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>}
+                          <TableRow className="bg-slate-50 border-b border-[#CBD5E1]">
+                            <TableHead className="font-bold text-xs text-[#475569]">Volunteer</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Staging Incident</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Assigned Role</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Status</TableHead>
+                            {!isAuthority && <th className="p-3 text-right font-bold text-xs text-[#475569]">Actions</th>}
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -600,27 +600,24 @@ export default function VolunteerCenterPage() {
                             const isAssignedToThisVol = user?.fullName === assign.volunteerName;
                             const canChange = isAuthority || isAssignedToThisVol;
                             return (
-                              <tr key={assign.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                                <td className="p-3 font-semibold text-foreground">{assign.volunteerName}</td>
-                                <td className="p-3 text-muted-foreground text-xs">
+                              <tr key={assign.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                                <td className="p-3 font-bold text-[#0F172A]">{assign.volunteerName}</td>
+                                <td className="p-3 text-[#475569] text-xs font-semibold">
                                   {assign.incidentLocation} ({assign.incidentType.toUpperCase()})
                                 </td>
-                                <td className="p-3 text-foreground text-xs font-semibold">{assign.role}</td>
+                                <td className="p-3 text-[#0F172A] text-xs font-bold">{assign.role}</td>
                                 <td className="p-3">
-                                  <Badge
-                                    variant={
-                                      assign.status === "completed"
-                                        ? "success"
-                                        : assign.status === "active"
-                                          ? "info"
-                                          : assign.status === "released"
-                                            ? "outline"
-                                            : "warning"
-                                    }
-                                    className="h-4.5 px-1.5 py-0 text-[9px] font-bold uppercase"
-                                  >
-                                    {assign.status}
-                                  </Badge>
+                                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border ${
+                                    assign.status === "completed"
+                                      ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20"
+                                      : assign.status === "active"
+                                        ? "bg-[#EFF6FF] text-[#2563EB] border-[#2563EB]/20"
+                                        : assign.status === "released"
+                                          ? "bg-[#F8FAFC] text-[#475569] border-[#CBD5E1]"
+                                          : "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
+                                  }`}>
+                                    ● {assign.status}
+                                  </span>
                                 </td>
                                 <td className="p-3 text-right">
                                   <div className="inline-flex gap-1.5">
@@ -629,7 +626,7 @@ export default function VolunteerCenterPage() {
                                         size="xs"
                                         variant="default"
                                         onClick={() => handleUpdateAssignmentStatus(assign.id, "active")}
-                                        className="h-7 text-xs px-2.5 cursor-pointer"
+                                        className="h-7 text-xs px-2.5 font-bold cursor-pointer"
                                       >
                                         Activate
                                       </Button>
@@ -639,7 +636,7 @@ export default function VolunteerCenterPage() {
                                         size="xs"
                                         variant="outline"
                                         onClick={() => handleUpdateAssignmentStatus(assign.id, "completed")}
-                                        className="h-7 text-xs px-2.5 text-success hover:border-success/30 cursor-pointer"
+                                        className="h-7 text-xs px-2.5 font-bold text-[#16A34A] hover:bg-[#F0FDF4] cursor-pointer"
                                       >
                                         Complete
                                       </Button>
@@ -651,7 +648,7 @@ export default function VolunteerCenterPage() {
                                           size="xs"
                                           variant="outline"
                                           onClick={() => handleUpdateAssignmentStatus(assign.id, "released")}
-                                          className="h-7 text-xs px-2.5 text-muted-foreground hover:text-destructive cursor-pointer"
+                                          className="h-7 text-xs px-2.5 font-bold text-[#475569] hover:text-[#DC2626] cursor-pointer"
                                         >
                                           Release
                                         </Button>

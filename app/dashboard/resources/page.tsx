@@ -326,20 +326,20 @@ export default function ResourceCenterPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[#475569] font-semibold">Overview</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Resources</BreadcrumbPage>
+                <BreadcrumbPage className="text-[#0F172A] font-bold">Resources</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
                 Resources
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#475569] font-medium">
                 Manage depot inventories, check logistics telemetry, and authorize staging allocations.
               </p>
             </div>
@@ -349,7 +349,7 @@ export default function ResourceCenterPage() {
                   onClick={() => setAllocateOpen(true)}
                   variant="default"
                   size="sm"
-                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                  className="h-9 px-4 text-xs font-bold cursor-pointer"
                 >
                   Allocate Resources
                 </Button>
@@ -357,7 +357,7 @@ export default function ResourceCenterPage() {
                   onClick={() => setNewResourceOpen(true)}
                   variant="outline"
                   size="sm"
-                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                  className="h-9 px-4 text-xs font-bold cursor-pointer"
                 >
                   Register Category
                 </Button>
@@ -374,14 +374,14 @@ export default function ResourceCenterPage() {
             { title: "Allocation Rate", value: `${dispatchPercent}%`, desc: `${totalAllocatedItems.toLocaleString()} / ${totalStockItems.toLocaleString()} units active` },
             { title: "Staged Dispatches", value: allocations.filter((a) => a.status !== "returned").length, desc: "Units currently en-route" },
           ].map((card, idx) => (
-            <div key={idx} className="border border-border bg-card rounded-lg p-5">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+            <div key={idx} className="border border-[#E2E8F0] bg-white rounded-lg p-5">
+              <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
                 {card.title}
               </span>
-              <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+              <span className="text-2xl font-extrabold tracking-tight text-[#0F172A] block">
                 {card.value}
               </span>
-              <span className="text-xs text-muted-foreground mt-1.5 block">
+              <span className="text-xs text-[#475569] mt-1.5 block font-medium">
                 {card.desc}
               </span>
             </div>
@@ -391,17 +391,17 @@ export default function ResourceCenterPage() {
         {/* Charts Section */}
         <div className="grid gap-6 md:grid-cols-3">
           {/* Dispatch Cap Gauge */}
-          <Card className="border border-border bg-card shadow-none">
+          <Card className="border border-[#E2E8F0] bg-white shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-[#0F172A]">
                 Allocation Rate
               </CardTitle>
-              <CardDescription className="text-xs">
+              <CardDescription className="text-xs text-[#475569] font-medium">
                 Total proportion of total depot inventories currently staged.
               </CardDescription>
             </CardHeader>
             <CardContent className="relative flex h-44 flex-col items-center justify-center pt-2">
-              <svg viewBox="0 0 120 120" className="h-32 w-32 text-muted-foreground/15">
+              <svg viewBox="0 0 120 120" className="h-32 w-32 text-slate-100">
                 <circle
                   cx="60"
                   cy="60"
@@ -415,7 +415,7 @@ export default function ResourceCenterPage() {
                   cy="60"
                   r="45"
                   fill="none"
-                  stroke="var(--primary)"
+                  stroke="#2563EB"
                   strokeWidth="6"
                   strokeDasharray="283"
                   strokeDashoffset={283 - (283 * dispatchPercent) / 100}
@@ -427,8 +427,8 @@ export default function ResourceCenterPage() {
                   x="60"
                   y="66"
                   textAnchor="middle"
-                  fill="currentColor"
-                  className="fill-foreground font-mono text-base font-extrabold"
+                  fill="#0F172A"
+                  className="fill-[#0F172A] font-mono text-base font-extrabold"
                 >
                   {dispatchPercent}%
                 </text>
@@ -437,24 +437,24 @@ export default function ResourceCenterPage() {
           </Card>
 
           {/* comparative Stock Bar Chart */}
-          <Card className="border border-border bg-card md:col-span-2 shadow-none">
+          <Card className="border border-[#E2E8F0] bg-white md:col-span-2 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-[#0F172A]">
                 Stock Levels Comparison
               </CardTitle>
-              <CardDescription className="text-xs">
+              <CardDescription className="text-xs text-[#475569] font-medium">
                 Available stock (Solid Blue) vs Allocated stock (Gray/Neutral) per category.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-44 items-center justify-center pt-2">
               {loading ? (
-                <div className="bg-muted h-10 w-1/4 animate-pulse rounded" />
+                <div className="bg-[#F8FAFC] h-10 w-1/4 animate-pulse rounded" />
               ) : inventory.length === 0 ? (
-                <div className="text-muted-foreground text-xs">
+                <div className="text-[#475569] text-xs font-semibold">
                   No inventory categories registered.
                 </div>
               ) : (
-                <svg viewBox="0 0 500 150" className="h-full w-full text-muted-foreground/10" fill="none">
+                <svg viewBox="0 0 500 150" className="h-full w-full text-slate-100" fill="none">
                   <line x1="40" y1="15" x2="480" y2="15" stroke="currentColor" strokeWidth="1" />
                   <line x1="40" y1="60" x2="480" y2="60" stroke="currentColor" strokeWidth="1" />
                   <line x1="40" y1="110" x2="480" y2="110" stroke="currentColor" strokeWidth="1" strokeOpacity="2" />
@@ -481,7 +481,7 @@ export default function ResourceCenterPage() {
                           width="12"
                           height={availHeight}
                           rx="1.5"
-                          fill="var(--primary)"
+                          fill="#2563EB"
                           fillOpacity="0.85"
                         />
                         {/* Allocated Stock (Neutral Bar) */}
@@ -491,15 +491,15 @@ export default function ResourceCenterPage() {
                           width="12"
                           height={allocHeight}
                           rx="1.5"
-                          fill="currentColor"
-                          fillOpacity="0.3"
+                          fill="#64748B"
+                          fillOpacity="0.35"
                         />
                         {/* Label name */}
                         <text
                           x={xPos + 13}
                           y="130"
-                          fill="currentColor"
-                          className="fill-muted-foreground"
+                          fill="#475569"
+                          className="fill-[#475569] font-bold"
                           fontSize="8.5"
                           textAnchor="middle"
                         >
@@ -516,7 +516,7 @@ export default function ResourceCenterPage() {
 
         {/* Tab Selection */}
         <div className="space-y-4">
-          <div className="border-b border-border flex gap-2">
+          <div className="border-b border-[#CBD5E1] flex gap-2">
             {[
               { id: "inventory", label: "Inventory Stock", icon: Package },
               { id: "allocations", label: "Active Dispatches", icon: Truck },
@@ -525,10 +525,10 @@ export default function ResourceCenterPage() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id as "inventory" | "allocations" | "history")}
-                className={`flex cursor-pointer items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-all ${
+                className={`flex cursor-pointer items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
                   selectedTab === tab.id
-                    ? "border-primary text-foreground"
-                    : "text-muted-foreground hover:text-foreground border-transparent"
+                    ? "border-[#2563EB] text-[#2563EB]"
+                    : "text-[#475569] hover:text-[#0F172A] border-transparent"
                 }`}
               >
                 <tab.icon className="size-3.5" />
@@ -540,61 +540,72 @@ export default function ResourceCenterPage() {
           {/* Tab Content Panels */}
           {loading ? (
             <div className="space-y-2 py-4">
-              <div className="bg-muted h-6 w-full animate-pulse rounded" />
-              <div className="bg-muted h-6 w-full animate-pulse rounded" />
+              <div className="bg-[#F8FAFC] h-6 w-full animate-pulse rounded" />
+              <div className="bg-[#F8FAFC] h-6 w-full animate-pulse rounded" />
             </div>
           ) : (
-            <div className="bg-card border border-border overflow-hidden rounded-md">
+            <div className="bg-white border border-[#E2E8F0] overflow-hidden rounded-md">
               {/* TAB 1: STOCK INVENTORY */}
               {selectedTab === "inventory" && (
                 <div className="space-y-4 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-foreground text-sm font-semibold">Stock Inventory</h3>
-                      <p className="text-muted-foreground text-xs mt-0.5">Adjust depot stock registers.</p>
+                      <h3 className="text-[#0F172A] text-sm font-bold">Stock Inventory</h3>
+                      <p className="text-[#475569] text-xs mt-0.5 font-semibold">Adjust depot stock registers.</p>
                     </div>
                     {!isCitizen && (
                       <Button
                         onClick={() => setStockModalOpen(true)}
                         variant="outline"
                         size="sm"
-                        className="h-8 px-3 text-xs cursor-pointer"
+                        className="h-8 px-3 text-xs font-bold cursor-pointer"
                       >
                         Adjust Stock
                       </Button>
                     )}
                   </div>
 
-                  <div className="border border-border rounded-md overflow-hidden bg-card">
+                  <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-muted/10">
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Resource</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Category</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Total Stock</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Allocated</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Available</TableHead>
-                          <TableHead className="font-semibold text-xs text-muted-foreground">Depot Location</TableHead>
+                        <TableRow className="bg-slate-50 border-b border-[#CBD5E1]">
+                          <TableHead className="font-bold text-xs text-[#475569]">Resource</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Category</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Total Stock</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Allocated</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Available</TableHead>
+                          <TableHead className="font-bold text-xs text-[#475569]">Depot Location</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {inventory.map((item) => {
                           const isLowStock = item.availableStock < item.totalStock * 0.15;
                           return (
-                            <tr key={item.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                              <td className="p-3 font-semibold text-foreground">{item.name}</td>
-                              <td className="p-3 text-muted-foreground text-xs capitalize">{item.category}</td>
-                              <td className="p-3 text-xs font-medium">{item.totalStock.toLocaleString()} {item.unit}</td>
-                              <td className="p-3 text-xs font-medium text-muted-foreground">{item.allocatedStock.toLocaleString()} {item.unit}</td>
+                            <tr key={item.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                              <td className="p-3 font-bold text-[#0F172A]">{item.name}</td>
+                              <td className="p-3 text-[#475569] text-xs font-semibold capitalize">{item.category}</td>
+                              <td className="p-3 text-xs font-bold text-[#0F172A]">{item.totalStock.toLocaleString()} {item.unit}</td>
+                              <td className="p-3 text-xs font-semibold text-[#475569]">{item.allocatedStock.toLocaleString()} {item.unit}</td>
                               <td className="p-3">
-                                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
-                                  isLowStock ? "text-destructive" : "text-foreground"
+                                <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                                  isLowStock 
+                                    ? "text-[#DC2626] bg-[#FEF2F2] border border-[#DC2626]/20 px-2 py-0.5 rounded-full" 
+                                    : "text-[#16A34A] bg-[#F0FDF4] border border-[#16A34A]/20 px-2 py-0.5 rounded-full"
                                 }`}>
-                                  {isLowStock && <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />}
-                                  {item.availableStock.toLocaleString()} {item.unit}
+                                  {isLowStock ? (
+                                    <>
+                                      <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626] animate-pulse" />
+                                      ⚠ LOW STOCK: {item.availableStock.toLocaleString()} {item.unit}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
+                                      {item.availableStock.toLocaleString()} {item.unit}
+                                    </>
+                                  )}
                                 </span>
                               </td>
-                              <td className="p-3 text-muted-foreground text-xs font-medium">{item.depot}</td>
+                              <td className="p-3 text-[#475569] text-xs font-bold">{item.depot}</td>
                             </tr>
                           );
                         })}
@@ -608,52 +619,49 @@ export default function ResourceCenterPage() {
               {selectedTab === "allocations" && (
                 <div className="space-y-4 p-4">
                   <div>
-                    <h3 className="text-foreground text-sm font-semibold">Active Dispatches</h3>
-                    <p className="text-muted-foreground text-xs mt-0.5">Track staged supplies allocated to active incident centers.</p>
+                    <h3 className="text-[#0F172A] text-sm font-bold">Active Dispatches</h3>
+                    <p className="text-[#475569] text-xs mt-0.5 font-semibold">Track staged supplies allocated to active incident centers.</p>
                   </div>
 
                   {allocations.length === 0 ? (
-                    <div className="text-muted-foreground py-8 text-center text-xs bg-muted/5 rounded-md">
+                    <div className="text-[#475569] py-8 text-center text-xs font-semibold bg-slate-50 border border-dashed border-[#CBD5E1] rounded-md">
                       No active resource dispatches recorded.
                     </div>
                   ) : (
-                    <div className="border border-border rounded-md overflow-hidden bg-card">
+                    <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-muted/10">
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Item</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Quantity</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Incident Allocation</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Staged By</TableHead>
-                            {!isCitizen && <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>}
+                          <TableRow className="bg-slate-50 border-b border-[#CBD5E1]">
+                            <TableHead className="font-bold text-xs text-[#475569]">Item</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Quantity</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Incident Allocation</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Status</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Staged By</TableHead>
+                            {!isCitizen && <th className="p-3 text-right font-bold text-xs text-[#475569]">Actions</th>}
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {allocations.map((alloc) => (
-                            <tr key={alloc.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                              <td className="p-3 font-semibold text-foreground">{alloc.resourceName}</td>
-                              <td className="p-3 text-xs font-semibold">{alloc.quantity}</td>
-                              <td className="p-3 text-muted-foreground text-xs capitalize">
+                            <tr key={alloc.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                              <td className="p-3 font-bold text-[#0F172A]">{alloc.resourceName}</td>
+                              <td className="p-3 text-xs font-bold text-[#0F172A]">{alloc.quantity}</td>
+                              <td className="p-3 text-[#475569] text-xs font-semibold capitalize">
                                 {alloc.incidentType} (ID: {alloc.incidentId.substring(0, 6)})
                               </td>
                               <td className="p-3">
-                                <Badge
-                                  variant={
-                                    alloc.status === "delivered"
-                                      ? "success"
-                                      : alloc.status === "en-route"
-                                        ? "info"
-                                        : alloc.status === "returned"
-                                          ? "outline"
-                                          : "warning"
-                                  }
-                                  className="h-4.5 px-1.5 py-0 text-[9px] font-bold uppercase"
-                                >
-                                  {alloc.status}
-                                </Badge>
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border ${
+                                  alloc.status === "delivered"
+                                    ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20"
+                                    : alloc.status === "en-route"
+                                      ? "bg-[#EFF6FF] text-[#2563EB] border-[#2563EB]/20"
+                                      : alloc.status === "returned"
+                                        ? "bg-[#F8FAFC] text-[#475569] border-[#CBD5E1]"
+                                        : "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
+                                }`}>
+                                  ● {alloc.status}
+                                </span>
                               </td>
-                              <td className="p-3 text-muted-foreground text-[10px]">{alloc.allocatedBy}</td>
+                              <td className="p-3 text-[#475569] text-[10.5px] font-semibold">{alloc.allocatedBy}</td>
                               {!isCitizen && (
                                 <td className="p-3 text-right">
                                   <div className="inline-flex gap-1.5">
@@ -662,7 +670,7 @@ export default function ResourceCenterPage() {
                                         size="xs"
                                         variant="default"
                                         onClick={() => handleUpdateAllocationStatus(alloc.id, "delivered")}
-                                        className="h-7 text-xs px-2.5 cursor-pointer"
+                                        className="h-7 text-xs px-2.5 font-bold cursor-pointer"
                                       >
                                         Deliver
                                       </Button>
@@ -672,7 +680,7 @@ export default function ResourceCenterPage() {
                                         size="xs"
                                         variant="outline"
                                         onClick={() => handleUpdateAllocationStatus(alloc.id, "returned")}
-                                        className="h-7 text-xs px-2.5 text-muted-foreground hover:text-destructive cursor-pointer"
+                                        className="h-7 text-xs px-2.5 font-bold text-[#475569] hover:text-[#DC2626] cursor-pointer"
                                       >
                                         Return
                                       </Button>
@@ -693,55 +701,52 @@ export default function ResourceCenterPage() {
               {selectedTab === "history" && (
                 <div className="space-y-4 p-4">
                   <div>
-                    <h3 className="text-foreground text-sm font-semibold">Staging Audit Timeline</h3>
-                    <p className="text-muted-foreground text-xs mt-0.5">Chronological operations ledger of depot transactions.</p>
+                    <h3 className="text-[#0F172A] text-sm font-bold">Staging Audit Timeline</h3>
+                    <p className="text-[#475569] text-xs mt-0.5 font-semibold">Chronological operations ledger of depot transactions.</p>
                   </div>
 
                   {historyLogs.length === 0 ? (
-                    <div className="text-muted-foreground py-8 text-center text-xs bg-muted/5 rounded-md">
+                    <div className="text-[#475569] py-8 text-center text-xs font-semibold bg-slate-50 border border-dashed border-[#CBD5E1] rounded-md">
                       No audit logs registered yet.
                     </div>
                   ) : (
-                    <div className="border border-border rounded-md overflow-hidden bg-card">
+                    <div className="border border-[#CBD5E1] rounded-md overflow-hidden bg-white">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-muted/10">
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Time</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Resource</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Action</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Quantity</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Note</TableHead>
-                            <TableHead className="font-semibold text-xs text-muted-foreground">Operator</TableHead>
+                          <TableRow className="bg-slate-50 border-b border-[#CBD5E1]">
+                            <TableHead className="font-bold text-xs text-[#475569]">Time</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Resource</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Action</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Quantity</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Note</TableHead>
+                            <TableHead className="font-bold text-xs text-[#475569]">Operator</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {historyLogs.map((log) => (
-                            <tr key={log.id} className="hover:bg-muted/5 transition-colors border-b border-border">
-                              <td className="p-3 text-muted-foreground text-[10px] whitespace-nowrap">
+                            <tr key={log.id} className="hover:bg-slate-50 transition-colors border-b border-[#E2E8F0]">
+                              <td className="p-3 text-[#475569] text-[10.5px] font-semibold whitespace-nowrap">
                                 {new Date(log.createdAt).toLocaleString()}
                               </td>
-                              <td className="p-3 font-semibold text-foreground">{log.resourceName}</td>
+                              <td className="p-3 font-bold text-[#0F172A]">{log.resourceName}</td>
                               <td className="p-3">
-                                <Badge
-                                  variant={
-                                    log.action === "stock_add"
-                                      ? "success"
-                                      : log.action === "allocate"
-                                        ? "warning"
-                                        : log.action === "stock_reduce"
-                                          ? "destructive"
-                                          : "outline"
-                                  }
-                                  className="h-4.5 px-1.5 py-0 text-[9px] font-bold uppercase"
-                                >
-                                  {log.action.replace("_", " ")}
-                                </Badge>
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border ${
+                                  log.action === "stock_add"
+                                    ? "bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20"
+                                    : log.action === "allocate"
+                                      ? "bg-[#FFFBEB] text-[#D97706] border-[#D97706]/20"
+                                      : log.action === "stock_reduce"
+                                        ? "bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/20"
+                                        : "bg-[#F8FAFC] text-[#475569] border-[#CBD5E1]"
+                                }`}>
+                                  ● {log.action.replace("_", " ")}
+                                </span>
                               </td>
-                              <td className="p-3 text-xs font-semibold">{log.quantity}</td>
-                              <td className="p-3 text-muted-foreground max-w-[180px] truncate text-xs italic font-normal">
+                              <td className="p-3 text-xs font-bold text-[#0F172A]">{log.quantity}</td>
+                              <td className="p-3 text-[#475569] max-w-[180px] truncate text-xs italic font-semibold">
                                 {log.note}
                               </td>
-                              <td className="p-3 text-muted-foreground text-[10px]">{log.performedBy}</td>
+                              <td className="p-3 text-[#475569] text-[10.5px] font-semibold">{log.performedBy}</td>
                             </tr>
                           ))}
                         </TableBody>

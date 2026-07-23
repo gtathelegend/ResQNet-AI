@@ -1,42 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "light";
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>("light");
+  const theme: Theme = "light";
 
   useEffect(() => {
-    // Determine active theme on load
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-      .matches
-      ? "dark"
-      : "light";
-    const activeTheme = savedTheme || systemTheme;
-
-    // Defer state update to next tick to avoid synchronous cascading renders warning
-    const timer = setTimeout(() => {
-      setTheme(activeTheme);
-    }, 0);
-
-    return () => clearTimeout(timer);
+    document.documentElement.classList.remove("dark");
   }, []);
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme]);
-
   const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
+    // Locked to light theme
   };
 
-  return { theme, toggleTheme, isDark: theme === "dark" };
+  return { theme, toggleTheme, isDark: false };
 }
