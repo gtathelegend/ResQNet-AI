@@ -18,6 +18,9 @@ import {
   Lock,
   Activity,
   Loader2,
+  Server,
+  FileCode2,
+  Home,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -53,247 +56,131 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-background text-foreground selection:bg-primary flex min-h-screen flex-col selection:text-white">
-      {/* Dynamic Header */}
+    <div className="bg-[#F8FAFC] text-[#0F172A] flex min-h-screen flex-col selection:bg-primary selection:text-white">
+      {/* Global Navigation Header */}
       <Navbar />
 
-      {/* Main Landing Content */}
       <main className="flex-1">
         {/* ================= HERO SECTION ================= */}
-        <section className="border-border from-card/30 to-background relative overflow-hidden border-b bg-gradient-to-b py-20 lg:py-32">
-          <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
-
+        <section className="relative overflow-hidden border-b border-border bg-white py-20 lg:py-28">
+          <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#e2e8f080_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f080_1px,transparent_1px)] bg-[size:20px_20px] opacity-60" />
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-              {/* Text Area */}
               <motion.div
-                className="flex flex-col items-start space-y-6 text-left"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                className="flex flex-col items-start space-y-5 text-left"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
                 <Badge
-                  variant="outline"
-                  className="border-primary/20 bg-primary/5 text-primary gap-2 px-3 py-1 text-xs font-semibold"
+                  variant="secondary"
+                  className="gap-1.5 px-3 py-1 text-xs font-semibold text-primary bg-primary/5 border border-primary/10 rounded-full"
                 >
-                  <span className="bg-primary size-2 animate-pulse rounded-full" />
-                  Next-Gen Disaster Operations Platform
+                  <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  Emergency Staging & Telemetry Platform
                 </Badge>
 
-                <h1 className="text-foreground text-4xl leading-[1.1] font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                  AI-Powered Response, <br />
-                  <span className="text-primary">
-                    Coordinated in Real Time.
-                  </span>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05]">
+                  Coordinated Emergency <br />
+                  <span className="text-primary font-bold">Response Grid.</span>
                 </h1>
 
-                <p className="text-muted-foreground max-w-lg text-lg leading-relaxed">
-                  ResQNet AI unites citizens, volunteers, and emergency
-                  authorities under a single secure telemetry grid to deploy
-                  resources, map incidents, and accelerate crisis response.
+                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-lg">
+                  ResQNet AI connects citizens, volunteer responders, and dispatch authorities under a single telemetry matrix to prioritize incidents, track depot resources, and accelerate disaster recovery.
                 </p>
 
-                {/* CTA Action Controls */}
-                <div className="flex w-full flex-wrap gap-3 sm:w-auto">
+                <div className="flex w-full flex-wrap gap-2.5 pt-2 sm:w-auto">
                   <Button
                     onClick={() => setReportModalOpen(true)}
                     variant="destructive"
-                    size="lg"
-                    className="shadow-destructive/10 hover:shadow-destructive/20 gap-2 font-semibold shadow-lg transition-all"
+                    size="sm"
+                    className="h-10 px-4 text-xs font-semibold cursor-pointer shadow-none"
                   >
-                    <ShieldAlert className="size-5" />
-                    <span>Report Disaster</span>
+                    Report Emergency
                   </Button>
 
                   {isAuthenticated ? (
                     <Link href="/dashboard" passHref>
                       <Button
                         variant="default"
-                        size="lg"
-                        className="shadow-primary/10 gap-2 font-semibold shadow-lg"
+                        size="sm"
+                        className="h-10 px-4 text-xs font-semibold cursor-pointer shadow-none"
                       >
-                        <span>Access Dashboard</span>
-                        <ArrowRight className="size-4" />
+                        Access Command Center
                       </Button>
                     </Link>
                   ) : (
                     <Link href="/login" passHref>
                       <Button
                         variant="outline"
-                        size="lg"
-                        className="border-border/80 gap-2 font-semibold"
+                        size="sm"
+                        className="h-10 px-4 text-xs font-semibold cursor-pointer"
                       >
-                        <span>Sign In Portal</span>
-                        <ArrowRight className="size-4" />
+                        Sign In Portal
                       </Button>
                     </Link>
                   )}
                 </div>
               </motion.div>
 
-              {/* Graphic Area (IBM-inspired SVG Grid Node Visualizer) */}
+              {/* Graphic Node Network Map (Leaflet Staging Area Visualizer) */}
               <motion.div
-                className="relative flex items-center justify-center lg:h-[450px]"
-                initial={{ opacity: 0, scale: 0.95 }}
+                className="relative flex items-center justify-center lg:h-[400px]"
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className="bg-primary/10 absolute -z-10 size-72 rounded-full blur-[120px]" />
-                <svg
-                  viewBox="0 0 500 500"
-                  className="text-primary w-full max-w-[420px]"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Outer Orbit lines */}
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="180"
-                    stroke="currentColor"
-                    strokeOpacity="0.08"
-                    strokeWidth="2"
-                    strokeDasharray="6 6"
-                  />
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="120"
-                    stroke="currentColor"
-                    strokeOpacity="0.15"
-                    strokeWidth="1.5"
-                  />
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="60"
-                    stroke="currentColor"
-                    strokeOpacity="0.2"
-                    strokeWidth="1"
-                  />
+                <div className="border border-border rounded-lg bg-[#F8FAFC] p-4 shadow-sm w-full max-w-[420px] aspect-square relative overflow-hidden flex flex-col justify-between">
+                  {/* Clean schematic grid */}
+                  <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] opacity-40" />
+                  
+                  {/* Staging Nodes */}
+                  <div className="z-10 flex justify-between items-center text-[10px] text-muted-foreground border-b border-border pb-2 bg-[#F8FAFC]/80 backdrop-blur-sm">
+                    <span className="font-bold tracking-wider uppercase">Active Telemetry Grid</span>
+                    <span className="font-mono text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-1.5 py-0.5">Live Sync</span>
+                  </div>
 
-                  {/* Connected Node Network paths */}
-                  <line
-                    x1="250"
-                    y1="250"
-                    x2="130"
-                    y2="150"
-                    stroke="currentColor"
-                    strokeOpacity="0.2"
-                    strokeWidth="2"
-                  />
-                  <line
-                    x1="250"
-                    y1="250"
-                    x2="370"
-                    y2="150"
-                    stroke="currentColor"
-                    strokeOpacity="0.2"
-                    strokeWidth="2"
-                  />
-                  <line
-                    x1="250"
-                    y1="250"
-                    x2="250"
-                    y2="390"
-                    stroke="currentColor"
-                    strokeOpacity="0.2"
-                    strokeWidth="2"
-                  />
-                  <line
-                    x1="130"
-                    y1="150"
-                    x2="370"
-                    y2="150"
-                    stroke="currentColor"
-                    strokeOpacity="0.08"
-                    strokeWidth="1.5"
-                  />
-                  <line
-                    x1="130"
-                    y1="150"
-                    x2="250"
-                    y2="390"
-                    stroke="currentColor"
-                    strokeOpacity="0.08"
-                    strokeWidth="1.5"
-                  />
+                  <div className="z-10 relative flex-1 flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="w-4/5 h-4/5 text-primary/20">
+                      <line x1="50" y1="50" x2="20" y2="30" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1" />
+                      <line x1="50" y1="50" x2="80" y2="30" stroke="currentColor" strokeWidth="0.5" />
+                      <line x1="50" y1="50" x2="50" y2="80" stroke="currentColor" strokeWidth="0.5" />
+                      {/* Center */}
+                      <circle cx="50" cy="50" r="4" fill="var(--primary)" className="animate-ping" />
+                      <circle cx="50" cy="50" r="3" fill="var(--primary)" />
+                      {/* Node A */}
+                      <circle cx="20" cy="30" r="3" fill="#ef4444" />
+                      {/* Node B */}
+                      <circle cx="80" cy="30" r="3" fill="#f97316" />
+                      {/* Node C */}
+                      <circle cx="50" cy="80" r="3" fill="#3b82f6" />
+                    </svg>
+                  </div>
 
-                  {/* Central Node */}
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="30"
-                    fill="currentColor"
-                    fillOpacity="0.1"
-                  />
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="16"
-                    fill="currentColor"
-                    className="animate-pulse"
-                  />
-                  <path d="M246 246H254V254H246V246Z" fill="white" />
-
-                  {/* Node 1 - Authority Node */}
-                  <g
-                    className="animate-bounce"
-                    style={{ animationDuration: "5s" }}
-                  >
-                    <circle
-                      cx="130"
-                      cy="150"
-                      r="22"
-                      fill="#DA1E28"
-                      fillOpacity="0.1"
-                    />
-                    <circle cx="130" cy="150" r="10" fill="#DA1E28" />
-                    <circle cx="130" cy="150" r="4" fill="white" />
-                  </g>
-
-                  {/* Node 2 - Volunteer Node */}
-                  <g
-                    className="animate-bounce"
-                    style={{ animationDuration: "4s", animationDelay: "1s" }}
-                  >
-                    <circle
-                      cx="370"
-                      cy="150"
-                      r="22"
-                      fill="#24A148"
-                      fillOpacity="0.1"
-                    />
-                    <circle cx="370" cy="150" r="10" fill="#24A148" />
-                    <circle cx="370" cy="150" r="4" fill="white" />
-                  </g>
-
-                  {/* Node 3 - Citizen Node */}
-                  <g
-                    className="animate-bounce"
-                    style={{ animationDuration: "6s", animationDelay: "0.5s" }}
-                  >
-                    <circle
-                      cx="250"
-                      cy="390"
-                      r="22"
-                      fill="#0F62FE"
-                      fillOpacity="0.1"
-                    />
-                    <circle cx="250" cy="390" r="10" fill="#0F62FE" />
-                    <circle cx="250" cy="390" r="4" fill="white" />
-                  </g>
-                </svg>
+                  <div className="z-10 border-t border-border pt-2 grid grid-cols-3 gap-2 text-center text-[9px] font-semibold bg-[#F8FAFC]/80 backdrop-blur-sm">
+                    <div>
+                      <span className="text-muted-foreground block uppercase">Authorities</span>
+                      <strong className="text-foreground text-[10.5px]">Command HQ</strong>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block uppercase">Responders</span>
+                      <strong className="text-foreground text-[10.5px]">On-Duty Units</strong>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block uppercase">Logistics</span>
+                      <strong className="text-foreground text-[10.5px]">Depot Stock</strong>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* ================= MISSION SECTION ================= */}
-        <section id="mission" className="bg-card border-border border-b py-20">
+        {/* ================= PROBLEM & CONTEXT SECTION ================= */}
+        <section id="problem" className="bg-[#F8FAFC] border-b border-border py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-              {/* Mission Statement */}
               <motion.div
                 className="space-y-4"
                 initial={{ opacity: 0, y: 15 }}
@@ -301,446 +188,232 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-primary block text-xs font-bold tracking-widest uppercase">
-                  Our Core Mission
+                <span className="text-primary block text-[10px] font-bold tracking-widest uppercase">
+                  Operation Obstacles
                 </span>
-                <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                  Speed, Safety, and Synchronization.
+                <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                  Decentralization slows disaster response.
                 </h2>
-                <p className="text-muted-foreground text-base leading-relaxed">
-                  During crisis management, seconds save lives. Traditional
-                  disaster channels are often isolated, leaving citizens
-                  stranded, volunteers uncoordinated, and authorities blind to
-                  real-time ground truths.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  During emergency responses, coordinating multiple entities is highly complex. Isolated communication channels leave citizens stranded, field volunteers without clear directions, and area commanders blind to active ground levels.
                 </p>
-                <p className="text-muted-foreground text-base leading-relaxed">
-                  ResQNet AI breaks down these silos. By providing a unified,
-                  secure dashboard, we ensure intelligence is routed
-                  contextually, assets are tracked dynamically, and operations
-                  are managed with absolute transparency.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  ResQNet AI bridges this gap. By centralizing incident reports, resource logs, and live maps, we ensure that dispatch data is accurate, volunteer matching is immediate, and critical resources are allocated where they are needed most.
                 </p>
               </motion.div>
 
-              {/* Mission Visual Pillars */}
               <div className="grid gap-4 sm:grid-cols-2">
-                <Card className="border-border bg-background transition-shadow hover:shadow-md">
-                  <CardHeader className="p-4 pb-2">
-                    <Zap className="text-primary mb-2 size-6" />
-                    <CardTitle className="text-base">
-                      Real-time Routing
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground p-4 pt-0 text-xs">
-                    Telemetry paths calculate resource allocations and routes
-                    instantaneously, cutting dispatch delays.
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border bg-background transition-shadow hover:shadow-md">
-                  <CardHeader className="p-4 pb-2">
-                    <Globe className="text-accent mb-2 size-6" />
-                    <CardTitle className="text-base">
-                      UN SDG Alignment
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground p-4 pt-0 text-xs">
-                    Engineered to directly advance targets in climate
-                    resilience, community safety, and international
-                    partnerships.
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border bg-background transition-shadow hover:shadow-md">
-                  <CardHeader className="p-4 pb-2">
-                    <Users className="text-warning mb-2 size-6" />
-                    <CardTitle className="text-base">
-                      Role-Based Silos
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground p-4 pt-0 text-xs">
-                    Custom permissions connect Citizens, Volunteers, and
-                    Emergency Command Centers natively under strict telemetry.
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border bg-background transition-shadow hover:shadow-md">
-                  <CardHeader className="p-4 pb-2">
-                    <Lock className="text-destructive mb-2 size-6" />
-                    <CardTitle className="text-base">HMAC Security</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground p-4 pt-0 text-xs">
-                    Secure APIs and inter-service token validations protect
-                    command telemetry feeds from tampering.
-                  </CardContent>
-                </Card>
+                {[
+                  { title: "Isolated Reporting", desc: "Citizens lack direct channels to feed active coordinates to responders.", icon: ShieldAlert },
+                  { title: "Depot Depletion", desc: "Warehouse dispatches are uncoordinated, leading to supply distribution imbalances.", icon: Lock },
+                  { title: "Manual Scheduling", desc: "Volunteers are deployed without accounting for distance from incident bases.", icon: Users },
+                  { title: "Data Tampering", desc: "Crisis response channels must be protected with cryptographically secure signatures.", icon: Activity }
+                ].map((item, idx) => (
+                  <div key={idx} className="border border-border bg-white rounded-lg p-5">
+                    <item.icon className="size-5 text-primary mb-2.5" />
+                    <h3 className="text-sm font-semibold text-foreground mb-1">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
         {/* ================= HOW IT WORKS SECTION ================= */}
-        <section
-          id="how-it-works"
-          className="bg-background border-border border-b py-20"
-        >
+        <section id="how-it-works" className="bg-white border-b border-border py-20">
           <div className="mx-auto max-w-7xl space-y-12 px-4 text-center sm:px-6 lg:px-8">
             <motion.div
-              className="space-y-3"
+              className="space-y-2"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
             >
-              <span className="text-primary block text-xs font-bold tracking-widest uppercase">
-                Response Loop
+              <span className="text-primary block text-[10px] font-bold tracking-widest uppercase">
+                Workflow Loop
               </span>
-              <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                How ResQNet AI Works
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                Coordinated Emergency Lifecycle
               </h2>
-              <p className="text-muted-foreground mx-auto max-w-2xl text-sm">
-                A seamless coordination cycle bridging local emergencies with
-                high-level tactical deployments.
+              <p className="text-muted-foreground mx-auto max-w-2xl text-xs sm:text-sm">
+                A structured, synchronized loop bringing ground-level reports into high-level tactical deployments.
               </p>
             </motion.div>
 
-            {/* Timeline Grid */}
             <div className="grid gap-6 text-left md:grid-cols-4">
               {[
                 {
                   step: "01",
-                  title: "Citizen Reports",
-                  desc: "Local residents file alerts with GPS coordinates and photos. Critical signals bypass latency.",
+                  title: "Emergency Signals",
+                  desc: "Citizens broadcast reports containing geo-coordinates, population numbers, and supply needs.",
                   icon: MapPin,
-                  color: "text-primary bg-primary/10",
                 },
                 {
                   step: "02",
-                  title: "AI Analysis",
-                  desc: "Algorithms classify incident severity, evaluate weather data, and prioritize sector tickets.",
+                  title: "Resource Check",
+                  desc: "Logistics systems check available stock counts in the nearest supply depot bases.",
                   icon: Zap,
-                  color: "text-accent bg-accent/10",
                 },
                 {
                   step: "03",
-                  title: "Volunteer Staging",
-                  desc: "Alerts are routed to nearby responders who review tasks and request depot resource allocations.",
+                  title: "Proximity Matching",
+                  desc: "The system identifies and ranks available on-duty volunteers based on distance.",
                   icon: Users,
-                  color: "text-warning bg-warning/10",
                 },
                 {
                   step: "04",
-                  title: "HQ Command",
-                  desc: "Authorities verify telemetry and execute unified dispatches to stabilize active crisis zones.",
+                  title: "Tactical Dispatch",
+                  desc: "HQ reviews telemetry metrics and authorizes immediate dispatches to the incident area.",
                   icon: ShieldAlert,
-                  color: "text-destructive bg-destructive/10",
                 },
               ].map((item, idx) => (
-                <motion.div
+                <div
                   key={idx}
-                  className="border-border bg-card group hover:border-primary/40 relative rounded-xl border p-6 transition-colors"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
+                  className="border border-border bg-[#F8FAFC] relative rounded-lg p-5 hover:border-primary/30 transition-colors"
                 >
-                  <div className="text-muted-foreground/20 group-hover:text-primary/20 absolute top-4 right-4 font-mono text-2xl font-extrabold transition-colors">
+                  <div className="text-muted-foreground/10 absolute top-4 right-4 font-mono text-2xl font-bold">
                     {item.step}
                   </div>
-                  <div
-                    className={`flex size-10 items-center justify-center rounded-lg ${item.color} mb-4`}
-                  >
-                    <item.icon className="size-5" />
+                  <div className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary mb-3">
+                    <item.icon className="size-4.5" />
                   </div>
-                  <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  <h3 className="text-sm font-semibold text-foreground mb-1.5">
                     {item.title}
                   </h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {item.desc}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ================= SDG GOALS SECTION ================= */}
-        <section id="sdgs" className="bg-card border-border border-b py-20">
-          <div className="mx-auto max-w-7xl space-y-12 px-4 text-center sm:px-6 lg:px-8">
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-            >
-              <span className="text-primary block text-xs font-bold tracking-widest uppercase">
-                Global Commitment
-              </span>
-              <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                Advancing UN Sustainable Development Goals
-              </h2>
-              <p className="text-muted-foreground mx-auto max-w-2xl text-sm">
-                ResQNet AI is engineered to address global challenges through
-                technical solutions that promote climate adaptation and
-                community resilience.
-              </p>
-            </motion.div>
-
-            {/* SDG Goals Cards */}
-            <div className="grid gap-6 text-left md:grid-cols-3">
-              {/* SDG 11 */}
-              <motion.div
-                className="relative rounded-xl border border-[#F99D1C]/20 bg-[#F99D1C]/5 p-6 transition-shadow hover:shadow-md"
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-              >
-                <div className="absolute top-4 right-4 flex size-10 items-center justify-center rounded bg-[#F99D1C] font-mono text-sm font-bold text-white shadow-sm">
-                  Goal 11
-                </div>
-                <div className="mb-6 flex size-12 items-center justify-center rounded-full bg-[#F99D1C]/10 text-[#F99D1C]">
-                  <Compass className="size-6" />
-                </div>
-                <h3 className="text-foreground mb-2 text-lg font-bold">
-                  Sustainable Cities
-                </h3>
-                <p className="text-muted-foreground mb-4 text-xs leading-relaxed">
-                  Make cities and human settlements inclusive, safe, resilient,
-                  and sustainable.
-                </p>
-                <div className="w-fit rounded bg-[#F99D1C]/10 px-2.5 py-1 text-[10px] font-bold text-[#F99D1C] uppercase">
-                  Target: Shelter Resilience
-                </div>
-              </motion.div>
-
-              {/* SDG 13 */}
-              <motion.div
-                className="relative rounded-xl border border-[#3F7E44]/20 bg-[#3F7E44]/5 p-6 transition-shadow hover:shadow-md"
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                <div className="absolute top-4 right-4 flex size-10 items-center justify-center rounded bg-[#3F7E44] font-mono text-sm font-bold text-white shadow-sm">
-                  Goal 13
-                </div>
-                <div className="mb-6 flex size-12 items-center justify-center rounded-full bg-[#3F7E44]/10 text-[#3F7E44]">
-                  <Globe className="size-6" />
-                </div>
-                <h3 className="text-foreground mb-2 text-lg font-bold">
-                  Climate Action
-                </h3>
-                <p className="text-muted-foreground mb-4 text-xs leading-relaxed">
-                  Take urgent action to combat climate change and its impacts by
-                  strengthening adaptative capacities.
-                </p>
-                <div className="w-fit rounded bg-[#3F7E44]/10 px-2.5 py-1 text-[10px] font-bold text-[#3F7E44] uppercase">
-                  Target: Disaster Telemetry
-                </div>
-              </motion.div>
-
-              {/* SDG 17 */}
-              <motion.div
-                className="relative rounded-xl border border-[#19486A]/20 bg-[#19486A]/5 p-6 transition-shadow hover:shadow-md"
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                <div className="absolute top-4 right-4 flex size-10 items-center justify-center rounded bg-[#19486A] font-mono text-sm font-bold text-white shadow-sm">
-                  Goal 17
-                </div>
-                <div className="mb-6 flex size-12 items-center justify-center rounded-full bg-[#19486A]/10 text-[#19486A]">
-                  <Users className="size-6" />
-                </div>
-                <h3 className="text-foreground mb-2 text-lg font-bold">
-                  Partnerships
-                </h3>
-                <p className="text-muted-foreground mb-4 text-xs leading-relaxed">
-                  Strengthen the means of implementation and revitalize global
-                  partnerships for sustainable development.
-                </p>
-                <div className="w-fit rounded bg-[#19486A]/10 px-2.5 py-1 text-[10px] font-bold text-[#19486A] uppercase">
-                  Target: Unified Command
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= FEATURES SECTION ================= */}
-        <section
-          id="features"
-          className="bg-background border-border border-b py-20"
-        >
-          <div className="mx-auto max-w-7xl space-y-12 px-4 text-center sm:px-6 lg:px-8">
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-            >
-              <span className="text-primary block text-xs font-bold tracking-widest uppercase">
-                System Capabilities
-              </span>
-              <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                Advanced Tactical Features
-              </h2>
-              <p className="text-muted-foreground mx-auto max-w-2xl text-sm">
-                Engineered for strict environments that demand secure
-                transmission and dynamic scaling.
-              </p>
-            </motion.div>
-
-            {/* Grid of Features */}
-            <div className="grid gap-6 text-left md:grid-cols-3">
-              <Card className="border-border bg-card">
-                <CardHeader>
-                  <div className="bg-primary/10 text-primary mb-3 flex size-10 items-center justify-center rounded-lg">
-                    <Activity className="size-5" />
-                  </div>
-                  <CardTitle className="text-lg">Dynamic Dispatching</CardTitle>
-                  <CardDescription className="text-xs">
-                    Command center interface allowing authorities to evaluate
-                    unit coordinates and allocate vehicles to incident sectors
-                    instantly.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="border-border bg-card">
-                <CardHeader>
-                  <div className="bg-accent/10 text-accent mb-3 flex size-10 items-center justify-center rounded-lg">
-                    <Lock className="size-5" />
-                  </div>
-                  <CardTitle className="text-lg">
-                    Telemetry Signatures
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    Secures inter-service REST endpoints with HMAC algorithms.
-                    Eliminates validation errors and prevents hijacking of
-                    command assets.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="border-border bg-card">
-                <CardHeader>
-                  <div className="bg-warning/10 text-warning mb-3 flex size-10 items-center justify-center rounded-lg">
-                    <Compass className="size-5" />
-                  </div>
-                  <CardTitle className="text-lg">Offline Mock Mode</CardTitle>
-                  <CardDescription className="text-xs">
-                    Built-in development simulation caching sessions in client
-                    cookies. Allows full UI test flows without database
-                    configurations.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= STATISTICS SECTION ================= */}
-        <section className="bg-primary border-primary-dark border-b py-16 text-white">
+        {/* ================= SDG TARGET 11.5 ALIGNMENT SECTION ================= */}
+        <section id="sdg-alignment" className="bg-[#F8FAFC] border-b border-border py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 text-center sm:grid-cols-3">
+            <div className="border border-border bg-white rounded-lg p-8 sm:p-12 grid gap-8 lg:grid-cols-12 items-center">
+              <div className="lg:col-span-8 space-y-4">
+                <span className="text-[#F99D1C] block text-[10px] font-bold tracking-widest uppercase">
+                  UN SDG Target 11.5 Commitment
+                </span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
+                  Reducing Disaster Impact & Protecting Communities
+                </h2>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Sustainable Development Goal 11 aims to make cities and human settlements inclusive, safe, resilient, and sustainable. Under target 11.5, the global mandate is to significantly reduce the number of deaths and the number of people affected by disasters.
+                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  ResQNet AI directly advances this mandate by providing emergency coordination tools. By optimizing volunteer response routes, managing emergency shelter occupancies, and tracking regional dispatch levels, the platform decreases staging delays and stabilizes disaster areas.
+                </p>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#F99D1C]/10 text-[#F99D1C] text-[10px] font-bold uppercase tracking-wider">
+                  Target 11.5: Reduced Disaster Vulnerability
+                </div>
+              </div>
+              <div className="lg:col-span-4 flex justify-center">
+                {/* Clean Flat SVG Graphic representing SDG Goal 11 */}
+                <div className="w-48 h-48 bg-[#F99D1C] rounded-lg text-white p-5 flex flex-col justify-between shadow-sm">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider block">Goal 11</span>
+                  <div className="flex-1 flex items-center justify-center">
+                    <Home className="size-20 stroke-[1.25]" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold block">Sustainable Cities</span>
+                    <span className="text-[9px] text-white/80 block">And Communities</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= TECH STACK & ARCHITECTURE ================= */}
+        <section id="tech-stack" className="bg-white border-b border-border py-20">
+          <div className="mx-auto max-w-7xl space-y-12 px-4 text-center sm:px-6 lg:px-8">
+            <motion.div
+              className="space-y-2"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              <span className="text-primary block text-[10px] font-bold tracking-widest uppercase">
+                Technical Foundation
+              </span>
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                Modern Operations Architecture
+              </h2>
+              <p className="text-muted-foreground mx-auto max-w-2xl text-xs sm:text-sm">
+                Engineered for strict environments that demand secure transmission and sub-second data synchronization.
+              </p>
+            </motion.div>
+
+            <div className="grid gap-6 text-left md:grid-cols-3">
               {[
-                { number: "12s", label: "Average Dispatch Latency", icon: Zap },
-                {
-                  number: "14.2k",
-                  label: "Active Field Responders",
-                  icon: Users,
-                },
-                {
-                  number: "4.2M",
-                  label: "Command Signals Transmitted",
-                  icon: TrendingUp,
-                },
-              ].map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  className="flex flex-col items-center space-y-2 p-4"
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
-                >
-                  <item.icon className="size-6 text-white/80" />
-                  <div className="text-4xl font-extrabold tracking-tight md:text-5xl">
-                    {item.number}
+                { title: "Next.js Core", desc: "App router system utilizing Server Component rendering and route proxy configurations.", icon: FileCode2 },
+                { title: "Supabase & Postgres", desc: "Real-time database handling operations coordinates, shelter occupancies, and volunteer profiles.", icon: Server },
+                { title: "GIS Leaflet Integration", desc: "Client-side mapping engine routing incident locations and staging bases.", icon: Compass }
+              ].map((tech, idx) => (
+                <div key={idx} className="border border-border bg-[#F8FAFC] rounded-lg p-5">
+                  <div className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary mb-3">
+                    <tech.icon className="size-4.5" />
                   </div>
-                  <div className="text-xs font-medium text-white/70">
-                    {item.label}
-                  </div>
-                </motion.div>
+                  <h3 className="text-sm font-semibold text-foreground mb-1">{tech.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{tech.desc}</p>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* ================= CALL TO ACTION SECTION ================= */}
-        <section className="from-background to-card/20 bg-gradient-to-b py-20">
+        <section className="bg-[#F8FAFC] py-20">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <motion.div
-              className="border-border bg-card relative space-y-6 overflow-hidden rounded-2xl border p-10 text-center shadow-xl md:p-16"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="bg-primary/5 absolute inset-0 -z-10" />
-
-              <Heart className="text-primary mx-auto size-10 animate-pulse" />
-
-              <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-                Ready to Join the Response Grid?
+            <div className="border border-border bg-white rounded-xl p-8 sm:p-12 text-center space-y-5 shadow-sm">
+              <ShieldAlert className="text-primary mx-auto size-9" />
+              
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
+                Join the Tactical Operations Grid
               </h2>
 
-              <p className="text-muted-foreground mx-auto max-w-xl text-sm leading-relaxed">
-                Connect your community, register volunteer units, and access
-                coordinated disaster response networks instantly. Secure local
-                simulation requires zero cloud setups.
+              <p className="text-muted-foreground mx-auto max-w-lg text-xs sm:text-sm leading-relaxed">
+                Connect your local community, register volunteer profiles, and access coordinated disaster response networks. The built-in offline simulation mode allows full testing without configuration.
               </p>
 
-              <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
+              <div className="flex flex-col justify-center gap-2.5 pt-2 sm:flex-row max-w-md mx-auto">
                 <Button
                   onClick={() => setReportModalOpen(true)}
                   variant="destructive"
-                  size="lg"
-                  className="gap-2 font-semibold"
+                  size="sm"
+                  className="h-10 px-5 text-xs font-semibold cursor-pointer shadow-none"
                 >
-                  <ShieldAlert className="size-4" />
-                  Report Emergency
+                  Report Incident
                 </Button>
 
                 {isAuthenticated ? (
                   <Link href="/dashboard" passHref>
                     <Button
                       variant="default"
-                      size="lg"
-                      className="gap-2 font-semibold"
+                      size="sm"
+                      className="h-10 px-5 text-xs font-semibold cursor-pointer shadow-none"
                     >
-                      Go to Dashboard
-                      <ArrowRight className="size-4" />
+                      Go to Command Dashboard
                     </Button>
                   </Link>
                 ) : (
                   <Link href="/login" passHref>
                     <Button
                       variant="outline"
-                      size="lg"
-                      className="border-border/80 gap-2 font-semibold"
+                      size="sm"
+                      className="h-10 px-5 text-xs font-semibold cursor-pointer"
                     >
-                      Access Command Center
-                      <ArrowRight className="size-4" />
+                      Access Command Portal
                     </Button>
                   </Link>
                 )}
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
       </main>
@@ -752,63 +425,64 @@ export default function LandingPage() {
       <Modal
         isOpen={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
-        title="Report Disaster Incident"
-        description="Broadcast an active emergency signal directly to nearby responders and Regional HQ."
+        title="Report Emergency Signal"
+        description="Broadcast an active emergency signal directly to Regional Command HQ."
       >
         <form onSubmit={handleReportSubmit} className="space-y-4 py-2">
-          <div className="space-y-1.5">
-            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-              Incident Category
+          <div className="space-y-1">
+            <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+              Emergency Category
             </label>
             <select
-              className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+              className="border border-border bg-background text-foreground w-full rounded-md px-3 py-2 text-xs outline-none"
               required
             >
-              <option value="flooding">Severe Flooding</option>
+              <option value="flooding">Severe Flooding / Inundation</option>
               <option value="fire">Wildfire / Structural Fire</option>
-              <option value="medical">Mass Medical Incident</option>
-              <option value="power">Power Grid / Telecom Failure</option>
+              <option value="medical">Mass Medical Emergency</option>
+              <option value="power">Power Grid / Infrastructure Failure</option>
             </select>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-              Location Coordinates
+          <div className="space-y-1">
+            <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+              Coordinates
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Latitude (E.g. 40.7128)"
-                className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2 text-xs outline-none"
+                className="border border-border bg-background text-foreground w-full rounded-md p-2.5 text-xs outline-none"
                 required
               />
               <input
                 type="text"
                 placeholder="Longitude (E.g. -74.0060)"
-                className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2 text-xs outline-none"
+                className="border border-border bg-background text-foreground w-full rounded-md p-2.5 text-xs outline-none"
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-              Detailed Description
+          <div className="space-y-1">
+            <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+              Operational Status / Description
             </label>
             <textarea
               placeholder="State status, injuries, water level, blocks, etc."
-              className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2 text-xs outline-none"
+              className="border border-border bg-background text-foreground w-full rounded-md p-2.5 text-xs outline-none"
               rows={3}
               required
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="border-t border-border flex justify-end gap-2 pt-4">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setReportModalOpen(false)}
+              className="h-8 text-xs px-3 cursor-pointer"
             >
               Cancel
             </Button>
@@ -816,18 +490,18 @@ export default function LandingPage() {
               type="submit"
               variant="destructive"
               size="sm"
-              className="gap-2"
+              className="h-8 text-xs px-3 cursor-pointer"
               disabled={reportSubmitting}
             >
               {reportSubmitting ? (
                 <>
                   <Loader2 className="size-3.5 animate-spin" />
-                  <span>Transmitting...</span>
+                  <span>Broadcasting...</span>
                 </>
               ) : (
                 <>
                   <Send className="size-3.5" />
-                  <span>Broadcast Signal</span>
+                  <span>Transmit Signal</span>
                 </>
               )}
             </Button>

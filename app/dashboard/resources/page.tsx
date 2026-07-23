@@ -71,7 +71,7 @@ export default function ResourceCenterPage() {
   const [adjustResourceId, setAdjustResourceId] = useState("");
   const [adjustQuantity, setAdjustQuantity] = useState<number>(0);
   const [adjustDepot, setAdjustDepot] = useState("Depot Alpha");
-  const [isAddMode, setIsAddMode] = useState(true); // true = Add stock, false = Reduce/Reduce Stock
+  const [isAddMode, setIsAddMode] = useState(true);
 
   // New Resource Form State
   const [newResourceOpen, setNewResourceOpen] = useState(false);
@@ -85,17 +85,13 @@ export default function ResourceCenterPage() {
 
   // Load resources telemetry from Supabase
   const loadData = async () => {
-    // Delay state changes to run in a separate tick to avoid synchronous React 19 cascading renders
-    await new Promise((resolve) => setTimeout(resolve, 0));
     try {
-      // 1. Fetch Inventory Items
       const resData = await supabase
         .from("resources")
         .select("*")
         .order("name", { ascending: true });
       if (resData.data) setInventory(resData.data as ResourceItem[]);
 
-      // 2. Fetch Allocations
       const allocData = await supabase
         .from("resource_allocations")
         .select("*")
@@ -103,14 +99,12 @@ export default function ResourceCenterPage() {
       if (allocData.data)
         setAllocations(allocData.data as ResourceAllocation[]);
 
-      // 3. Fetch History Logs
       const histData = await supabase
         .from("resource_history")
         .select("*")
         .order("createdAt", { ascending: false });
       if (histData.data) setHistoryLogs(histData.data as ResourceHistoryLog[]);
 
-      // 4. Fetch Active Incidents
       const incData = await supabase
         .from("incidents")
         .select("*")
@@ -118,7 +112,6 @@ export default function ResourceCenterPage() {
       if (incData.data) {
         setActiveIncidents(incData.data as Incident[]);
       } else {
-        // Fallback: Fetch all reported incidents if none are active
         const incAllData = await supabase.from("incidents").select("*");
         if (incAllData.data) {
           setActiveIncidents(
@@ -136,11 +129,10 @@ export default function ResourceCenterPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
   }, []);
 
-  // Compute operational statistics
+  // Compute stats
   const totalStockItems = inventory.reduce(
     (sum, item) => sum + item.totalStock,
     0
@@ -157,7 +149,7 @@ export default function ResourceCenterPage() {
     new Set(inventory.map((item) => item.depot))
   ).length;
 
-  // Handle CRUD update for stock levels (Adjust Stock Modal)
+  // Handle stock levels update
   const handleAdjustStock = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !adjustResourceId || adjustQuantity <= 0) return;
@@ -174,17 +166,13 @@ export default function ResourceCenterPage() {
         nextAvail += adjustQuantity;
       } else {
         if (adjustQuantity > resource.availableStock) {
-          toast.error("Invalid Reduction", {
-            description:
-              "Cannot reduce stock below active allocated quantities.",
-          });
+          toast.error("Cannot reduce stock below active allocated quantities.");
           return;
         }
         nextTotal -= adjustQuantity;
         nextAvail -= adjustQuantity;
       }
 
-      // Update Resource stock levels
       const resResult = await supabase
         .from("resources")
         .update({
@@ -196,7 +184,6 @@ export default function ResourceCenterPage() {
         .single();
       if (resResult.error) throw new Error(resResult.error.message);
 
-      // Log Stock transaction history
       const log = {
         resourceId: resource.id,
         resourceName: resource.name,
@@ -212,19 +199,17 @@ export default function ResourceCenterPage() {
       const histResult = await supabase.from("resource_history").insert(log);
       if (histResult.error) throw new Error(histResult.error.message);
 
-      toast.success("Stock Adjusted Successfully");
+      toast.success("Stock adjusted successfully");
       setStockModalOpen(false);
       setAdjustQuantity(0);
       setAdjustResourceId("");
       loadData();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Database write error.";
-      toast.error("Operation Failed", { description: errorMsg });
+      toast.error("Failed to adjust stock");
     }
   };
 
-  // Handle CRUD create for new inventory items
+  // Handle resource category registration
   const handleCreateResource = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newName || newTotalStock <= 0) return;
@@ -244,7 +229,6 @@ export default function ResourceCenterPage() {
       const resResult = await supabase.from("resources").insert(resource);
       if (resResult.error) throw new Error(resResult.error.message);
 
-      // Log history
       const log = {
         resourceId: "new-resource",
         resourceName: newName,
@@ -258,7 +242,7 @@ export default function ResourceCenterPage() {
       const histResult = await supabase.from("resource_history").insert(log);
       if (histResult.error) throw new Error(histResult.error.message);
 
-      toast.success("New Resource Item Added");
+      toast.success("New resource category registered");
       setNewResourceOpen(false);
       setNewName("");
       setNewTotalStock(100);
@@ -266,13 +250,11 @@ export default function ResourceCenterPage() {
       setNewDepot("Depot Alpha");
       loadData();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Database save failure.";
-      toast.error("Operation Failed", { description: errorMsg });
+      toast.error("Failed to register resource");
     }
   };
 
-  // Handle CRUD update for dispatches (Delivered / Return)
+  // Update allocation status
   const handleUpdateAllocationStatus = async (
     allocId: string,
     nextStatus: "delivered" | "returned"
@@ -282,7 +264,6 @@ export default function ResourceCenterPage() {
     if (!allocation) return;
 
     try {
-      // Update Allocation Status
       const allocResult = await supabase
         .from("resource_allocations")
         .update({ status: nextStatus })
@@ -290,7 +271,6 @@ export default function ResourceCenterPage() {
         .single();
       if (allocResult.error) throw new Error(allocResult.error.message);
 
-      // If returned, restore stock levels
       if (nextStatus === "returned") {
         const resource = inventory.find((r) => r.id === allocation.resourceId);
         if (resource) {
@@ -312,7 +292,6 @@ export default function ResourceCenterPage() {
         }
       }
 
-      // Log transaction history
       const log = {
         resourceId: allocation.resourceId,
         resourceName: allocation.resourceName,
@@ -332,205 +311,142 @@ export default function ResourceCenterPage() {
       const histResult = await supabase.from("resource_history").insert(log);
       if (histResult.error) throw new Error(histResult.error.message);
 
-      toast.success(`Dispatch marked as ${nextStatus.toUpperCase()}`);
+      toast.success(`Dispatch marked as ${nextStatus}`);
       loadData();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Failed updating dispatch status.";
-      toast.error("Operation Failed", { description: errorMsg });
+      toast.error("Failed to update status");
     }
   };
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Resources Center</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        {/* Title Block */}
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-foreground text-2xl font-bold tracking-tight">
-              Resource Operations Center
-            </h2>
-            <p className="text-muted-foreground mt-0.5 text-xs">
-              Command depot stock management, active incident staging, and
-              Gemini AI dispatch recommendation logic.
-            </p>
-          </div>
-          {!isCitizen && (
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setAllocateOpen(true)}
-                variant="default"
-                size="sm"
-                className="gap-2"
-              >
-                <Truck className="size-4" />
-                <span>Allocate Resources</span>
-              </Button>
-              <Button
-                onClick={() => setNewResourceOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-border/80 gap-2"
-              >
-                <Plus className="size-4" />
-                <span>Register Category</span>
-              </Button>
+        {/* Navigation & Header */}
+        <div className="flex flex-col gap-3">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Resources</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+                Resources
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Manage depot inventories, check logistics telemetry, and authorize staging allocations.
+              </p>
             </div>
-          )}
+            {!isCitizen && (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setAllocateOpen(true)}
+                  variant="default"
+                  size="sm"
+                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                >
+                  Allocate Resources
+                </Button>
+                <Button
+                  onClick={() => setNewResourceOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                >
+                  Register Category
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Statistics Panels */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Depot Operations
-              </CardTitle>
-              <Database className="text-primary size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{uniqueDepots} Depots</div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Staging warehouses synced
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Total Inventory Categories
-              </CardTitle>
-              <Package className="text-accent size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {inventory.length} Classes
-              </div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Supplies, vehicles, and teams
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Dispatched Telemetry
-              </CardTitle>
-              <Activity className="text-warning size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{dispatchPercent}%</div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                {totalAllocatedItems.toLocaleString()} /{" "}
-                {totalStockItems.toLocaleString()} units active
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Active Staging Dispatches
-              </CardTitle>
-              <Truck className="text-destructive size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {allocations.filter((a) => a.status !== "returned").length}{" "}
-                Staged
-              </div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Staged or en-route to sectors
-              </p>
-            </CardContent>
-          </Card>
+          {[
+            { title: "Depots Active", value: `${uniqueDepots} Centers`, desc: "Registered staging depots" },
+            { title: "Resource Classes", value: `${inventory.length} Categories`, desc: "Supplies, vehicles, and teams" },
+            { title: "Allocation Rate", value: `${dispatchPercent}%`, desc: `${totalAllocatedItems.toLocaleString()} / ${totalStockItems.toLocaleString()} units active` },
+            { title: "Staged Dispatches", value: allocations.filter((a) => a.status !== "returned").length, desc: "Units currently en-route" },
+          ].map((card, idx) => (
+            <div key={idx} className="border border-border bg-card rounded-lg p-5">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                {card.title}
+              </span>
+              <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+                {card.value}
+              </span>
+              <span className="text-xs text-muted-foreground mt-1.5 block">
+                {card.desc}
+              </span>
+            </div>
+          ))}
         </div>
 
         {/* Charts Section */}
         <div className="grid gap-6 md:grid-cols-3">
-          {/* Radial Dispatch Gauge */}
-          <Card className="border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold tracking-wider uppercase">
-                Dispatch Cap Gauge
+          {/* Dispatch Cap Gauge */}
+          <Card className="border border-border bg-card shadow-none">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                Allocation Rate
               </CardTitle>
-              <CardDescription>
-                Total percentage of inventory allocated to active disaster
-                sectors.
+              <CardDescription className="text-xs">
+                Total proportion of total depot inventories currently staged.
               </CardDescription>
             </CardHeader>
-            <CardContent className="relative flex h-48 flex-col items-center justify-center">
-              {/* Custom SVG Radial Gauge */}
-              <svg viewBox="0 0 120 120" className="text-primary size-36">
-                {/* Background track circle */}
+            <CardContent className="relative flex h-44 flex-col items-center justify-center pt-2">
+              <svg viewBox="0 0 120 120" className="h-32 w-32 text-muted-foreground/15">
                 <circle
                   cx="60"
                   cy="60"
                   r="45"
                   fill="none"
                   stroke="currentColor"
-                  strokeOpacity="0.08"
-                  strokeWidth="8"
+                  strokeWidth="6"
                 />
-                {/* Stroked value arc */}
                 <circle
                   cx="60"
                   cy="60"
                   r="45"
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth="8"
+                  stroke="var(--primary)"
+                  strokeWidth="6"
                   strokeDasharray="283"
                   strokeDashoffset={283 - (283 * dispatchPercent) / 100}
                   strokeLinecap="round"
                   transform="rotate(-90 60 60)"
-                  className="text-primary transition-all duration-500"
+                  className="transition-all duration-300"
                 />
-                {/* Centered text */}
                 <text
                   x="60"
                   y="66"
                   textAnchor="middle"
                   fill="currentColor"
-                  className="text-foreground font-mono text-base font-extrabold"
+                  className="fill-foreground font-mono text-base font-extrabold"
                 >
                   {dispatchPercent}%
                 </text>
               </svg>
-              <span className="text-muted-foreground mt-2 text-[10px] font-bold tracking-wider uppercase">
-                Allocated Stock Load
-              </span>
             </CardContent>
           </Card>
 
-          {/* Available vs Allocated comparative Stock Bar Chart */}
-          <Card className="border-border bg-card md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-1.5 text-sm font-bold tracking-wider uppercase">
-                <TrendingUp className="text-accent size-4" />
-                <span>Depot Capacity & Allocation Status</span>
+          {/* comparative Stock Bar Chart */}
+          <Card className="border border-border bg-card md:col-span-2 shadow-none">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                Stock Levels Comparison
               </CardTitle>
-              <CardDescription>
-                Visual comparison of available stock (Blue) vs allocated stock
-                (Orange) per category.
+              <CardDescription className="text-xs">
+                Available stock (Solid Blue) vs Allocated stock (Gray/Neutral) per category.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex h-48 items-center justify-center pt-2">
+            <CardContent className="flex h-44 items-center justify-center pt-2">
               {loading ? (
                 <div className="bg-muted h-10 w-1/4 animate-pulse rounded" />
               ) : inventory.length === 0 ? (
@@ -538,38 +454,11 @@ export default function ResourceCenterPage() {
                   No inventory categories registered.
                 </div>
               ) : (
-                <svg
-                  viewBox="0 0 500 150"
-                  className="text-foreground h-full w-full"
-                  fill="none"
-                >
-                  {/* Grid Lines */}
-                  <line
-                    x1="40"
-                    y1="15"
-                    x2="480"
-                    y2="15"
-                    stroke="currentColor"
-                    strokeOpacity="0.05"
-                  />
-                  <line
-                    x1="40"
-                    y1="60"
-                    x2="480"
-                    y2="60"
-                    stroke="currentColor"
-                    strokeOpacity="0.05"
-                  />
-                  <line
-                    x1="40"
-                    y1="110"
-                    x2="480"
-                    y2="110"
-                    stroke="currentColor"
-                    strokeOpacity="0.1"
-                  />
+                <svg viewBox="0 0 500 150" className="h-full w-full text-muted-foreground/10" fill="none">
+                  <line x1="40" y1="15" x2="480" y2="15" stroke="currentColor" strokeWidth="1" />
+                  <line x1="40" y1="60" x2="480" y2="60" stroke="currentColor" strokeWidth="1" />
+                  <line x1="40" y1="110" x2="480" y2="110" stroke="currentColor" strokeWidth="1" strokeOpacity="2" />
 
-                  {/* Draw comparative bars for first 6 items */}
                   {inventory.slice(0, 6).map((item, idx) => {
                     const xPos = 60 + idx * 72;
                     const maxVal = Math.max(
@@ -591,26 +480,26 @@ export default function ResourceCenterPage() {
                           y={yAvail}
                           width="12"
                           height={availHeight}
-                          rx="2"
+                          rx="1.5"
                           fill="var(--primary)"
                           fillOpacity="0.85"
                         />
-                        {/* Allocated Stock (Orange Bar) */}
+                        {/* Allocated Stock (Neutral Bar) */}
                         <rect
                           x={xPos + 14}
                           y={yAlloc}
                           width="12"
                           height={allocHeight}
-                          rx="2"
-                          fill="var(--warning)"
-                          fillOpacity="0.85"
+                          rx="1.5"
+                          fill="currentColor"
+                          fillOpacity="0.3"
                         />
                         {/* Label name */}
                         <text
                           x={xPos + 13}
                           y="130"
                           fill="currentColor"
-                          fillOpacity="0.4"
+                          className="fill-muted-foreground"
                           fontSize="8.5"
                           textAnchor="middle"
                         >
@@ -625,163 +514,130 @@ export default function ResourceCenterPage() {
           </Card>
         </div>
 
-        {/* Modular Tabs Area */}
+        {/* Tab Selection */}
         <div className="space-y-4">
-          {/* Tab Buttons */}
-          <div className="border-border flex gap-2 border-b">
+          <div className="border-b border-border flex gap-2">
             {[
-              {
-                id: "inventory",
-                label: "Depot Stock Inventory",
-                icon: Package,
-              },
-              {
-                id: "allocations",
-                label: "Active Staging Dispatches",
-                icon: Truck,
-              },
-              { id: "history", label: "Staging Audit Logs", icon: History },
+              { id: "inventory", label: "Inventory Stock", icon: Package },
+              { id: "allocations", label: "Active Dispatches", icon: Truck },
+              { id: "history", label: "Audit Ledger", icon: History },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() =>
-                  setSelectedTab(
-                    tab.id as "inventory" | "allocations" | "history"
-                  )
-                }
+                onClick={() => setSelectedTab(tab.id as "inventory" | "allocations" | "history")}
                 className={`flex cursor-pointer items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-all ${
                   selectedTab === tab.id
                     ? "border-primary text-foreground"
                     : "text-muted-foreground hover:text-foreground border-transparent"
                 }`}
               >
-                <tab.icon className="size-4" />
+                <tab.icon className="size-3.5" />
                 <span>{tab.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Loading view */}
+          {/* Tab Content Panels */}
           {loading ? (
             <div className="space-y-2 py-4">
               <div className="bg-muted h-6 w-full animate-pulse rounded" />
               <div className="bg-muted h-6 w-full animate-pulse rounded" />
             </div>
           ) : (
-            <div className="bg-card border-border overflow-hidden rounded-lg border">
-              {/* ================= TAB 1: STOCK INVENTORY ================= */}
+            <div className="bg-card border border-border overflow-hidden rounded-md">
+              {/* TAB 1: STOCK INVENTORY */}
               {selectedTab === "inventory" && (
                 <div className="space-y-4 p-4">
                   <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <h3 className="text-foreground text-sm font-bold">
-                        Depot Stock Levels
-                      </h3>
-                      <p className="text-muted-foreground text-xs">
-                        Adjust quantities or register new classes.
-                      </p>
+                    <div>
+                      <h3 className="text-foreground text-sm font-semibold">Stock Inventory</h3>
+                      <p className="text-muted-foreground text-xs mt-0.5">Adjust depot stock registers.</p>
                     </div>
                     {!isCitizen && (
                       <Button
                         onClick={() => setStockModalOpen(true)}
-                        variant="accent"
-                        size="xs"
-                        className="gap-1.5"
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-3 text-xs cursor-pointer"
                       >
-                        <Plus className="size-3.5" />
-                        <span>Adjust Stock</span>
+                        Adjust Stock
                       </Button>
                     )}
                   </div>
 
-                  <div className="border-border rounded-md border">
+                  <div className="border border-border rounded-md overflow-hidden bg-card">
                     <Table>
                       <TableHeader>
-                        <TableRow>
-                          <TableHead>Resource Name</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead>Total Stock</TableHead>
-                          <TableHead>Allocated Stock</TableHead>
-                          <TableHead>Available Stock</TableHead>
-                          <TableHead>Depot Location</TableHead>
+                        <TableRow className="bg-muted/10">
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Resource</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Category</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Total Stock</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Allocated</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Available</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Depot Location</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {inventory.map((item) => (
-                          <TableRow key={item.id}>
-                            <TableCell className="text-foreground font-semibold">
-                              {item.name}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground text-xs capitalize">
-                              {item.category}
-                            </TableCell>
-                            <TableCell className="text-xs font-medium">
-                              {item.totalStock.toLocaleString()} {item.unit}
-                            </TableCell>
-                            <TableCell className="text-warning text-xs font-semibold">
-                              {item.allocatedStock.toLocaleString()} {item.unit}
-                            </TableCell>
-                            <TableCell className="text-accent text-xs font-bold">
-                              {item.availableStock.toLocaleString()} {item.unit}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground text-xs font-semibold">
-                              {item.depot}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {inventory.map((item) => {
+                          const isLowStock = item.availableStock < item.totalStock * 0.15;
+                          return (
+                            <tr key={item.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                              <td className="p-3 font-semibold text-foreground">{item.name}</td>
+                              <td className="p-3 text-muted-foreground text-xs capitalize">{item.category}</td>
+                              <td className="p-3 text-xs font-medium">{item.totalStock.toLocaleString()} {item.unit}</td>
+                              <td className="p-3 text-xs font-medium text-muted-foreground">{item.allocatedStock.toLocaleString()} {item.unit}</td>
+                              <td className="p-3">
+                                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
+                                  isLowStock ? "text-destructive" : "text-foreground"
+                                }`}>
+                                  {isLowStock && <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />}
+                                  {item.availableStock.toLocaleString()} {item.unit}
+                                </span>
+                              </td>
+                              <td className="p-3 text-muted-foreground text-xs font-medium">{item.depot}</td>
+                            </tr>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>
                 </div>
               )}
 
-              {/* ================= TAB 2: ACTIVE DISPATCHES ================= */}
+              {/* TAB 2: ACTIVE DISPATCHES */}
               {selectedTab === "allocations" && (
                 <div className="space-y-4 p-4">
-                  <div className="space-y-0.5">
-                    <h3 className="text-foreground text-sm font-bold">
-                      Active Dispatch Allocations
-                    </h3>
-                    <p className="text-muted-foreground text-xs">
-                      Track staged supply lines en-route to emergency zones.
-                    </p>
+                  <div>
+                    <h3 className="text-foreground text-sm font-semibold">Active Dispatches</h3>
+                    <p className="text-muted-foreground text-xs mt-0.5">Track staged supplies allocated to active incident centers.</p>
                   </div>
 
                   {allocations.length === 0 ? (
-                    <div className="text-muted-foreground py-8 text-center text-xs">
+                    <div className="text-muted-foreground py-8 text-center text-xs bg-muted/5 rounded-md">
                       No active resource dispatches recorded.
                     </div>
                   ) : (
-                    <div className="border-border rounded-md border">
+                    <div className="border border-border rounded-md overflow-hidden bg-card">
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Item</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Incident Allocation</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Staged By</TableHead>
-                            {!isCitizen && (
-                              <TableHead className="text-right">
-                                Action
-                              </TableHead>
-                            )}
+                          <TableRow className="bg-muted/10">
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Item</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Quantity</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Incident Allocation</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Staged By</TableHead>
+                            {!isCitizen && <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>}
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {allocations.map((alloc) => (
-                            <TableRow key={alloc.id}>
-                              <TableCell className="text-foreground font-semibold">
-                                {alloc.resourceName}
-                              </TableCell>
-                              <TableCell className="text-xs font-medium">
-                                {alloc.quantity}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-xs capitalize">
-                                {alloc.incidentType} (ID:{" "}
-                                {alloc.incidentId.substring(0, 6)})
-                              </TableCell>
-                              <TableCell>
+                            <tr key={alloc.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                              <td className="p-3 font-semibold text-foreground">{alloc.resourceName}</td>
+                              <td className="p-3 text-xs font-semibold">{alloc.quantity}</td>
+                              <td className="p-3 text-muted-foreground text-xs capitalize">
+                                {alloc.incidentType} (ID: {alloc.incidentId.substring(0, 6)})
+                              </td>
+                              <td className="p-3">
                                 <Badge
                                   variant={
                                     alloc.status === "delivered"
@@ -796,47 +652,35 @@ export default function ResourceCenterPage() {
                                 >
                                   {alloc.status}
                                 </Badge>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-[10px]">
-                                {alloc.allocatedBy}
-                              </TableCell>
+                              </td>
+                              <td className="p-3 text-muted-foreground text-[10px]">{alloc.allocatedBy}</td>
                               {!isCitizen && (
-                                <TableCell className="flex justify-end gap-1.5 text-right">
-                                  {alloc.status === "staged" && (
-                                    <Button
-                                      size="xs"
-                                      variant="default"
-                                      onClick={() =>
-                                        handleUpdateAllocationStatus(
-                                          alloc.id,
-                                          "delivered"
-                                        )
-                                      }
-                                      className="cursor-pointer gap-1"
-                                    >
-                                      <Truck className="size-3" />
-                                      <span>Deliver</span>
-                                    </Button>
-                                  )}
-                                  {alloc.status !== "returned" && (
-                                    <Button
-                                      size="xs"
-                                      variant="outline"
-                                      onClick={() =>
-                                        handleUpdateAllocationStatus(
-                                          alloc.id,
-                                          "returned"
-                                        )
-                                      }
-                                      className="text-muted-foreground hover:text-destructive hover:border-destructive/30 cursor-pointer gap-1"
-                                    >
-                                      <RotateCcw className="size-3" />
-                                      <span>Return</span>
-                                    </Button>
-                                  )}
-                                </TableCell>
+                                <td className="p-3 text-right">
+                                  <div className="inline-flex gap-1.5">
+                                    {alloc.status === "staged" && (
+                                      <Button
+                                        size="xs"
+                                        variant="default"
+                                        onClick={() => handleUpdateAllocationStatus(alloc.id, "delivered")}
+                                        className="h-7 text-xs px-2.5 cursor-pointer"
+                                      >
+                                        Deliver
+                                      </Button>
+                                    )}
+                                    {alloc.status !== "returned" && (
+                                      <Button
+                                        size="xs"
+                                        variant="outline"
+                                        onClick={() => handleUpdateAllocationStatus(alloc.id, "returned")}
+                                        className="h-7 text-xs px-2.5 text-muted-foreground hover:text-destructive cursor-pointer"
+                                      >
+                                        Return
+                                      </Button>
+                                    )}
+                                  </div>
+                                </td>
                               )}
-                            </TableRow>
+                            </tr>
                           ))}
                         </TableBody>
                       </Table>
@@ -845,46 +689,39 @@ export default function ResourceCenterPage() {
                 </div>
               )}
 
-              {/* ================= TAB 3: AUDIT LEDGER ================= */}
+              {/* TAB 3: AUDIT LEDGER */}
               {selectedTab === "history" && (
                 <div className="space-y-4 p-4">
-                  <div className="space-y-0.5">
-                    <h3 className="text-foreground text-sm font-bold">
-                      Depot Transaction History
-                    </h3>
-                    <p className="text-muted-foreground text-xs">
-                      Timeline audit of resource allocations and inventory stock
-                      adjustments.
-                    </p>
+                  <div>
+                    <h3 className="text-foreground text-sm font-semibold">Staging Audit Timeline</h3>
+                    <p className="text-muted-foreground text-xs mt-0.5">Chronological operations ledger of depot transactions.</p>
                   </div>
 
                   {historyLogs.length === 0 ? (
-                    <div className="text-muted-foreground py-8 text-center text-xs">
-                      No audit history logged.
+                    <div className="text-muted-foreground py-8 text-center text-xs bg-muted/5 rounded-md">
+                      No audit logs registered yet.
                     </div>
                   ) : (
-                    <div className="border-border rounded-md border">
+                    <div className="border border-border rounded-md overflow-hidden bg-card">
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Time</TableHead>
-                            <TableHead>Resource</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Note</TableHead>
-                            <TableHead>Operator</TableHead>
+                          <TableRow className="bg-muted/10">
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Time</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Resource</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Action</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Quantity</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Note</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Operator</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {historyLogs.map((log) => (
-                            <TableRow key={log.id}>
-                              <TableCell className="text-muted-foreground text-[10px] whitespace-nowrap">
+                            <tr key={log.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                              <td className="p-3 text-muted-foreground text-[10px] whitespace-nowrap">
                                 {new Date(log.createdAt).toLocaleString()}
-                              </TableCell>
-                              <TableCell className="text-foreground font-semibold">
-                                {log.resourceName}
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-3 font-semibold text-foreground">{log.resourceName}</td>
+                              <td className="p-3">
                                 <Badge
                                   variant={
                                     log.action === "stock_add"
@@ -899,17 +736,13 @@ export default function ResourceCenterPage() {
                                 >
                                   {log.action.replace("_", " ")}
                                 </Badge>
-                              </TableCell>
-                              <TableCell className="text-xs font-semibold">
-                                {log.quantity}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground max-w-[200px] truncate font-sans text-xs italic">
+                              </td>
+                              <td className="p-3 text-xs font-semibold">{log.quantity}</td>
+                              <td className="p-3 text-muted-foreground max-w-[180px] truncate text-xs italic font-normal">
                                 {log.note}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-[10px]">
-                                {log.performedBy}
-                              </TableCell>
-                            </TableRow>
+                              </td>
+                              <td className="p-3 text-muted-foreground text-[10px]">{log.performedBy}</td>
+                            </tr>
                           ))}
                         </TableBody>
                       </Table>
@@ -932,37 +765,36 @@ export default function ResourceCenterPage() {
           />
         )}
 
-        {/* Stock Adjuster Modal (CRUD updates) */}
+        {/* Stock Adjuster Modal */}
         {stockModalOpen && (
           <Modal
             isOpen={stockModalOpen}
             onClose={() => setStockModalOpen(false)}
-            title="Adjust Depot Stock levels"
-            description="Add or reduce total inventory stock parameters dynamically."
+            title="Adjust Depot Stock Levels"
+            description="Add or reduce inventory stock levels in staging depots."
           >
             <form onSubmit={handleAdjustStock} className="space-y-4 py-2">
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-                  Select Item to Adjust
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  Resource Item
                 </label>
                 <select
                   value={adjustResourceId}
                   onChange={(e) => setAdjustResourceId(e.target.value)}
-                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                  className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none"
                   required
                 >
                   <option value="">Select Resource...</option>
                   {inventory.map((res) => (
                     <option key={res.id} value={res.id}>
-                      {res.name} (Stock: {res.availableStock} {res.unit} /
-                      Depot: {res.depot})
+                      {res.name} (Stock: {res.availableStock} {res.unit} / Depot: {res.depot})
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                   Adjustment Mode
                 </label>
                 <div className="flex gap-2">
@@ -972,7 +804,7 @@ export default function ResourceCenterPage() {
                     className="h-9 flex-1 cursor-pointer text-xs font-semibold"
                     onClick={() => setIsAddMode(true)}
                   >
-                    Add Stock (crates, liters, etc.)
+                    Add Stock
                   </Button>
                   <Button
                     type="button"
@@ -985,54 +817,52 @@ export default function ResourceCenterPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                   Quantity
                 </label>
                 <input
                   type="number"
                   value={adjustQuantity || ""}
-                  onChange={(e) =>
-                    setAdjustQuantity(
-                      Math.max(0, parseInt(e.target.value) || 0)
-                    )
-                  }
+                  onChange={(e) => setAdjustQuantity(Math.max(0, parseInt(e.target.value) || 0))}
                   placeholder="E.g. 500"
-                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2 text-xs outline-none"
+                  className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2 text-xs outline-none"
                   min={1}
                   required
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                   Staging Depot
                 </label>
                 <select
                   value={adjustDepot}
                   onChange={(e) => setAdjustDepot(e.target.value)}
-                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                  className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none"
                   required
                 >
-                  <option value="Depot Alpha">
-                    Depot Alpha - Eastern Sector
-                  </option>
-                  <option value="Depot Beta">
-                    Depot Beta - Western Sector
-                  </option>
+                  <option value="Depot Alpha">Depot Alpha - Eastern Sector</option>
+                  <option value="Depot Beta">Depot Beta - Western Sector</option>
                 </select>
               </div>
 
-              <div className="border-border flex justify-end gap-2 border-t pt-2">
+              <div className="border-t border-border flex justify-end gap-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setStockModalOpen(false)}
+                  className="h-8 text-xs px-3 cursor-pointer"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="accent" size="sm">
+                <Button 
+                  type="submit" 
+                  variant="default" 
+                  size="sm" 
+                  className="h-8 text-xs px-3 cursor-pointer"
+                >
                   Save Changes
                 </Button>
               </div>
@@ -1040,7 +870,7 @@ export default function ResourceCenterPage() {
           </Modal>
         )}
 
-        {/* Register Category Modal (CRUD creates) */}
+        {/* Register Category Modal */}
         {newResourceOpen && (
           <Modal
             isOpen={newResourceOpen}
@@ -1049,8 +879,8 @@ export default function ResourceCenterPage() {
             description="Add a new class of inventory stock to the command telemetry grid."
           >
             <form onSubmit={handleCreateResource} className="space-y-4 py-2">
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                   Resource Name
                 </label>
                 <input
@@ -1058,38 +888,30 @@ export default function ResourceCenterPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="E.g. Tented Shelters, Chemical Neutralizers"
-                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                  className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                   required
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Category Type
                   </label>
                   <select
                     value={newCategory}
-                    onChange={(e) =>
-                      setNewCategory(
-                        e.target.value as "supplies" | "vehicles" | "personnel"
-                      )
-                    }
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                    onChange={(e) => setNewCategory(e.target.value as "supplies" | "vehicles" | "personnel")}
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none"
                     required
                   >
-                    <option value="supplies">
-                      Supplies (Food, water, kits)
-                    </option>
+                    <option value="supplies">Supplies (Food, water, kits)</option>
                     <option value="vehicles">Vehicles (Trucks, boats)</option>
-                    <option value="personnel">
-                      Personnel (Medical, search units)
-                    </option>
+                    <option value="personnel">Personnel (Medical, search units)</option>
                   </select>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Unit Measurement
                   </label>
                   <input
@@ -1097,38 +919,34 @@ export default function ResourceCenterPage() {
                     value={newUnit}
                     onChange={(e) => setNewUnit(e.target.value)}
                     placeholder="E.g. crates, liters, units, teams"
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Initial Stock Count
                   </label>
                   <input
                     type="number"
                     value={newTotalStock || ""}
-                    onChange={(e) =>
-                      setNewTotalStock(
-                        Math.max(0, parseInt(e.target.value) || 0)
-                      )
-                    }
+                    onChange={(e) => setNewTotalStock(Math.max(0, parseInt(e.target.value) || 0))}
                     placeholder="E.g. 100"
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                     min={1}
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Staging Depot
                   </label>
                   <select
                     value={newDepot}
                     onChange={(e) => setNewDepot(e.target.value)}
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none"
                     required
                   >
                     <option value="Depot Alpha">Depot Alpha - Eastern</option>
@@ -1137,23 +955,23 @@ export default function ResourceCenterPage() {
                 </div>
               </div>
 
-              <div className="border-border flex justify-end gap-2 border-t pt-2">
+              <div className="border-t border-border flex justify-end gap-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setNewResourceOpen(false)}
+                  className="h-8 text-xs px-3 cursor-pointer"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  variant="accent"
+                  variant="default"
                   size="sm"
-                  className="gap-1.5"
+                  className="h-8 text-xs px-3 cursor-pointer"
                 >
-                  <Plus className="size-3.5" />
-                  <span>Register Category</span>
+                  Register Category
                 </Button>
               </div>
             </form>

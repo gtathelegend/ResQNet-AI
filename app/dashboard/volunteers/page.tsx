@@ -49,9 +49,8 @@ import { VolunteerProfile, VolunteerAssignment } from "@/types/volunteer";
 import { Incident } from "@/types/incident";
 import { AssignVolunteerModal } from "@/components/volunteers/AssignVolunteerModal";
 
-// Proximity calculation helper using Haversine formula
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 6371; // Radius of the earth in km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -95,17 +94,15 @@ export default function VolunteerCenterPage() {
   );
   const [newHours, setNewHours] = useState("24/7");
 
-  // Load telemetry data from local mock Supabase
+  // Load telemetry data from Supabase
   const loadData = async () => {
     try {
-      // 1. Fetch Volunteers
       const volData = await supabase
         .from("volunteers")
         .select("*")
         .order("name", { ascending: true });
       if (volData.data) setVolunteers(volData.data as VolunteerProfile[]);
 
-      // 2. Fetch Assignments
       const assignData = await supabase
         .from("volunteer_assignments")
         .select("*")
@@ -113,7 +110,6 @@ export default function VolunteerCenterPage() {
       if (assignData.data)
         setAssignments(assignData.data as VolunteerAssignment[]);
 
-      // 3. Fetch Active Incidents
       const incData = await supabase
         .from("incidents")
         .select("*")
@@ -138,7 +134,6 @@ export default function VolunteerCenterPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
   }, []);
 
@@ -165,23 +160,17 @@ export default function VolunteerCenterPage() {
   // Statistics
   const totalVolunteers = volunteers.length;
   const onDutyCount = volunteers.filter((v) => v.status === "on-duty").length;
-  const assignedCount = volunteers.filter(
-    (v) => v.status === "assigned"
-  ).length;
+  const assignedCount = volunteers.filter((v) => v.status === "assigned").length;
   const activeAssignmentsCount = assignments.filter(
     (a) => a.status === "active"
   ).length;
 
-  // Toggle availability status (for self or authorities)
   const handleToggleAvailability = async (volId: string) => {
     const vol = volunteers.find((v) => v.id === volId);
     if (!vol) return;
 
-    // Permissions check
     if (!isAuthority && user?.email !== vol.email) {
-      toast.error("Access Denied", {
-        description: "You can only update your own availability status.",
-      });
+      toast.error("You can only update your own availability status.");
       return;
     }
 
@@ -195,18 +184,13 @@ export default function VolunteerCenterPage() {
 
       if (error) throw new Error(error.message);
 
-      toast.success("Availability Updated", {
-        description: `${vol.name} is now ${nextStatus.toUpperCase()}.`,
-      });
+      toast.success("Availability updated successfully");
       loadData();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Database write error.";
-      toast.error("Operation Failed", { description: errorMsg });
+      toast.error("Failed to update availability");
     }
   };
 
-  // Create new volunteer profile (CRUD Register)
   const handleRegisterVolunteer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName || !newEmail || !newPhone) return;
@@ -217,7 +201,6 @@ export default function VolunteerCenterPage() {
         .map((s) => s.trim())
         .filter((s) => s !== "");
 
-      // Geocode mock positions depending on selected sector
       let lat = 40.7128;
       let lng = -74.006;
       if (newLocationName.includes("Sector B")) {
@@ -244,7 +227,7 @@ export default function VolunteerCenterPage() {
       const { error } = await supabase.from("volunteers").insert(profile);
       if (error) throw new Error(error.message);
 
-      toast.success("Volunteer Responder Registered");
+      toast.success("Volunteer registered successfully");
       setNewVolunteerOpen(false);
       setNewName("");
       setNewEmail("");
@@ -252,13 +235,10 @@ export default function VolunteerCenterPage() {
       setNewSkillsString("");
       loadData();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Database write error.";
-      toast.error("Registration Failed", { description: errorMsg });
+      toast.error("Registration failed");
     }
   };
 
-  // Update assignment statuses (Active -> Complete)
   const handleUpdateAssignmentStatus = async (
     assignId: string,
     nextStatus: "active" | "completed" | "released"
@@ -267,7 +247,6 @@ export default function VolunteerCenterPage() {
     if (!assignment) return;
 
     try {
-      // Update Assignment status
       const assignResult = await supabase
         .from("volunteer_assignments")
         .update({ status: nextStatus })
@@ -275,7 +254,6 @@ export default function VolunteerCenterPage() {
         .single();
       if (assignResult.error) throw new Error(assignResult.error.message);
 
-      // If completed or released, free up the volunteer to "on-duty"
       if (nextStatus === "completed" || nextStatus === "released") {
         const volResult = await supabase
           .from("volunteers")
@@ -284,7 +262,6 @@ export default function VolunteerCenterPage() {
           .single();
         if (volResult.error) throw new Error(volResult.error.message);
 
-        // Append log to Incident status History
         const timelinesNote = `Volunteer ${assignment.volunteerName} completed assignment: ${assignment.role}.`;
 
         const incidentData = await supabase
@@ -312,160 +289,105 @@ export default function VolunteerCenterPage() {
         }
       }
 
-      toast.success(`Assignment marked as ${nextStatus.toUpperCase()}`);
+      toast.success(`Assignment marked as ${nextStatus}`);
       loadData();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Failed updating assignment.";
-      toast.error("Operation Failed", { description: errorMsg });
+      toast.error("Failed to update assignment status");
     }
   };
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Volunteer Coordination</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        {/* Title Block */}
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-foreground text-2xl font-bold tracking-tight">
-              Volunteer Coordination Command
-            </h2>
-            <p className="text-muted-foreground mt-0.5 text-xs">
-              Deploy on-duty responders, view proximity allocations, and run
-              Gemini AI profile matching.
-            </p>
-          </div>
-          {isAuthority && (
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setDispatchOpen(true)}
-                variant="default"
-                size="sm"
-                className="gap-2"
-              >
-                <Send className="size-4" />
-                <span>Dispatch Responder</span>
-              </Button>
-              <Button
-                onClick={() => setNewVolunteerOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-border/80 gap-2"
-              >
-                <Plus className="size-4" />
-                <span>Register Profile</span>
-              </Button>
+        {/* Navigation & Header */}
+        <div className="flex flex-col gap-3">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Volunteers</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+                Volunteers
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Coordinate on-duty personnel, view regional dispatch areas, and manage field assignments.
+              </p>
             </div>
-          )}
+            {isAuthority && (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setDispatchOpen(true)}
+                  variant="default"
+                  size="sm"
+                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                >
+                  Dispatch Responder
+                </Button>
+                <Button
+                  onClick={() => setNewVolunteerOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-4 text-xs font-semibold cursor-pointer"
+                >
+                  Register Profile
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Statistics Panels */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Registered Responders
-              </CardTitle>
-              <Users className="text-primary size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalVolunteers} Volunteers
-              </div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Total registered capacity
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                On-Duty Telemetry
-              </CardTitle>
-              <Compass className="text-accent size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{onDutyCount} On-Duty</div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Ready for immediate dispatch
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Currently Deployed
-              </CardTitle>
-              <Activity className="text-warning size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{assignedCount} Assigned</div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Deployments currently staged
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Active Incidents Managed
-              </CardTitle>
-              <Shield className="text-destructive size-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {activeAssignmentsCount} Active
-              </div>
-              <p className="text-muted-foreground mt-1 text-[10px]">
-                Coordination sectors dispatched
-              </p>
-            </CardContent>
-          </Card>
+          {[
+            { title: "Responders Registered", value: `${totalVolunteers} Profiles`, desc: "Total database capacity" },
+            { title: "On-Duty Grid", value: `${onDutyCount} Available`, desc: "Ready for quick dispatch" },
+            { title: "Field Deployed", value: `${assignedCount} Assigned`, desc: "Currently in disaster sectors" },
+            { title: "Active Missions", value: activeAssignmentsCount, desc: "Sectors currently coordinated" },
+          ].map((card, idx) => (
+            <div key={idx} className="border border-border bg-card rounded-lg p-5">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                {card.title}
+              </span>
+              <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+                {card.value}
+              </span>
+              <span className="text-xs text-muted-foreground mt-1.5 block">
+                {card.desc}
+              </span>
+            </div>
+          ))}
         </div>
 
         {/* Proximity Matcher Card */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
-              <MapPin className="text-primary size-4" />
-              <span>Proximity & Skill Matching Matrix</span>
-            </CardTitle>
-            <CardDescription>
-              Select an active incident location to automatically locate and
-              sort the closest on-duty responders.
+        <Card className="border border-border bg-card shadow-none">
+          <CardHeader className="pb-3 border-b border-border">
+            <CardTitle className="text-base font-semibold">Proximity & Skill Matcher</CardTitle>
+            <CardDescription className="text-xs">
+              Select an active incident location to filter the nearest available volunteers on-duty.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <div className="max-w-md space-y-1.5">
               <label className="text-muted-foreground block text-[10px] font-bold uppercase">
-                Select Active Staging Area
+                Active Incident Coordinates
               </label>
               <select
                 value={proximityIncidentId}
                 onChange={(e) => setProximityIncidentId(e.target.value)}
-                className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1"
               >
-                <option value="">Choose incident...</option>
+                <option value="">Choose incident area...</option>
                 {activeIncidents.map((inc) => (
                   <option key={inc.id} value={inc.id}>
-                    {inc.location} ({inc.type.toUpperCase()} - Severity:{" "}
-                    {inc.severity.toUpperCase()})
+                    {inc.location} ({inc.type.toUpperCase()})
                   </option>
                 ))}
               </select>
@@ -477,75 +399,61 @@ export default function VolunteerCenterPage() {
                   No on-duty volunteers available for proximity calculation.
                 </div>
               ) : (
-                <div className="border-border rounded-md border">
+                <div className="border border-border rounded-md overflow-hidden bg-card">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Volunteer Name</TableHead>
-                        <TableHead>Primary Skills</TableHead>
-                        <TableHead>Location Depot</TableHead>
-                        <TableHead>Proximity Distance</TableHead>
-                        {isAuthority && (
-                          <TableHead className="text-right">
-                            Quick Dispatch
-                          </TableHead>
-                        )}
+                      <TableRow className="bg-muted/10">
+                        <TableHead className="font-semibold text-xs text-muted-foreground">Responder Name</TableHead>
+                        <TableHead className="font-semibold text-xs text-muted-foreground">Skills</TableHead>
+                        <TableHead className="font-semibold text-xs text-muted-foreground">Location Base</TableHead>
+                        <TableHead className="font-semibold text-xs text-muted-foreground">Estimated Proximity</TableHead>
+                        {isAuthority && <th className="p-3 text-right font-semibold text-xs text-muted-foreground font-medium">Quick Dispatch</th>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {proximityVolunteers.map((vol) => (
-                        <TableRow key={vol.id}>
-                          <TableCell className="text-foreground font-semibold">
-                            {vol.name}
-                          </TableCell>
-                          <TableCell>
+                        <tr key={vol.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                          <td className="p-3 font-semibold text-foreground">{vol.name}</td>
+                          <td className="p-3">
                             <div className="flex flex-wrap gap-1">
                               {vol.skills.slice(0, 2).map((s, idx) => (
                                 <Badge
                                   key={idx}
-                                  variant="outline"
-                                  className="border-primary/20 text-primary px-1 py-0 text-[9.5px]"
+                                  variant="secondary"
+                                  className="text-[9.5px] px-1.5 py-0"
                                 >
                                   {s}
                                 </Badge>
                               ))}
                             </div>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground text-xs">
-                            {vol.locationName}
-                          </TableCell>
-                          <TableCell className="text-foreground font-mono text-xs font-bold">
-                            {vol.distance === 0
-                              ? "Under 0.5 km"
-                              : `${vol.distance} km away`}
-                          </TableCell>
+                          </td>
+                          <td className="p-3 text-muted-foreground text-xs">{vol.locationName}</td>
+                          <td className="p-3 text-foreground font-mono text-xs font-semibold">
+                            {vol.distance === 0 ? "Under 0.5 km" : `${vol.distance} km away`}
+                          </td>
                           {isAuthority && (
-                            <TableCell className="text-right">
+                            <td className="p-3 text-right">
                               <Button
                                 size="xs"
                                 variant="outline"
-                                onClick={() => {
-                                  setDispatchOpen(true);
-                                }}
-                                className="cursor-pointer gap-1"
+                                onClick={() => setDispatchOpen(true)}
+                                className="h-7 text-xs px-2.5 cursor-pointer"
                               >
-                                <Send className="size-3" />
-                                <span>Deploy</span>
+                                Deploy
                               </Button>
-                            </TableCell>
+                            </td>
                           )}
-                        </TableRow>
+                        </tr>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
               )
             ) : (
-              <div className="border-border/80 text-muted-foreground flex flex-col items-center justify-center rounded-lg border border-dashed py-8 text-center text-xs">
-                <AlertTriangle className="text-muted-foreground/60 mb-2 size-6" />
-                <p>
-                  Please select an incident coordinates area above to run the
-                  proximity locator grid.
+              <div className="border border-border border-dashed text-muted-foreground flex flex-col items-center justify-center rounded-md py-8 text-center text-xs bg-muted/5">
+                <AlertTriangle className="text-muted-foreground mb-2 size-5" />
+                <p className="max-w-xs leading-relaxed">
+                  Please select an incident area above to display the proximity matching grid.
                 </p>
               </div>
             )}
@@ -554,136 +462,107 @@ export default function VolunteerCenterPage() {
 
         {/* Tab Selection */}
         <div className="space-y-4">
-          <div className="border-border flex gap-2 border-b">
+          <div className="border-b border-border flex gap-2">
             {[
-              {
-                id: "directory",
-                label: "Active Responders Ledger",
-                icon: Users,
-              },
-              {
-                id: "assignments",
-                label: "Deployment Assignments",
-                icon: Briefcase,
-              },
+              { id: "directory", label: "Responder directory", icon: Users },
+              { id: "assignments", label: "Missions & Assignments", icon: Briefcase },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() =>
-                  setSelectedTab(tab.id as "directory" | "assignments")
-                }
+                onClick={() => setSelectedTab(tab.id as "directory" | "assignments")}
                 className={`flex cursor-pointer items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-all ${
                   selectedTab === tab.id
                     ? "border-primary text-foreground"
                     : "text-muted-foreground hover:text-foreground border-transparent"
                 }`}
               >
-                <tab.icon className="size-4" />
+                <tab.icon className="size-3.5" />
                 <span>{tab.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Tab Content */}
+          {/* Tab Content Panel */}
           {loading ? (
             <div className="space-y-2 py-4">
               <div className="bg-muted h-6 w-full animate-pulse rounded" />
               <div className="bg-muted h-6 w-full animate-pulse rounded" />
             </div>
           ) : (
-            <div className="bg-card border-border overflow-hidden rounded-lg border">
-              {/* ================= TAB 1: VOLUNTEERS DIRECTORY ================= */}
+            <div className="bg-card border border-border overflow-hidden rounded-md">
+              {/* TAB 1: VOLUNTEERS DIRECTORY */}
               {selectedTab === "directory" && (
                 <div className="space-y-4 p-4">
-                  <div className="space-y-0.5">
-                    <h3 className="text-foreground text-sm font-bold">
-                      Responder Directory
-                    </h3>
-                    <p className="text-muted-foreground text-xs">
-                      Command capabilities list, contact numbers, and duty
-                      statuses.
-                    </p>
+                  <div>
+                    <h3 className="text-foreground text-sm font-semibold font-semibold">Active Directory</h3>
+                    <p className="text-muted-foreground text-xs mt-0.5 font-medium">Volunteer profiles registered in database.</p>
                   </div>
 
-                  <div className="border-border rounded-md border">
+                  <div className="border border-border rounded-md overflow-hidden bg-card">
                     <Table>
                       <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Skills</TableHead>
-                          <TableHead>Hours</TableHead>
-                          <TableHead>Staging Depot</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
+                        <TableRow className="bg-muted/10">
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Name</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Skills</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Availability</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Depot Location</TableHead>
+                          <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
+                          <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {volunteers.map((vol) => {
-                          const canToggle =
-                            isAuthority || user?.email === vol.email;
+                          const canToggle = isAuthority || user?.email === vol.email;
                           return (
-                            <TableRow key={vol.id}>
-                              <TableCell className="space-y-0.5">
-                                <div className="text-foreground font-semibold">
-                                  {vol.name}
-                                </div>
-                                <div className="text-muted-foreground flex items-center gap-1 text-[10px]">
-                                  <Phone className="text-muted-foreground size-2.5" />
+                            <tr key={vol.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                              <td className="p-3">
+                                <div className="text-foreground font-semibold">{vol.name}</div>
+                                <div className="text-muted-foreground flex items-center gap-1 text-[10px] mt-0.5">
+                                  <Phone className="size-2.5" />
                                   <span>{vol.phone}</span>
                                 </div>
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-3">
                                 <div className="flex flex-wrap gap-1">
                                   {vol.skills.map((s, idx) => (
                                     <Badge
                                       key={idx}
-                                      variant="outline"
-                                      className="border-border bg-muted/20 px-1.5 py-0 text-[9px]"
+                                      variant="secondary"
+                                      className="px-1.5 py-0 text-[9px] font-medium"
                                     >
                                       {s}
                                     </Badge>
                                   ))}
                                 </div>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-xs font-medium">
-                                {vol.availabilityHours}
-                              </TableCell>
-                              <TableCell className="text-foreground text-xs font-medium">
-                                {vol.locationName}
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    vol.status === "on-duty"
-                                      ? "success"
-                                      : vol.status === "assigned"
-                                        ? "warning"
-                                        : "outline"
-                                  }
-                                  className="h-4.5 px-1.5 py-0 text-[9px] font-bold uppercase"
-                                >
+                              </td>
+                              <td className="p-3 text-muted-foreground text-xs font-semibold">{vol.availabilityHours}</td>
+                              <td className="p-3 text-foreground text-xs font-medium">{vol.locationName}</td>
+                              <td className="p-3">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                  vol.status === "on-duty"
+                                    ? "bg-success/10 text-success"
+                                    : vol.status === "assigned"
+                                      ? "bg-warning/10 text-warning"
+                                      : "bg-muted text-muted-foreground border border-border"
+                                }`}>
                                   {vol.status.replace("-", " ")}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
+                                </span>
+                              </td>
+                              <td className="p-3 text-right">
                                 {canToggle && vol.status !== "assigned" ? (
                                   <Button
                                     size="xs"
                                     variant="outline"
-                                    onClick={() =>
-                                      handleToggleAvailability(vol.id)
-                                    }
-                                    className="cursor-pointer text-xs"
+                                    onClick={() => handleToggleAvailability(vol.id)}
+                                    className="cursor-pointer h-7 text-xs px-2.5"
                                   >
                                     Toggle Duty
                                   </Button>
                                 ) : (
-                                  <span className="text-muted-foreground text-[10.5px] italic">
-                                    Restricted
-                                  </span>
+                                  <span className="text-muted-foreground text-[10px] italic">Restricted</span>
                                 )}
-                              </TableCell>
-                            </TableRow>
+                              </td>
+                            </tr>
                           );
                         })}
                       </TableBody>
@@ -692,55 +571,42 @@ export default function VolunteerCenterPage() {
                 </div>
               )}
 
-              {/* ================= TAB 2: ACTIVE ASSIGNMENTS ================= */}
+              {/* TAB 2: ACTIVE ASSIGNMENTS */}
               {selectedTab === "assignments" && (
                 <div className="space-y-4 p-4">
-                  <div className="space-y-0.5">
-                    <h3 className="text-foreground text-sm font-bold">
-                      Volunteer Assignments
-                    </h3>
-                    <p className="text-muted-foreground text-xs">
-                      Track dispatched personnel assignments across sectors.
-                    </p>
+                  <div>
+                    <h3 className="text-foreground text-sm font-semibold">Field Deployments</h3>
+                    <p className="text-muted-foreground text-xs mt-0.5">Track personnel dispatched to operational sectors.</p>
                   </div>
 
                   {assignments.length === 0 ? (
-                    <div className="text-muted-foreground py-8 text-center text-xs">
+                    <div className="text-muted-foreground py-8 text-center text-xs bg-muted/5 rounded-md">
                       No volunteer assignments currently active.
                     </div>
                   ) : (
-                    <div className="border-border rounded-md border">
+                    <div className="border border-border rounded-md overflow-hidden bg-card">
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Volunteer</TableHead>
-                            <TableHead>Incident Location</TableHead>
-                            <TableHead>Assigned Role</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">
-                              Actions
-                            </TableHead>
+                          <TableRow className="bg-muted/10">
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Volunteer</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Staging Incident</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Assigned Role</TableHead>
+                            <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
+                            {!isAuthority && <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Actions</th>}
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {assignments.map((assign) => {
-                            const isAssignedToThisVol =
-                              user?.fullName === assign.volunteerName;
-                            const canChange =
-                              isAuthority || isAssignedToThisVol;
+                            const isAssignedToThisVol = user?.fullName === assign.volunteerName;
+                            const canChange = isAuthority || isAssignedToThisVol;
                             return (
-                              <TableRow key={assign.id}>
-                                <TableCell className="text-foreground font-semibold">
-                                  {assign.volunteerName}
-                                </TableCell>
-                                <TableCell className="text-muted-foreground text-xs">
-                                  {assign.incidentLocation} (
-                                  {assign.incidentType.toUpperCase()})
-                                </TableCell>
-                                <TableCell className="text-foreground text-xs font-semibold">
-                                  {assign.role}
-                                </TableCell>
-                                <TableCell>
+                              <tr key={assign.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                                <td className="p-3 font-semibold text-foreground">{assign.volunteerName}</td>
+                                <td className="p-3 text-muted-foreground text-xs">
+                                  {assign.incidentLocation} ({assign.incidentType.toUpperCase()})
+                                </td>
+                                <td className="p-3 text-foreground text-xs font-semibold">{assign.role}</td>
+                                <td className="p-3">
                                   <Badge
                                     variant={
                                       assign.status === "completed"
@@ -755,61 +621,44 @@ export default function VolunteerCenterPage() {
                                   >
                                     {assign.status}
                                   </Badge>
-                                </TableCell>
-                                <TableCell className="flex justify-end gap-1.5 text-right">
-                                  {canChange &&
-                                    assign.status === "assigned" && (
+                                </td>
+                                <td className="p-3 text-right">
+                                  <div className="inline-flex gap-1.5">
+                                    {canChange && assign.status === "assigned" && (
                                       <Button
                                         size="xs"
                                         variant="default"
-                                        onClick={() =>
-                                          handleUpdateAssignmentStatus(
-                                            assign.id,
-                                            "active"
-                                          )
-                                        }
-                                        className="cursor-pointer gap-1"
+                                        onClick={() => handleUpdateAssignmentStatus(assign.id, "active")}
+                                        className="h-7 text-xs px-2.5 cursor-pointer"
                                       >
-                                        <Activity className="size-3" />
-                                        <span>Activate</span>
+                                        Activate
                                       </Button>
                                     )}
-                                  {canChange && assign.status === "active" && (
-                                    <Button
-                                      size="xs"
-                                      variant="accent"
-                                      onClick={() =>
-                                        handleUpdateAssignmentStatus(
-                                          assign.id,
-                                          "completed"
-                                        )
-                                      }
-                                      className="cursor-pointer gap-1"
-                                    >
-                                      <CheckCircle className="size-3" />
-                                      <span>Complete</span>
-                                    </Button>
-                                  )}
-                                  {isAuthority &&
-                                    assign.status !== "completed" &&
-                                    assign.status !== "released" && (
+                                    {canChange && assign.status === "active" && (
                                       <Button
                                         size="xs"
                                         variant="outline"
-                                        onClick={() =>
-                                          handleUpdateAssignmentStatus(
-                                            assign.id,
-                                            "released"
-                                          )
-                                        }
-                                        className="text-muted-foreground hover:text-destructive hover:border-destructive/30 cursor-pointer gap-1"
+                                        onClick={() => handleUpdateAssignmentStatus(assign.id, "completed")}
+                                        className="h-7 text-xs px-2.5 text-success hover:border-success/30 cursor-pointer"
                                       >
-                                        <RotateCcw className="size-3" />
-                                        <span>Release</span>
+                                        Complete
                                       </Button>
                                     )}
-                                </TableCell>
-                              </TableRow>
+                                    {isAuthority &&
+                                      assign.status !== "completed" &&
+                                      assign.status !== "released" && (
+                                        <Button
+                                          size="xs"
+                                          variant="outline"
+                                          onClick={() => handleUpdateAssignmentStatus(assign.id, "released")}
+                                          className="h-7 text-xs px-2.5 text-muted-foreground hover:text-destructive cursor-pointer"
+                                        >
+                                          Release
+                                        </Button>
+                                      )}
+                                  </div>
+                                </td>
+                              </tr>
                             );
                           })}
                         </TableBody>
@@ -839,11 +688,11 @@ export default function VolunteerCenterPage() {
             isOpen={newVolunteerOpen}
             onClose={() => setNewVolunteerOpen(false)}
             title="Register Volunteer Responder"
-            description="Add a new responder profile to the coordination database grid."
+            description="Add a new responder profile to the coordination database."
           >
             <form onSubmit={handleRegisterVolunteer} className="space-y-4 py-2">
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                   Volunteer Name
                 </label>
                 <input
@@ -851,14 +700,14 @@ export default function VolunteerCenterPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="E.g. Clara Oswald"
-                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                  className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                   required
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Email Address
                   </label>
                   <input
@@ -866,13 +715,13 @@ export default function VolunteerCenterPage() {
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     placeholder="E.g. responder@gmail.com"
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Contact Phone
                   </label>
                   <input
@@ -880,14 +729,14 @@ export default function VolunteerCenterPage() {
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
                     placeholder="E.g. +1-555-0150"
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                     required
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+              <div className="space-y-1">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                   Skills / Specializations (Comma separated)
                 </label>
                 <input
@@ -895,42 +744,36 @@ export default function VolunteerCenterPage() {
                   value={newSkillsString}
                   onChange={(e) => setNewSkillsString(e.target.value)}
                   placeholder="E.g. Medical, Water Rescue, First Aid"
-                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                  className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md p-2.5 text-xs outline-none"
                   required
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Initial Depot Base
                   </label>
                   <select
                     value={newLocationName}
                     onChange={(e) => setNewLocationName(e.target.value)}
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none"
                     required
                   >
-                    <option value="Sector A, Riverfront">
-                      Sector A - Riverfront (East)
-                    </option>
-                    <option value="Sector B, Downtown">
-                      Sector B - Downtown (Central)
-                    </option>
-                    <option value="Sector C, Warehouse">
-                      Sector C - Warehouse (West)
-                    </option>
+                    <option value="Sector A, Riverfront">Sector A - Riverfront (East)</option>
+                    <option value="Sector B, Downtown">Sector B - Downtown (Central)</option>
+                    <option value="Sector C, Warehouse">Sector C - Warehouse (West)</option>
                   </select>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Availability Hours
                   </label>
                   <select
                     value={newHours}
                     onChange={(e) => setNewHours(e.target.value)}
-                    className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-xs outline-none"
+                    className="border border-border bg-background text-foreground focus:border-primary w-full rounded-md px-3 py-2 text-xs outline-none"
                     required
                   >
                     <option value="24/7">24/7 Availability</option>
@@ -941,23 +784,23 @@ export default function VolunteerCenterPage() {
                 </div>
               </div>
 
-              <div className="border-border flex justify-end gap-2 border-t pt-2">
+              <div className="border-t border-border flex justify-end gap-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setNewVolunteerOpen(false)}
+                  className="h-8 text-xs px-3 cursor-pointer"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  variant="accent"
+                  variant="default"
                   size="sm"
-                  className="gap-1.5"
+                  className="h-8 text-xs px-3 cursor-pointer"
                 >
-                  <Plus className="size-3.5" />
-                  <span>Register Responder</span>
+                  Register Responder
                 </Button>
               </div>
             </form>

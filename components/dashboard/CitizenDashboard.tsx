@@ -6,10 +6,6 @@ import {
   AlertTriangle,
   Plus,
   BellRing,
-  Compass,
-  Users,
-  FileText,
-  ShieldAlert,
   ArrowRight,
 } from "lucide-react";
 import {
@@ -73,21 +69,19 @@ export function CitizenDashboard({
   return (
     <>
       {/* Title block */}
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-foreground text-2xl font-bold tracking-tight">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
             Citizen Support Center
-          </h2>
-          <p className="text-muted-foreground mt-0.5 text-xs">
-            Emergency telemetry and resources access for{" "}
-            <strong className="text-foreground">{user?.fullName}</strong>.
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Emergency telemetry and safety resources access for <span className="font-semibold text-foreground">{user?.fullName}</span>.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/dashboard/incidents/create" passHref>
-            <Button variant="accent" size="sm" className="gap-2">
-              <Plus className="size-4" />
-              <span>Report Disaster</span>
+            <Button variant="default" size="sm" className="h-9 px-4 text-xs font-semibold cursor-pointer">
+              Report Incident
             </Button>
           </Link>
         </div>
@@ -95,88 +89,33 @@ export function CitizenDashboard({
 
       {/* Grid of KPI Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="transition-shadow hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-semibold">
-              Evacuation Capacity
-            </CardTitle>
-            <Compass className="text-info size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">84%</div>
-            <div className="mt-1 flex items-center gap-2">
-              <Badge variant="info">Near Limit</Badge>
-              <span className="text-muted-foreground text-xs">
-                Evac shelter Sector C
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="transition-shadow hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-semibold">
-              Community Volunteers
-            </CardTitle>
-            <Users className="text-accent size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">142</div>
-            <div className="mt-1 flex items-center gap-2">
-              <Badge variant="success">Active</Badge>
-              <span className="text-muted-foreground text-xs">
-                Staged in sector
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="transition-shadow hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-semibold">
-              Safe Shelters Nearby
-            </CardTitle>
-            <ShieldAlert className="text-primary size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <div className="mt-1 flex items-center gap-2">
-              <Badge variant="success">Open</Badge>
-              <span className="text-muted-foreground text-xs">
-                Checked 5m ago
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="transition-shadow hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-semibold">
-              My Active Reports
-            </CardTitle>
-            <FileText className="text-warning size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{myReports.length}</div>
-            <div className="mt-1 flex items-center gap-2">
-              <Badge variant={myReports.length > 0 ? "warning" : "outline"}>
-                {myReports.length > 0 ? "Under Review" : "No active cases"}
-              </Badge>
-              <span className="text-muted-foreground text-xs">
-                Filed via this portal
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        {[
+          { title: "Evacuation Capacity", value: "84%", desc: "Evac shelter Sector C" },
+          { title: "Community Volunteers", value: "142", desc: "Active in this sector" },
+          { title: "Safe Shelters Nearby", value: "3", desc: "Currently open" },
+          { title: "My Reports", value: myReports.length, desc: "Filed via this account" },
+        ].map((card, idx) => (
+          <div key={idx} className="border border-border bg-card rounded-lg p-5">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+              {card.title}
+            </span>
+            <span className="text-2xl font-extrabold tracking-tight text-foreground block">
+              {card.value}
+            </span>
+            <span className="text-xs text-muted-foreground mt-1.5 block">
+              {card.desc}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* Main Grid: Bulletins and Controller */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Bulletins/Reports Table */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>My Filed Reports & Local Alerts</CardTitle>
-            <CardDescription>
+        <Card className="lg:col-span-2 shadow-none border-border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Filed Reports & Local Alerts</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
               Status tracking for disaster incidents reported in your area.
             </CardDescription>
           </CardHeader>
@@ -187,73 +126,79 @@ export function CitizenDashboard({
                 <div className="bg-muted h-6 w-full animate-pulse rounded" />
               </div>
             ) : incidents.length === 0 ? (
-              <div className="text-muted-foreground rounded-lg border border-dashed py-6 text-center text-xs">
+              <div className="text-muted-foreground rounded-lg border border-dashed py-8 text-center text-xs bg-muted/5">
                 No active public disaster alerts posted.
               </div>
             ) : (
-              <div className="border-border rounded-md border">
+              <div className="border border-border rounded-md overflow-hidden bg-card">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Incident Type</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Severity</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Action</TableHead>
+                    <TableRow className="bg-muted/10">
+                      <TableHead className="font-semibold text-xs text-muted-foreground">Incident Type</TableHead>
+                      <TableHead className="font-semibold text-xs text-muted-foreground">Location</TableHead>
+                      <TableHead className="font-semibold text-xs text-muted-foreground">Severity</TableHead>
+                      <TableHead className="font-semibold text-xs text-muted-foreground">Status</TableHead>
+                      <th className="p-3 text-right font-semibold text-xs text-muted-foreground">Action</th>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {incidents.map((inc) => (
-                      <TableRow key={inc.id}>
-                        <TableCell className="flex items-center gap-1.5 font-semibold capitalize">
-                          <span
-                            className={`size-2 rounded-full ${
-                              inc.status === "active"
-                                ? "bg-destructive animate-ping"
-                                : inc.status === "resolved"
-                                  ? "bg-accent"
-                                  : "bg-warning"
-                            }`}
-                          />
-                          {inc.type}
-                        </TableCell>
-                        <TableCell className="max-w-[150px] truncate">
-                          {inc.location}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              inc.severity === "critical"
-                                ? "destructive"
-                                : "outline"
-                            }
-                            className="px-1.5 py-0 text-[9px] uppercase"
-                          >
-                            {inc.severity}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className="text-[9px] uppercase"
-                          >
-                            {inc.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Link href={`/dashboard/incidents/${inc.id}`}>
-                            <Button
-                              size="xs"
-                              variant="outline"
-                              className="cursor-pointer gap-1"
+                    {incidents.map((inc) => {
+                      const severityColor = inc.severity === "critical" 
+                        ? "destructive" 
+                        : inc.severity === "high" 
+                          ? "warning" 
+                          : inc.severity === "medium" 
+                            ? "warning" 
+                            : "outline";
+
+                      return (
+                        <tr key={inc.id} className="hover:bg-muted/5 transition-colors border-b border-border">
+                          <td className="p-3 font-semibold text-foreground capitalize flex items-center gap-2">
+                            <span
+                              className={`h-2 w-2 rounded-full ${
+                                inc.status === "active"
+                                  ? "bg-destructive animate-pulse"
+                                  : inc.status === "resolved"
+                                    ? "bg-success"
+                                    : "bg-warning"
+                              }`}
+                            />
+                            {inc.type}
+                          </td>
+                          <td className="p-3 text-muted-foreground max-w-[150px] truncate">
+                            {inc.location}
+                          </td>
+                          <td className="p-3">
+                            <Badge
+                              variant={severityColor}
+                              className="h-4.5 px-1.5 py-0 text-[9px] uppercase font-semibold tracking-wider"
                             >
-                              <span>View</span>
-                              <ArrowRight className="size-3" />
-                            </Button>
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                              {inc.severity}
+                            </Badge>
+                          </td>
+                          <td className="p-3">
+                            <Badge
+                              variant="outline"
+                              className="h-4.5 px-1.5 py-0 text-[9px] uppercase font-medium"
+                            >
+                              {inc.status}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-right">
+                            <Link href={`/dashboard/incidents/${inc.id}`}>
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                className="cursor-pointer h-7 text-xs px-2.5"
+                              >
+                                View
+                                <ArrowRight className="h-3 w-3 ml-1" />
+                              </Button>
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
@@ -263,36 +208,34 @@ export function CitizenDashboard({
 
         {/* Controller */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Platform Controller</CardTitle>
-              <CardDescription>
-                Verify micro-animations and toast notifications.
+          <Card className="shadow-none border-border">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold">Ops Diagnostics</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">
+                Verify micro-animations and system toast alerts.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              <div className="space-y-2">
-                <span className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-                  Notify Feed (Sonner)
+              <div className="space-y-1.5">
+                <span className="text-muted-foreground block text-[10px] font-bold tracking-wider uppercase">
+                  Trigger Alert Feed
                 </span>
                 <div className="flex gap-2">
                   <Button
                     onClick={triggerToast}
                     variant="outline"
                     size="sm"
-                    className="flex-1 gap-2"
+                    className="flex-1 text-xs h-8 cursor-pointer"
                   >
-                    <BellRing className="text-primary size-4" />
-                    <span>Info Toast</span>
+                    Info Toast
                   </Button>
                   <Button
                     onClick={triggerAlertToast}
                     variant="outline"
                     size="sm"
-                    className="flex-1 gap-2"
+                    className="flex-1 text-xs h-8 cursor-pointer"
                   >
-                    <AlertTriangle className="text-destructive size-4" />
-                    <span>Alert Toast</span>
+                    Alert Toast
                   </Button>
                 </div>
               </div>
@@ -303,3 +246,4 @@ export function CitizenDashboard({
     </>
   );
 }
+export default CitizenDashboard;

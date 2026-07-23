@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { ShieldAlert, ArrowLeft, Send, Upload, Check } from "lucide-react";
+import { ShieldAlert, ArrowLeft, Loader2, Upload, Check } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase/client";
@@ -80,7 +80,6 @@ export default function CreateIncidentPage() {
     },
   });
 
-  // Handle local image uploads via base64 encoding
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -93,28 +92,21 @@ export default function CreateIncidentPage() {
     }
   };
 
-  // Populate mock coordinates
   const useMockCoordinates = () => {
-    // Sector A center coordinates
     setValue("latitude", 40.7128);
     setValue("longitude", -74.006);
     setValue("location", "Sector A, Riverfront");
-    toast.info("Mock Coordinates Applied", {
-      description: "Latitude 40.7128 and Longitude -74.0060 filled.",
-    });
+    toast.info("Mock coordinates applied");
   };
 
   const onSubmit = async (values: IncidentFormValues) => {
     if (!user) {
-      toast.error("Unauthenticated Session", {
-        description: "You must be logged in to report disasters.",
-      });
+      toast.error("You must be logged in to report disasters.");
       return;
     }
 
     setSubmitting(true);
     try {
-      // 1. Fetch AI Analysis from Gemini Route
       const response = await fetch("/api/analyze-incident", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -130,7 +122,6 @@ export default function CreateIncidentPage() {
 
       const { analysis } = await response.json();
 
-      // 2. Build incident data with embedded AI Analysis
       const incidentData = {
         ...values,
         imageUrl: imageBase64 || "",
@@ -147,15 +138,13 @@ export default function CreateIncidentPage() {
         throw new Error(error.message);
       }
 
-      toast.success("Incident Staged and Logged", {
-        description: "Broadcast signal has been initiated successfully.",
-      });
+      toast.success("Incident registered successfully.");
       router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
       const errorMsg =
         err instanceof Error ? err.message : "Database connection issue.";
-      toast.error("Dispatch Failed", {
+      toast.error("Failed to submit report", {
         description: errorMsg,
       });
     } finally {
@@ -166,61 +155,52 @@ export default function CreateIncidentPage() {
   return (
     <DashboardLayout>
       {submitting && (
-        <div className="bg-background/95 fixed inset-0 z-55 flex flex-col items-center justify-center backdrop-blur-md">
-          <div className="relative flex size-28 items-center justify-center">
-            {/* Concentric expanding grid rings */}
-            <div className="border-primary/20 absolute inset-0 animate-ping rounded-full border" />
-            <div className="border-primary/40 absolute inset-2 animate-pulse rounded-full border" />
-            <div className="bg-primary/10 text-primary shadow-primary/15 flex size-16 animate-bounce items-center justify-center rounded-full shadow-lg">
-              <ShieldAlert className="size-8" />
-            </div>
-          </div>
-          <h3 className="text-foreground mt-6 text-lg font-bold tracking-tight">
-            ResQNet <span className="text-primary">AI Agent</span>
+        <div className="bg-background/95 fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <h3 className="text-foreground mt-4 text-base font-semibold">
+            Analyzing Incident
           </h3>
-          <p className="text-muted-foreground mt-1.5 max-w-xs animate-pulse text-center text-xs leading-relaxed">
-            Gemini AI is analyzing disaster severity, allocating support
-            resources, and modeling escalation risks...
+          <p className="text-muted-foreground mt-1 max-w-xs text-center text-xs">
+            Emergency telemetry is being parsed and triage risk levels evaluated...
           </p>
         </div>
       )}
       <div className="space-y-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Report Incident</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        {/* Back Link */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/dashboard")}
-            className="cursor-pointer gap-2"
-          >
-            <ArrowLeft className="size-4" />
-            <span>Back to Dashboard</span>
-          </Button>
+        {/* Navigation & Header */}
+        <div className="flex flex-col gap-3">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Report Incident</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/dashboard")}
+              className="cursor-pointer h-8 px-3 text-xs"
+            >
+              <ArrowLeft className="size-3.5 mr-1" />
+              Back
+            </Button>
+          </div>
         </div>
 
         {/* Form Card */}
-        <Card className="border-border mx-auto max-w-3xl">
-          <CardHeader>
-            <CardTitle className="text-destructive flex items-center gap-2 text-xl">
-              <ShieldAlert className="size-5 shrink-0" />
-              <span>Report Disaster Incident</span>
+        <Card className="border-border mx-auto max-w-3xl shadow-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
+              <ShieldAlert className="size-5 shrink-0 text-muted-foreground" />
+              <span>Report Incident</span>
             </CardTitle>
-            <CardDescription>
-              Filing this form transmits emergency telemetry to responders.
-              Please input accurate coordinates.
+            <CardDescription className="text-xs">
+              Provide incident details below. Transmission triggers an immediate AI-supported threat assessment.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -228,13 +208,13 @@ export default function CreateIncidentPage() {
               {/* Form Grid */}
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Disaster Type */}
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Disaster Type
                   </label>
                   <select
                     {...register("type")}
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   >
                     <option value="">Select Category...</option>
                     <option value="flooding">Severe Flooding</option>
@@ -252,20 +232,18 @@ export default function CreateIncidentPage() {
                 </div>
 
                 {/* Severity Level */}
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Severity Level
                   </label>
                   <select
                     {...register("severity")}
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   >
                     <option value="low">Low - Minor Hazard</option>
                     <option value="medium">Medium - Staging Required</option>
                     <option value="high">High - Immediate Rescue</option>
-                    <option value="critical">
-                      Critical - Command Center Trigger
-                    </option>
+                    <option value="critical">Critical - Command Center Trigger</option>
                   </select>
                   {errors.severity && (
                     <span className="text-destructive mt-0.5 block text-[10px]">
@@ -275,15 +253,15 @@ export default function CreateIncidentPage() {
                 </div>
 
                 {/* Location Name */}
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Location Description
                   </label>
                   <input
                     type="text"
                     {...register("location")}
-                    placeholder="E.g., Intersection of Route 4 and Sector B Bridge"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                    placeholder="E.g., Sector A, Riverfront Boulevard"
+                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   />
                   {errors.location && (
                     <span className="text-destructive mt-0.5 block text-[10px]">
@@ -293,9 +271,9 @@ export default function CreateIncidentPage() {
                 </div>
 
                 {/* Coordinate Fields */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                    <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                       Latitude
                     </label>
                     <button
@@ -303,14 +281,14 @@ export default function CreateIncidentPage() {
                       onClick={useMockCoordinates}
                       className="text-primary text-[10px] font-semibold hover:underline"
                     >
-                      Fill Mock GPS
+                      Fill Mock Coordinates
                     </button>
                   </div>
                   <input
                     type="text"
                     {...register("latitude")}
                     placeholder="E.g. 40.7128"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   />
                   {errors.latitude && (
                     <span className="text-destructive mt-0.5 block text-[10px]">
@@ -319,15 +297,15 @@ export default function CreateIncidentPage() {
                   )}
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Longitude
                   </label>
                   <input
                     type="text"
                     {...register("longitude")}
                     placeholder="E.g. -74.0060"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   />
                   {errors.longitude && (
                     <span className="text-destructive mt-0.5 block text-[10px]">
@@ -337,15 +315,15 @@ export default function CreateIncidentPage() {
                 </div>
 
                 {/* People Affected */}
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-                    Estimated People Affected
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                    People Affected
                   </label>
                   <input
                     type="number"
                     {...register("peopleAffected")}
                     placeholder="E.g. 150"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                   />
                   {errors.peopleAffected && (
                     <span className="text-destructive mt-0.5 block text-[10px]">
@@ -354,12 +332,12 @@ export default function CreateIncidentPage() {
                   )}
                 </div>
 
-                {/* File/Image Upload Simulator */}
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
+                {/* Photo Upload */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
                     Incident Photo
                   </label>
-                  <div className="border-border bg-background hover:bg-muted/30 relative flex h-[38px] items-center justify-center overflow-hidden rounded-lg border border-dashed p-2.5 transition-colors">
+                  <div className="border-border bg-background hover:bg-muted/30 relative flex h-[38px] items-center justify-center overflow-hidden rounded-md border border-dashed p-2 transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -369,10 +347,8 @@ export default function CreateIncidentPage() {
                     <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
                       {imageName ? (
                         <>
-                          <Check className="text-accent size-4 shrink-0" />
-                          <span className="max-w-[180px] truncate">
-                            {imageName}
-                          </span>
+                          <Check className="text-success size-4 shrink-0" />
+                          <span className="max-w-[180px] truncate">{imageName}</span>
                         </>
                       ) : (
                         <>
@@ -385,72 +361,64 @@ export default function CreateIncidentPage() {
                 </div>
               </div>
 
-              {/* Checkbox Checklist for Resource Needs */}
-              <div className="border-border space-y-3 border-t pt-4">
-                <span className="text-muted-foreground block text-xs font-bold tracking-wider uppercase">
-                  Support Resources Needed
+              {/* Resource checklist */}
+              <div className="border-border space-y-2 border-t pt-4">
+                <span className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  Support Resources Required
                 </span>
                 <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-                  {/* Medical Need */}
-                  <label className="border-border bg-card hover:bg-muted/20 flex cursor-pointer items-center gap-2.5 rounded-lg border p-3 transition-all select-none">
+                  {/* Medical */}
+                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
                     <input
                       type="checkbox"
                       {...register("medicalEmergency")}
                       className="accent-primary size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-semibold">
-                      Medical Staging
-                    </span>
+                    <span className="text-foreground text-xs font-medium">Medical Assistance</span>
                   </label>
 
-                  {/* Water Need */}
-                  <label className="border-border bg-card hover:bg-muted/20 flex cursor-pointer items-center gap-2.5 rounded-lg border p-3 transition-all select-none">
+                  {/* Water */}
+                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
                     <input
                       type="checkbox"
                       {...register("waterNeeded")}
                       className="accent-primary size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-semibold">
-                      Drinking Water
-                    </span>
+                    <span className="text-foreground text-xs font-medium">Drinking Water</span>
                   </label>
 
-                  {/* Food Need */}
-                  <label className="border-border bg-card hover:bg-muted/20 flex cursor-pointer items-center gap-2.5 rounded-lg border p-3 transition-all select-none">
+                  {/* Food */}
+                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
                     <input
                       type="checkbox"
                       {...register("foodNeeded")}
                       className="accent-primary size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-semibold">
-                      Food Rations
-                    </span>
+                    <span className="text-foreground text-xs font-medium">Food Supplies</span>
                   </label>
 
-                  {/* Shelter Need */}
-                  <label className="border-border bg-card hover:bg-muted/20 flex cursor-pointer items-center gap-2.5 rounded-lg border p-3 transition-all select-none">
+                  {/* Shelter */}
+                  <label className="border-border bg-card hover:bg-muted/10 flex cursor-pointer items-center gap-2.5 rounded-md border p-3 transition-colors select-none">
                     <input
                       type="checkbox"
                       {...register("shelterNeeded")}
                       className="accent-primary size-4 shrink-0 rounded"
                     />
-                    <span className="text-foreground text-xs font-semibold">
-                      Shelter Station
-                    </span>
+                    <span className="text-foreground text-xs font-medium">Temporary Shelter</span>
                   </label>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="border-border space-y-1.5 border-t pt-4">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-                  Detailed Hazard Description
+              <div className="border-border space-y-1 border-t pt-4">
+                <label className="text-muted-foreground block text-xs font-semibold uppercase tracking-wider">
+                  Incident Description
                 </label>
                 <textarea
                   {...register("description")}
-                  placeholder="Please state current weather conditions, immediate injuries, accessibility issues, water heights, etc."
+                  placeholder="Provide a description of the event including current hazards, blockages, or urgent needs."
                   rows={4}
-                  className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border p-3 text-xs outline-none focus:ring-1"
+                  className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border p-3 text-xs outline-none focus:ring-1"
                 />
                 {errors.description && (
                   <span className="text-destructive mt-0.5 block text-[10px]">
@@ -467,22 +435,18 @@ export default function CreateIncidentPage() {
                   size="sm"
                   onClick={() => router.push("/dashboard")}
                   disabled={submitting}
+                  className="cursor-pointer text-xs"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  variant="destructive"
+                  variant="default"
                   size="sm"
-                  className="gap-2"
                   disabled={submitting}
+                  className="cursor-pointer text-xs"
                 >
-                  <Send className="size-3.5" />
-                  <span>
-                    {submitting
-                      ? "Broadcasting Alert..."
-                      : "Transmit Emergency Alert"}
-                  </span>
+                  {submitting ? "Submitting Report..." : "Submit Incident Report"}
                 </Button>
               </div>
             </form>

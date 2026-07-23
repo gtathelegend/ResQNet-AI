@@ -88,124 +88,24 @@ Supabase provides the PostgreSQL database, authentication, and real-time subscri
 
 #### 2. Database Schema Setup
 
-Run the following SQL in the Supabase SQL Editor (**SQL Editor > New Query**):
+To create the required tables with the correct case-sensitive column names matching the frontend client:
 
-```sql
--- =============================================================================
--- ResQNet AI - Production Database Schema
--- =============================================================================
+1. Open the [supabase_schema.sql](file:///d:/Vedaang/Internship/IBM%20Skillsbuild/ResQNet%20AI/supabase_schema.sql) file in your editor.
+2. Copy its contents.
+3. In your Supabase Dashboard, go to **SQL Editor > New Query**.
+4. Paste the SQL code and click **Run**.
 
--- Incidents table
-CREATE TABLE incidents (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  type TEXT NOT NULL,
-  location TEXT NOT NULL,
-  latitude FLOAT NOT NULL,
-  longitude FLOAT NOT NULL,
-  severity TEXT NOT NULL CHECK (severity IN ('low', 'medium', 'high', 'critical')),
-  people_affected INTEGER DEFAULT 0,
-  description TEXT,
-  image_url TEXT,
-  medical_emergency BOOLEAN DEFAULT FALSE,
-  water_needed BOOLEAN DEFAULT FALSE,
-  food_needed BOOLEAN DEFAULT FALSE,
-  shelter_needed BOOLEAN DEFAULT FALSE,
-  status TEXT NOT NULL DEFAULT 'reported' CHECK (status IN ('reported', 'investigating', 'active', 'resolved')),
-  reported_by TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  status_history JSONB DEFAULT '[]',
-  ai_analysis JSONB
-);
+This schema sets up all 8 tables (`incidents`, `resources`, `resource_allocations`, `resource_history`, `volunteers`, `volunteer_assignments`, `shelters`, and `hospitals`) with row-level security (RLS) policies configured for permissive development access.
 
--- Resources table
-CREATE TABLE resources (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('supplies', 'vehicles', 'personnel')),
-  total_stock INTEGER NOT NULL DEFAULT 0,
-  allocated_stock INTEGER NOT NULL DEFAULT 0,
-  available_stock INTEGER GENERATED ALWAYS AS (total_stock - allocated_stock) STORED,
-  unit TEXT NOT NULL,
-  depot TEXT NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+#### 3. Database Seeding
 
--- Resource allocations table
-CREATE TABLE resource_allocations (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  resource_id UUID REFERENCES resources(id),
-  resource_name TEXT NOT NULL,
-  incident_id UUID REFERENCES incidents(id),
-  incident_type TEXT NOT NULL,
-  quantity INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT 'staged' CHECK (status IN ('staged', 'en-route', 'delivered', 'returned')),
-  allocated_by TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+Once the database schema tables have been created, you can seed the database with the initial development mock data:
 
--- Resource history table
-CREATE TABLE resource_history (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  resource_id UUID REFERENCES resources(id),
-  resource_name TEXT NOT NULL,
-  action TEXT NOT NULL CHECK (action IN ('stock_add', 'stock_reduce', 'allocate', 'deallocate')),
-  quantity INTEGER NOT NULL,
-  performed_by TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  note TEXT
-);
-
--- Volunteers table
-CREATE TABLE volunteers (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
-  phone TEXT,
-  skills TEXT[] DEFAULT '{}',
-  status TEXT NOT NULL DEFAULT 'off-duty' CHECK (status IN ('on-duty', 'off-duty', 'assigned')),
-  latitude FLOAT,
-  longitude FLOAT,
-  location_name TEXT,
-  availability_hours TEXT,
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Volunteer assignments table
-CREATE TABLE volunteer_assignments (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  volunteer_id UUID REFERENCES volunteers(id),
-  volunteer_name TEXT NOT NULL,
-  incident_id UUID REFERENCES incidents(id),
-  incident_type TEXT NOT NULL,
-  incident_location TEXT NOT NULL,
-  role TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'assigned' CHECK (status IN ('assigned', 'active', 'completed', 'released')),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- =============================================================================
--- Row Level Security (RLS)
--- =============================================================================
-
-ALTER TABLE incidents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
-ALTER TABLE resource_allocations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE resource_history ENABLE ROW LEVEL SECURITY;
-ALTER TABLE volunteers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE volunteer_assignments ENABLE ROW LEVEL SECURITY;
-
--- Create permissive policies for authenticated users
--- NOTE: Customize these policies based on your authentication requirements
-CREATE POLICY "Allow all" ON incidents FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all" ON resources FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all" ON resource_allocations FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all" ON resource_history FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all" ON volunteers FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all" ON volunteer_assignments FOR ALL USING (true) WITH CHECK (true);
+```bash
+npm run db:seed
 ```
+
+This will populate all tables with standard mock entities so that your map and dashboard display data immediately.
 
 #### 3. Get API Credentials
 

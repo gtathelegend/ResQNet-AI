@@ -12,12 +12,10 @@ import {
   Users,
   AlertTriangle,
   FileText,
-  Activity,
   Heart,
   Droplet,
   Trash2,
-  Sparkles,
-  CheckCircle,
+  Home,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/hooks/use-auth";
@@ -53,7 +51,7 @@ export default function IncidentDetailsPage() {
   const [selectedStatus, setSelectedStatus] =
     useState<IncidentStatus>("reported");
 
-  // Fetch incident details from Supabase (backed by localStorage in mock mode)
+  // Fetch incident details from Supabase
   useEffect(() => {
     async function fetchIncident() {
       if (!id) return;
@@ -72,13 +70,13 @@ export default function IncidentDetailsPage() {
           setIncident(data as Incident);
           setSelectedStatus(data.status);
         } else {
-          toast.error("Incident Not Found");
+          toast.error("Incident not found");
           router.push("/dashboard");
         }
       } catch (err: unknown) {
         const errorMsg =
           err instanceof Error ? err.message : "Error fetching details.";
-        toast.error("Fetch Error", { description: errorMsg });
+        toast.error("Failed to load incident details");
       } finally {
         setLoading(false);
       }
@@ -87,7 +85,7 @@ export default function IncidentDetailsPage() {
     fetchIncident();
   }, [id, router]);
 
-  // Handle CRUD update for status
+  // Handle status update
   const handleStatusUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!incident || !user) return;
@@ -114,14 +112,12 @@ export default function IncidentDetailsPage() {
       if (data) {
         setIncident(data as Incident);
         setStatusNote("");
-        toast.success("Incident Status Updated", {
-          description: `Dispatched logs to field responders.`,
-        });
+        toast.success("Incident status updated");
       }
     } catch (err: unknown) {
       const errorMsg =
         err instanceof Error ? err.message : "Failed updating status.";
-      toast.error("Update Error", { description: errorMsg });
+      toast.error("Failed to update status");
     } finally {
       setStatusUpdating(false);
     }
@@ -142,7 +138,7 @@ export default function IncidentDetailsPage() {
         aiAnalysis: updatedAnalysis,
         status: "active" as IncidentStatus,
         statusNote:
-          "Approved Gemini AI tactical recommendations and initiated responder dispatch.",
+          "Approved emergency threat assessment recommendations and initiated responder dispatch.",
         updatedBy: user.fullName || user.email,
       };
 
@@ -159,28 +155,25 @@ export default function IncidentDetailsPage() {
       if (data) {
         setIncident(data as Incident);
         setSelectedStatus("active");
-        toast.success("AI Recommendation Approved", {
-          description:
-            "Staged supply logistics are dispatched. Status set to ACTIVE.",
-        });
+        toast.success("Triage recommendations approved");
       }
     } catch (err: unknown) {
       const errorMsg =
         err instanceof Error
           ? err.message
           : "Failed approving AI recommendation.";
-      toast.error("Approval Error", { description: errorMsg });
+      toast.error("Failed to approve recommendations");
     } finally {
       setStatusUpdating(false);
     }
   };
 
-  // Handle CRUD delete for incident
+  // Handle delete
   const handleIncidentDelete = async () => {
     if (
       !incident ||
       !window.confirm(
-        "Are you sure you want to delete/cancel this disaster incident?"
+        "Are you sure you want to cancel this emergency incident report?"
       )
     )
       return;
@@ -195,20 +188,14 @@ export default function IncidentDetailsPage() {
         throw new Error(error.message);
       }
 
-      toast.success("Incident Deleted", {
-        description:
-          "Disaster report cancelled and purged from telemetry grid.",
-      });
+      toast.success("Incident cancelled and removed");
       router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Failed deleting incident.";
-      toast.error("Deletion Error", { description: errorMsg });
+      toast.error("Failed to delete incident");
     }
   };
 
-  // Status styling colors
   const getStatusConfig = (status: IncidentStatus) => {
     switch (status) {
       case "reported":
@@ -233,7 +220,7 @@ export default function IncidentDetailsPage() {
         return {
           label: "Resolved",
           variant: "success" as const,
-          color: "text-accent",
+          color: "text-success",
         };
     }
   };
@@ -241,22 +228,21 @@ export default function IncidentDetailsPage() {
   const getSeverityBadge = (severity: IncidentSeverity) => {
     switch (severity) {
       case "low":
-        return <Badge variant="outline">Low Priority</Badge>;
+        return <Badge variant="outline" className="text-[10px]">Low Priority</Badge>;
       case "medium":
-        return <Badge variant="info">Medium Severity</Badge>;
+        return <Badge variant="warning" className="text-[10px]">Medium Severity</Badge>;
       case "high":
-        return <Badge variant="warning">High Severity</Badge>;
+        return <Badge variant="warning" className="text-[10px]">High Severity</Badge>;
       case "critical":
-        return <Badge variant="destructive">Critical Emergency</Badge>;
+        return <Badge variant="destructive" className="text-[10px]">Critical Emergency</Badge>;
     }
   };
 
-  // Render Loader Skeleton
   if (loading) {
     return (
       <DashboardLayout>
         <div className="space-y-6">
-          <div className="bg-muted h-10 w-1/4 animate-pulse rounded" />
+          <div className="bg-muted h-8 w-1/4 animate-pulse rounded" />
           <div className="grid gap-6 md:grid-cols-3">
             <div className="bg-muted h-96 animate-pulse rounded md:col-span-2" />
             <div className="bg-muted h-96 animate-pulse rounded" />
@@ -293,189 +279,171 @@ export default function IncidentDetailsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Incident details</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        {/* Back Link */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/dashboard")}
-            className="w-fit cursor-pointer gap-2"
-          >
-            <ArrowLeft className="size-4" />
-            <span>Back to Dashboard</span>
-          </Button>
-
-          {role === "authority" && (
+        {/* Navigation & Header */}
+        <div className="flex flex-col gap-3">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard">Overview</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Incident Details</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Button
-              variant="destructive"
+              variant="outline"
               size="sm"
-              onClick={handleIncidentDelete}
-              className="w-fit cursor-pointer gap-2"
+              onClick={() => router.push("/dashboard")}
+              className="w-fit cursor-pointer h-8 px-3 text-xs"
             >
-              <Trash2 className="size-4" />
-              <span>Cancel & Delete Incident</span>
+              <ArrowLeft className="size-3.5 mr-1" />
+              Back
             </Button>
-          )}
+
+            {role === "authority" && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleIncidentDelete}
+                className="w-fit cursor-pointer h-8 px-3 text-xs"
+              >
+                <Trash2 className="size-3.5 mr-1" />
+                Cancel Report
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Main Details Grid */}
         <div className="grid gap-6 md:grid-cols-3">
-          {/* Incident Report details card */}
+          {/* Main Info Columns */}
           <div className="space-y-6 md:col-span-2">
-            <Card className="border-border">
-              <CardHeader className="border-border flex flex-row items-start justify-between border-b pb-4">
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge
-                      variant={statusConfig.variant}
-                      className="px-2 py-0.5 text-[10px] font-bold uppercase"
-                    >
-                      {statusConfig.label}
-                    </Badge>
-                    {getSeverityBadge(incident.severity)}
-                  </div>
-                  <CardTitle className="pt-1.5 text-xl capitalize">
-                    {incident.type} Incident
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-1 text-xs">
-                    <Clock className="text-muted-foreground size-3" />
-                    <span>
-                      Reported on{" "}
-                      {new Date(incident.createdAt).toLocaleString()}
-                    </span>
-                  </CardDescription>
+            {/* Incident Details Card */}
+            <Card className="border-border shadow-none">
+              <CardHeader className="pb-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                    incident.status === "active" 
+                      ? "bg-destructive/10 text-destructive"
+                      : incident.status === "resolved"
+                        ? "bg-success/10 text-success"
+                        : "bg-warning/10 text-warning"
+                  }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${
+                      incident.status === "active" 
+                        ? "bg-destructive" 
+                        : incident.status === "resolved" 
+                          ? "bg-success" 
+                          : "bg-warning"
+                    }`} />
+                    {statusConfig.label}
+                  </span>
+                  {getSeverityBadge(incident.severity)}
                 </div>
-                <div className="bg-destructive/10 text-destructive flex size-12 items-center justify-center rounded-lg shadow-sm">
-                  <ShieldAlert className="size-6" />
-                </div>
+                <CardTitle className="pt-2 text-2xl font-extrabold capitalize text-foreground">
+                  {incident.type} Incident
+                </CardTitle>
+                <CardDescription className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                  <Clock className="size-3" />
+                  Reported on {new Date(incident.createdAt).toLocaleString()}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pt-6">
-                {/* Image display */}
+              <CardContent className="space-y-6 pt-2">
+                {/* Scene image if present */}
                 {incident.imageUrl && (
-                  <div className="border-border bg-muted flex max-h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border">
+                  <div className="border border-border bg-muted/20 flex max-h-[300px] w-full items-center justify-center overflow-hidden rounded-md">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={incident.imageUrl}
-                      alt="Incident scene"
+                      alt="Incident scene photograph"
                       className="h-full w-full object-cover"
                     />
                   </div>
                 )}
 
-                {/* Description details */}
+                {/* Situation Description */}
                 <div className="space-y-1.5">
-                  <h4 className="text-muted-foreground flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase">
-                    <FileText className="size-3.5" />
-                    <span>Situation Description</span>
-                  </h4>
-                  <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                  <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Situation Description
+                  </span>
+                  <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap font-normal">
                     {incident.description}
                   </p>
                 </div>
 
-                {/* Geographic coordinates */}
-                <div className="border-border grid gap-4 border-t pt-4 sm:grid-cols-2">
+                {/* Geospatial Coordinates and Affected Stats */}
+                <div className="border-t border-border grid gap-4 pt-4 sm:grid-cols-2">
                   <div className="flex items-start gap-3">
-                    <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-lg">
-                      <MapPin className="size-4.5" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                    <MapPin className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
                         Location Coordinates
-                      </h4>
-                      <p className="text-foreground text-xs font-semibold">
+                      </span>
+                      <p className="text-foreground text-xs font-semibold mt-0.5">
                         {incident.location}
                       </p>
-                      <p className="text-muted-foreground font-mono text-[10px]">
-                        GPS: {incident.latitude.toFixed(4)},{" "}
-                        {incident.longitude.toFixed(4)}
+                      <p className="text-muted-foreground font-mono text-[9px] mt-0.5">
+                        GPS: {incident.latitude.toFixed(4)}, {incident.longitude.toFixed(4)}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-accent/10 text-accent flex size-8 shrink-0 items-center justify-center rounded-lg">
-                      <Users className="size-4.5" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-                        People Affected
-                      </h4>
-                      <p className="text-foreground text-sm font-bold">
+                    <Users className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                        Estimated Affected
+                      </span>
+                      <p className="text-foreground text-sm font-bold mt-0.5">
                         {incident.peopleAffected} People
-                      </p>
-                      <p className="text-muted-foreground text-[10px]">
-                        Evacuation status monitored
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Checklist of support details */}
-                <div className="border-border space-y-3 border-t pt-4">
-                  <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                {/* Support Requests list */}
+                <div className="border-t border-border space-y-3 pt-4">
+                  <span className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
                     Emergency Support Requests
-                  </h4>
+                  </span>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {[
                       {
                         check: incident.medicalEmergency,
                         text: "Medical Evacuation Staging",
                         icon: Heart,
-                        activeColor: "text-destructive bg-destructive/10",
                       },
                       {
                         check: incident.waterNeeded,
                         text: "Drinking Water Supply",
                         icon: Droplet,
-                        activeColor: "text-primary bg-primary/10",
                       },
                       {
                         check: incident.foodNeeded,
                         text: "Emergency Food Rations",
                         icon: FileText,
-                        activeColor: "text-warning bg-warning/10",
                       },
                       {
                         check: incident.shelterNeeded,
                         text: "Temporary Shelter Allocation",
-                        icon: Activity,
-                        activeColor: "text-accent bg-accent/10",
+                        icon: Home,
                       },
                     ].map((item, idx) => (
                       <div
                         key={idx}
-                        className={`flex items-center gap-3 rounded-lg border p-3 text-xs leading-relaxed transition-colors duration-200 ${
+                        className={`flex items-center gap-3 rounded-md border p-3 text-xs leading-relaxed transition-colors ${
                           item.check
-                            ? "border-border/80 bg-card"
-                            : "border-border/40 bg-muted/20 opacity-50"
+                            ? "border-border bg-card"
+                            : "border-border/40 bg-muted/10 opacity-40 select-none"
                         }`}
                       >
-                        <div
-                          className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${
-                            item.check
-                              ? item.activeColor
-                              : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          <item.icon className="size-4" />
-                        </div>
+                        <item.icon className={`size-4 shrink-0 ${item.check ? "text-primary" : "text-muted-foreground"}`} />
                         <span className="font-semibold">{item.text}</span>
-                        <span className="text-muted-foreground ml-auto font-mono text-[10px] font-bold uppercase">
-                          {item.check ? "Needed" : "Not Requested"}
+                        <span className="text-[9px] font-bold uppercase tracking-wider ml-auto text-muted-foreground">
+                          {item.check ? "Requested" : "None"}
                         </span>
                       </div>
                     ))}
@@ -483,150 +451,124 @@ export default function IncidentDetailsPage() {
                 </div>
 
                 {/* Reporter information */}
-                <div className="border-border text-muted-foreground flex flex-col gap-2 border-t pt-4 text-[11px] sm:flex-row sm:justify-between">
+                <div className="border-t border-border text-muted-foreground flex flex-col gap-2 pt-4 text-[11px] sm:flex-row sm:justify-between">
                   <span className="flex items-center gap-1">
                     <User className="size-3.5" />
                     <span>
-                      Reported by: <strong>{incident.reportedBy}</strong>
+                      Reported by: <strong className="text-foreground">{incident.reportedBy}</strong>
                     </span>
                   </span>
                   <span>
-                    Last system update:{" "}
-                    {new Date(incident.updatedAt).toLocaleString()}
+                    Last system update: {new Date(incident.updatedAt).toLocaleString()}
                   </span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Gemini AI Incident Analysis Details */}
+            {/* AI Assessment (Calm Decision-Support Representation) */}
             {incident.aiAnalysis && (
-              <Card className="border-border overflow-hidden">
-                <CardHeader className="bg-primary/5 border-border flex flex-row items-center justify-between border-b py-4">
-                  <div className="space-y-1">
-                    <CardTitle className="text-primary flex items-center gap-2 text-base font-bold">
-                      <Sparkles className="text-primary size-4 shrink-0 animate-pulse" />
-                      <span>Gemini AI Incident Analysis</span>
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      Machine learning diagnostic of priority, safety, and
-                      supply logistics.
-                    </CardDescription>
+              <Card className="border-border shadow-none">
+                <CardHeader className="pb-3 border-b border-border">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base font-semibold text-foreground">
+                        AI Decision Support Assessment
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Triage suggestion, resource modeling, and hazard escalation forecast.
+                      </CardDescription>
+                    </div>
+                    <Badge
+                      variant={incident.aiAnalysis.approved ? "success" : "warning"}
+                      className="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider"
+                    >
+                      {incident.aiAnalysis.approved ? "Approved" : "Awaiting Command"}
+                    </Badge>
                   </div>
-                  <Badge
-                    variant={
-                      incident.aiAnalysis.approved ? "success" : "warning"
-                    }
-                    className="px-2 py-0.5 text-[10px] font-bold uppercase"
-                  >
-                    {incident.aiAnalysis.approved
-                      ? "Approved & Staged"
-                      : "Awaiting Command Approval"}
-                  </Badge>
                 </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  {/* Priority / Estimated response time grid */}
+                <CardContent className="space-y-6 pt-4">
+                  {/* Recommended Priority / Response time */}
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="border-border space-y-1 rounded-lg border p-3">
-                      <span className="text-muted-foreground text-[10px] font-bold uppercase">
-                        AI Recommended Triage
+                    <div className="border border-border bg-muted/5 rounded-md p-3">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                        Recommended Triage
                       </span>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            incident.aiAnalysis.priority === "critical"
-                              ? "destructive"
-                              : incident.aiAnalysis.priority === "high"
-                                ? "warning"
-                                : incident.aiAnalysis.priority === "medium"
-                                  ? "info"
-                                  : "outline"
-                          }
-                          className="px-2 py-0.5 text-[10px] font-bold capitalize"
-                        >
-                          {incident.aiAnalysis.priority}
-                        </Badge>
-                        <span className="text-muted-foreground text-xs">
-                          Priority Level
-                        </span>
-                      </div>
+                      <span className="text-sm font-semibold capitalize text-foreground">
+                        {incident.aiAnalysis.priority} Priority
+                      </span>
                     </div>
 
-                    <div className="border-border space-y-1 rounded-lg border p-3">
-                      <span className="text-muted-foreground text-[10px] font-bold uppercase">
+                    <div className="border border-border bg-muted/5 rounded-md p-3">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
                         Estimated Response Window
                       </span>
-                      <p className="text-foreground flex items-center gap-1.5 pt-0.5 text-xs font-bold">
-                        <Clock className="text-primary size-4" />
-                        <span>{incident.aiAnalysis.estimatedResponseTime}</span>
-                      </p>
+                      <span className="text-sm font-semibold text-foreground">
+                        {incident.aiAnalysis.estimatedResponseTime}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Summary & Triage Reason */}
-                  <div className="space-y-2">
-                    <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-                      AI Tactical Summary
-                    </h4>
-                    <p className="text-foreground bg-muted/30 rounded-lg border p-3 text-xs leading-relaxed font-medium">
+                  {/* Tactical Summary */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Assessment Summary
+                    </span>
+                    <p className="text-xs text-foreground bg-muted/20 border border-border p-3 rounded-md leading-relaxed font-normal">
                       {incident.aiAnalysis.summary}
                     </p>
                   </div>
 
-                  <div className="space-y-2">
-                    <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-                      Triage Justification
-                    </h4>
-                    <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap">
+                  {/* Justification details */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Triage Rationales
+                    </span>
+                    <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
                       {incident.aiAnalysis.reason}
                     </p>
                   </div>
 
-                  {/* Resources / Risks Grid */}
-                  <div className="border-border grid gap-4 border-t pt-4 sm:grid-cols-2">
-                    <div className="space-y-2.5">
-                      <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                  {/* Supplies & Hazards Grid */}
+                  <div className="border-t border-border grid gap-4 pt-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
                         Suggested Supply Logistics
-                      </h4>
+                      </span>
                       <div className="flex flex-wrap gap-1.5">
-                        {incident.aiAnalysis.requiredResources.map(
-                          (res, idx) => (
-                            <Badge
-                              key={idx}
-                              variant="outline"
-                              className="bg-primary/5 text-primary border-primary/10 px-2 py-0.5 text-[10px]"
-                            >
-                              {res}
-                            </Badge>
-                          )
-                        )}
+                        {incident.aiAnalysis.requiredResources.map((res, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="text-[10px] font-medium"
+                          >
+                            {res}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <h4 className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
                         Potential Hazard Escalations
-                      </h4>
-                      <ul className="text-muted-foreground list-disc space-y-1.5 pl-4 text-xs">
+                      </span>
+                      <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
                         {incident.aiAnalysis.potentialRisks.map((risk, idx) => (
-                          <li key={idx}>{risk}</li>
+                          <li key={idx} className="leading-relaxed">{risk}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
 
-                  {/* Commander Approval Button */}
+                  {/* Commander approval triggers */}
                   {role === "authority" && !incident.aiAnalysis.approved && (
-                    <div className="border-border border-t pt-4">
+                    <div className="border-t border-border pt-4">
                       <Button
                         onClick={handleApproveAIRecommendations}
                         disabled={statusUpdating}
-                        className="w-full cursor-pointer gap-2 text-xs font-bold"
+                        className="w-full cursor-pointer h-9 text-xs font-semibold"
                         variant="default"
                       >
-                        <CheckCircle className="size-4" />
-                        <span>
-                          Approve AI Recommendations & Dispatch Staged Units
-                        </span>
+                        Approve Triage & Dispatch Units
                       </Button>
                     </div>
                   )}
@@ -635,32 +577,29 @@ export default function IncidentDetailsPage() {
             )}
           </div>
 
-          {/* Status Timeline & Update Forms */}
+          {/* Sidebar Status Updates and Logs */}
           <div className="space-y-6">
-            {/* Status Update Panel (Authorities/Volunteers only) */}
+            {/* Status updates panel */}
             {(role === "authority" || role === "volunteer") && (
-              <Card className="border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
-                    <Activity className="text-primary size-4" />
-                    <span>Command Telemetry Log</span>
+              <Card className="border-border shadow-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                    Telemetry Dispatch Log
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Update operations status for responders.
+                    Log dispatcher progress reports and status updates.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleStatusUpdate} className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <label className="text-muted-foreground block text-[10px] font-bold uppercase">
-                        Select New Status
+                        Operational Status
                       </label>
                       <select
                         value={selectedStatus}
-                        onChange={(e) =>
-                          setSelectedStatus(e.target.value as IncidentStatus)
-                        }
-                        className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-1"
+                        onChange={(e) => setSelectedStatus(e.target.value as IncidentStatus)}
+                        className="border-border bg-background text-foreground focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-xs outline-none focus:ring-1"
                       >
                         <option value="reported">Reported</option>
                         <option value="investigating">Investigating</option>
@@ -669,15 +608,15 @@ export default function IncidentDetailsPage() {
                       </select>
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <label className="text-muted-foreground block text-[10px] font-bold uppercase">
-                        Tactical Progress Notes
+                        Progress Notes
                       </label>
                       <textarea
                         value={statusNote}
                         onChange={(e) => setStatusNote(e.target.value)}
-                        placeholder="E.g., Rescue team deployed. Sandbags positioned."
-                        className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border p-2.5 text-xs outline-none"
+                        placeholder="E.g., Safety perimeter staging set up. Operations on-duty."
+                        className="border-border bg-background text-foreground focus:border-primary w-full rounded-md border p-2.5 text-xs outline-none focus:ring-1"
                         rows={3}
                         required
                       />
@@ -687,41 +626,42 @@ export default function IncidentDetailsPage() {
                       type="submit"
                       variant="default"
                       size="sm"
-                      className="w-full"
+                      className="w-full text-xs cursor-pointer h-9"
                       disabled={statusUpdating}
                     >
-                      {statusUpdating
-                        ? "Transmitting Log..."
-                        : "Update Incident State"}
+                      Update State
                     </Button>
                   </form>
                 </CardContent>
               </Card>
             )}
 
-            {/* Status Timeline history logs */}
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
-                  <Clock className="text-primary size-4" />
-                  <span>Incident Status Timeline</span>
+            {/* Status timeline audit history */}
+            <Card className="border-border shadow-none">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-foreground">
+                  Audit Timeline
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Audit log of tactical dispatches.
+                  Chronological logs of tactical changes.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="border-border relative ml-2.5 space-y-6 border-l py-2 pl-5">
+                <div className="border-border relative ml-2.5 space-y-6 border-l py-2 pl-4">
                   {incident.statusHistory?.map((hist, idx) => {
                     const conf = getStatusConfig(hist.status);
 
                     return (
                       <div key={idx} className="group relative">
-                        {/* Bullet point node */}
-                        <div className="bg-background border-border group-last:border-primary absolute top-1.5 -left-[27px] flex size-3.5 items-center justify-center rounded-full border-2">
-                          <div
-                            className={`size-1.5 rounded-full ${conf.color.replace("text-", "bg-")}`}
-                          />
+                        {/* Bullet node */}
+                        <div className="bg-background border-border group-last:border-primary absolute top-1.5 -left-[24px] flex h-3 w-3 items-center justify-center rounded-full border">
+                          <div className={`h-1.5 w-1.5 rounded-full ${
+                            hist.status === "active" 
+                              ? "bg-destructive" 
+                              : hist.status === "resolved" 
+                                ? "bg-success" 
+                                : "bg-warning"
+                          }`} />
                         </div>
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center justify-between gap-1">
@@ -739,7 +679,7 @@ export default function IncidentDetailsPage() {
                             Logged by: {hist.updatedBy}
                           </p>
                           {hist.note && (
-                            <div className="bg-muted text-foreground mt-1 rounded border p-2 font-sans text-xs leading-relaxed italic">
+                            <div className="bg-muted/30 text-foreground mt-1 rounded border border-border p-2.5 text-xs font-normal leading-relaxed italic">
                               {hist.note}
                             </div>
                           )}

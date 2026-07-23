@@ -110,17 +110,20 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[220px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b">
-              <span class="font-extrabold uppercase text-red-600 text-[10px]">🚨 DISASTER IN PROGRESS</span>
-              <span class="text-[9px] font-semibold text-muted-foreground">${new Date(inc.createdAt).toLocaleTimeString()}</span>
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
+              <span class="font-extrabold uppercase text-red-600 text-[9px]">🚨 DISASTER IN PROGRESS</span>
+              <span class="text-[9px] font-semibold text-muted-foreground">${new Date(inc.createdAt).toLocaleDateString()}</span>
             </div>
-            <h4 class="font-bold text-sm text-foreground capitalize mb-1">${inc.type} - Staging Sector</h4>
+            <h4 class="font-bold text-sm text-foreground capitalize mb-1">${inc.type}</h4>
             <p class="text-muted-foreground leading-relaxed mb-2">${inc.description.substring(0, 70)}...</p>
-            <div class="grid grid-cols-2 gap-1.5 text-[10.5px]">
-              <div>Severity: <strong class="text-red-500 capitalize font-bold">${inc.severity}</strong></div>
+            <div class="grid grid-cols-2 gap-1 text-[10.5px] border-t border-border pt-1.5 mt-1.5">
+              <div>Severity: <strong class="text-red-500 capitalize">${inc.severity}</strong></div>
               <div>Affected: <strong>${inc.peopleAffected}</strong></div>
             </div>
-            <div class="mt-2 text-[9.5px] bg-muted/65 p-1 rounded font-mono">Status: <strong>${inc.status.toUpperCase()}</strong></div>
+            <div class="mt-2.5 flex items-center justify-between">
+              <span class="text-[9px] bg-muted px-1.5 py-0.5 rounded font-mono font-medium">${inc.status.toUpperCase()}</span>
+              <a href="/dashboard/incidents/${inc.id}" class="text-primary hover:underline font-semibold text-[10px]">View Details &rarr;</a>
+            </div>
           </div>
         `;
 
@@ -147,9 +150,9 @@ export default function LiveMap({
             radius,
             color: heatColor,
             fillColor: heatColor,
-            fillOpacity: 0.16,
+            fillOpacity: 0.1,
             stroke: true,
-            weight: 1.5,
+            weight: 1,
           }).addTo(heatmapGroup);
         }
       });
@@ -165,16 +168,19 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[200px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b">
-              <span class="font-extrabold uppercase text-blue-600 text-[10px]">🏠 SHELTER</span>
-              <span class="text-[9px] font-semibold text-emerald-600">Active</span>
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
+              <span class="font-extrabold uppercase text-blue-600 text-[9px]">🏠 SHELTER</span>
+              <span class="text-[9px] font-semibold text-success">Open</span>
             </div>
             <h4 class="font-bold text-sm text-foreground mb-1">${shelter.name}</h4>
             <div class="space-y-1 mt-1 text-[11px]">
               <div>Occupancy: <strong>${shelter.currentOccupancy} / ${shelter.capacity} (${occupancyRate}%)</strong></div>
-              <div class="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+              <div class="w-full bg-muted rounded-full h-1 overflow-hidden">
                 <div class="bg-blue-500 h-full" style="width: ${occupancyRate}%"></div>
               </div>
+            </div>
+            <div class="mt-2 text-right">
+              <a href="/dashboard/shelters" class="text-primary hover:underline font-semibold text-[10px]">View Directory &rarr;</a>
             </div>
           </div>
         `;
@@ -195,14 +201,14 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[200px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b">
-              <span class="font-extrabold uppercase text-indigo-600 text-[10px]">🏥 HOSPITAL CENTER</span>
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
+              <span class="font-extrabold uppercase text-indigo-600 text-[9px]">🏥 HOSPITAL CENTER</span>
               <span class="text-[9px] font-semibold text-indigo-600 capitalize">${hosp.status}</span>
             </div>
             <h4 class="font-bold text-sm text-foreground mb-1">${hosp.name}</h4>
             <div class="space-y-1 mt-1 text-[11px]">
               <div>ER Capacity: <strong>${hosp.currentOccupancy} / ${hosp.capacity} Beds (${loadRate}%)</strong></div>
-              <div class="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+              <div class="w-full bg-muted rounded-full h-1 overflow-hidden">
                 <div class="bg-indigo-500 h-full" style="width: ${loadRate}%"></div>
               </div>
             </div>
@@ -222,20 +228,23 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[180px]">
-            <div class="flex justify-between items-center mb-1 pb-1 border-b">
-              <span class="font-extrabold uppercase text-orange-500 text-[10px]">🙋 VOLUNTEER</span>
-              <span class="text-[9px] font-semibold text-emerald-500 capitalize">${vol.status}</span>
+            <div class="flex justify-between items-center mb-1 pb-1 border-b border-border">
+              <span class="font-extrabold uppercase text-orange-500 text-[9px]">🙋 VOLUNTEER</span>
+              <span class="text-[9px] font-semibold text-success capitalize">${vol.status}</span>
             </div>
             <h4 class="font-bold text-sm text-foreground mb-0.5">${vol.name}</h4>
             <div class="text-[9.5px] text-muted-foreground mb-1.5">Hours: ${vol.availabilityHours}</div>
-            <div class="flex flex-wrap gap-1">
+            <div class="flex flex-wrap gap-1 mb-2">
               ${vol.skills
                 .slice(0, 2)
                 .map(
                   (s) =>
-                    `<span class="text-[9px] bg-orange-50 border border-orange-200 text-orange-600 px-1 py-0.5 rounded">${s}</span>`
+                    `<span class="text-[9px] bg-secondary text-foreground px-1 py-0.5 rounded font-medium">${s}</span>`
                 )
                 .join("")}
+            </div>
+            <div class="mt-2 text-right border-t border-border pt-1.5">
+              <a href="/dashboard/volunteers" class="text-primary hover:underline font-semibold text-[10px]">View Directory &rarr;</a>
             </div>
           </div>
         `;
@@ -248,11 +257,9 @@ export default function LiveMap({
 
     // E. Add Resources (Depots)
     if (filterLayers.depots) {
-      // Map resources to distinct depot centers
       const uniqueDepots = Array.from(new Set(resources.map((r) => r.depot)));
 
       uniqueDepots.forEach((depotName) => {
-        // Geocode coordinates for depot centers
         let lat = 40.715;
         let lng = -74.001;
         if (depotName.includes("Beta")) {
@@ -273,13 +280,16 @@ export default function LiveMap({
 
         const popupHTML = `
           <div class="p-2 font-sans text-xs min-w-[200px]">
-            <div class="flex justify-between items-center mb-1.5 pb-1 border-b">
-              <span class="font-extrabold uppercase text-emerald-600 text-[10px]">📦 LOGISTICS DEPOT</span>
+            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-border">
+              <span class="font-extrabold uppercase text-emerald-600 text-[9px]">📦 LOGISTICS DEPOT</span>
               <span class="text-[9px] font-semibold text-emerald-600 font-mono">Synced</span>
             </div>
             <h4 class="font-bold text-sm text-foreground mb-1.5">${depotName}</h4>
-            <div class="space-y-0.5 border-t pt-1 border-dashed mt-1">
+            <div class="space-y-0.5 border-t pt-1 border-dashed mt-1 mb-2">
               ${itemsHTML}
+            </div>
+            <div class="mt-2 text-right border-t border-border pt-1.5">
+              <a href="/dashboard/resources" class="text-primary hover:underline font-semibold text-[10px]">View Resources &rarr;</a>
             </div>
           </div>
         `;

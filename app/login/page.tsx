@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Form validation schema with Zod
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -33,15 +32,27 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+const registerSchema = z.object({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["citizen", "volunteer", "authority"]),
+  phone: z.string().optional(),
+  skills: z.string().optional(),
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
+
 export default function LoginPage() {
-  const { login, isLoading } = useAuth();
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const { login, signUp, isLoading } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
+    register: registerLogin,
+    handleSubmit: handleSubmitLogin,
+    setValue: setValueLogin,
+    formState: { errors: errorsLogin },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -50,7 +61,27 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
+  const {
+    register: registerSignUp,
+    handleSubmit: handleSubmitSignUp,
+    watch: watchSignUp,
+    formState: { errors: errorsSignUp },
+    reset: resetSignUp,
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      role: "citizen",
+      phone: "",
+      skills: "",
+    },
+  });
+
+  const selectedRole = watchSignUp("role");
+
+  const onLoginSubmit = async (data: LoginFormValues) => {
     setFormError(null);
     try {
       await login(data.email, data.password);
@@ -60,165 +91,350 @@ export default function LoginPage() {
     }
   };
 
-  // Preset mock login helper
+  const onSignUpSubmit = async (data: RegisterFormValues) => {
+    setFormError(null);
+    try {
+      await signUp(
+        data.email,
+        data.password,
+        data.fullName,
+        data.role,
+        data.phone,
+        data.skills
+      );
+      setMode("login");
+      resetSignUp();
+    } catch (err) {
+      const error = err as Error;
+      setFormError(error.message || "Failed to register account.");
+    }
+  };
+
   const handleQuickLogin = (email: string) => {
-    setValue("email", email);
-    setValue("password", "password");
-    handleSubmit(onSubmit)();
+    setValueLogin("email", email);
+    setValueLogin("password", "password");
+    handleSubmitLogin(onLoginSubmit)();
   };
 
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
+    <div className="bg-[#F8FAFC] flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-6">
         {/* Brand header */}
         <div className="flex flex-col items-center text-center">
-          <div className="bg-primary shadow-primary/30 flex size-14 items-center justify-center rounded-xl text-white shadow-lg">
-            <ShieldAlert className="size-7" />
+          <div className="bg-primary flex size-12 items-center justify-center rounded-lg text-white">
+            <ShieldAlert className="size-6" />
           </div>
-          <h2 className="text-foreground mt-6 text-3xl font-extrabold tracking-tight">
-            ResQNet AI Portal
+          <h2 className="text-foreground mt-4 text-2xl font-bold tracking-tight">
+            ResQNet AI Command
           </h2>
-          <p className="text-muted-foreground mt-2 max-w-xs text-sm">
-            Disaster Coordination & Resource Intelligence Command Center
+          <p className="text-muted-foreground mt-1 text-xs max-w-xs leading-relaxed">
+            Emergency Operations & Resource Coordination Command Center
           </p>
         </div>
 
-        {/* Login form Card */}
-        <Card className="border-border/80 bg-card border shadow-lg backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-xl">Sign In</CardTitle>
-            <CardDescription>
-              Access coordinates, incident feeds, and resource logs.
+        {/* Auth form Card */}
+        <Card className="border border-border bg-white shadow-sm overflow-hidden">
+          {/* Tabs header */}
+          <div className="grid w-full grid-cols-2 border-b border-border bg-slate-50/50">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("login");
+                setFormError(null);
+              }}
+              className={`py-3 text-center text-xs font-bold uppercase tracking-wider transition-all ${
+                mode === "login"
+                  ? "bg-white border-b border-transparent text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/50 border-r border-border"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("register");
+                setFormError(null);
+              }}
+              className={`py-3 text-center text-xs font-bold uppercase tracking-wider transition-all ${
+                mode === "register"
+                  ? "bg-white border-b border-transparent text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/50 border-l border-border"
+              }`}
+            >
+              Register
+            </button>
+          </div>
+
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base font-semibold">
+              {mode === "login" ? "Access Command Center" : "Register Profile"}
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {mode === "login"
+                ? "Enter your credentials to access operations dashboard."
+                : "Create a coordination profile for disaster dispatch."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Form level error */}
-              {formError && (
-                <div className="bg-destructive/10 text-destructive rounded p-3 text-xs font-medium">
-                  {formError}
-                </div>
-              )}
-
-              {/* Email Input */}
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    placeholder="name@agency.gov"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary/20 placeholder:text-muted-foreground w-full rounded-lg border py-2.5 pr-4 pl-10 text-sm transition-all outline-none focus:ring-2"
-                    {...register("email")}
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-destructive mt-1 text-xs">
-                    {errors.email.message}
-                  </p>
-                )}
+            {formError && (
+              <div className="bg-destructive/10 text-destructive rounded p-3 text-xs font-semibold mb-4 border border-destructive/10">
+                {formError}
               </div>
+            )}
 
-              {/* Password Input */}
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-xs font-semibold tracking-wider uppercase">
-                  Security Token (Password)
-                </label>
-                <div className="relative">
-                  <Lock className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    className="border-border bg-background text-foreground focus:border-primary focus:ring-primary/20 placeholder:text-muted-foreground w-full rounded-lg border py-2.5 pr-4 pl-10 text-sm transition-all outline-none focus:ring-2"
-                    {...register("password")}
-                  />
+            {mode === "login" ? (
+              <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="space-y-4">
+                {/* Email Input */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      placeholder="name@agency.gov"
+                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      {...registerLogin("email")}
+                    />
+                  </div>
+                  {errorsLogin.email && (
+                    <p className="text-destructive mt-1 text-xs">
+                      {errorsLogin.email.message}
+                    </p>
+                  )}
                 </div>
-                {errors.password && (
-                  <p className="text-destructive mt-1 text-xs">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
 
-              {/* Sign In CTA */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="mt-2 h-10 w-full gap-2"
-              >
-                {isLoading ? (
+                {/* Password Input */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Security Token (Password)
+                  </label>
+                  <div className="relative">
+                    <Lock className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      {...registerLogin("password")}
+                    />
+                  </div>
+                  {errorsLogin.password && (
+                    <p className="text-destructive mt-1 text-xs">
+                      {errorsLogin.password.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Sign In CTA */}
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="mt-2 h-9 w-full gap-2 text-xs font-semibold cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="size-3.5 animate-spin" />
+                      <span>Verifying Session...</span>
+                    </>
+                  ) : (
+                    <span>Access Command Center</span>
+                  )}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleSubmitSignUp(onSignUpSubmit)} className="space-y-4">
+                {/* Full Name Input */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Jane Doe"
+                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      {...registerSignUp("fullName")}
+                    />
+                  </div>
+                  {errorsSignUp.fullName && (
+                    <p className="text-destructive mt-1 text-xs">
+                      {errorsSignUp.fullName.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Email Input */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      placeholder="name@agency.gov"
+                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      {...registerSignUp("email")}
+                    />
+                  </div>
+                  {errorsSignUp.email && (
+                    <p className="text-destructive mt-1 text-xs">
+                      {errorsSignUp.email.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Password Input */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Password (Security Token)
+                  </label>
+                  <div className="relative">
+                    <Lock className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <input
+                      type="password"
+                      placeholder="Min 6 characters"
+                      className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md py-2 pr-4 pl-10 text-xs transition-all outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                      {...registerSignUp("password")}
+                    />
+                  </div>
+                  {errorsSignUp.password && (
+                    <p className="text-destructive mt-1 text-xs">
+                      {errorsSignUp.password.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Role Selection */}
+                <div className="space-y-1">
+                  <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                    Account Type / Role
+                  </label>
+                  <select
+                    className="border border-border bg-background text-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                    {...registerSignUp("role")}
+                  >
+                    <option value="citizen">Citizen (Report Incidents)</option>
+                    <option value="volunteer">Volunteer (Accept Dispatches)</option>
+                    <option value="authority">Authority (Operations Command)</option>
+                  </select>
+                  {errorsSignUp.role && (
+                    <p className="text-destructive mt-1 text-xs">
+                      {errorsSignUp.role.message}
+                    </p>
+                  )}
+                </div>
+
+                {selectedRole === "volunteer" && (
                   <>
-                    <Loader2 className="size-4 animate-spin" />
-                    <span>Verifying Session...</span>
+                    <div className="space-y-1">
+                      <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                        {...registerSignUp("phone")}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-muted-foreground block text-[10px] font-bold uppercase tracking-wider">
+                        Skills (Comma-separated)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Medical, Logistics, Rescue, Swimmer"
+                        className="border border-border bg-background text-foreground placeholder:text-muted-foreground w-full rounded-md px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                        {...registerSignUp("skills")}
+                      />
+                    </div>
                   </>
-                ) : (
-                  <span>Access Platform</span>
                 )}
-              </Button>
-            </form>
+
+                {/* Sign Up CTA */}
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="mt-2 h-9 w-full gap-2 text-xs font-semibold cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="size-3.5 animate-spin" />
+                      <span>Creating Profile...</span>
+                    </>
+                  ) : (
+                    <span>Register Account</span>
+                  )}
+                </Button>
+              </form>
+            )}
           </CardContent>
 
-          {/* Quick mock selectors */}
-          <CardFooter className="border-border/60 bg-muted/30 flex flex-col gap-4 border-t pt-6">
-            <div className="w-full space-y-2">
-              <span className="text-muted-foreground block text-center text-xs font-semibold tracking-wider uppercase">
-                Development Quick Login (Mock Mode)
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  onClick={() => handleQuickLogin("citizen@resqnet.ai")}
-                  variant="outline"
-                  size="sm"
-                  className="border-border/80 hover:bg-card hover:text-primary flex h-16 flex-col items-center justify-center px-1 py-2 text-center transition-all"
-                >
-                  <User className="text-muted-foreground mb-1 size-4" />
-                  <span className="text-[10px] font-bold">Citizen</span>
-                  <Badge
+          {/* Quick mock selectors (Only visible during Sign In) */}
+          {mode === "login" && (
+            <CardFooter className="border-t border-border bg-slate-50/50 flex flex-col gap-3 pt-4">
+              <div className="w-full space-y-2">
+                <span className="text-muted-foreground block text-center text-[10px] font-bold tracking-wider uppercase">
+                  Development Quick Login (Offline Mode)
+                </span>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    onClick={() => handleQuickLogin("citizen@resqnet.ai")}
                     variant="outline"
-                    className="border-muted text-muted-foreground mt-0.5 h-3 px-1 py-0 text-[8px]"
+                    size="sm"
+                    className="border border-border bg-white hover:bg-slate-50 flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer"
                   >
-                    Jane
-                  </Badge>
-                </Button>
-                <Button
-                  onClick={() => handleQuickLogin("volunteer@resqnet.ai")}
-                  variant="outline"
-                  size="sm"
-                  className="border-border/80 hover:bg-card hover:text-accent flex h-16 flex-col items-center justify-center px-1 py-2 text-center transition-all"
-                >
-                  <Users className="text-muted-foreground mb-1 size-4" />
-                  <span className="text-[10px] font-bold">Volunteer</span>
-                  <Badge
+                    <User className="text-muted-foreground size-4 mb-0.5" />
+                    <span className="text-[10px] font-bold text-foreground">Citizen</span>
+                    <Badge
+                      variant="outline"
+                      className="border-border text-[8px] bg-slate-50 px-1 py-0 scale-90"
+                    >
+                      Jane
+                    </Badge>
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickLogin("volunteer@resqnet.ai")}
                     variant="outline"
-                    className="border-muted text-muted-foreground mt-0.5 h-3 px-1 py-0 text-[8px]"
+                    size="sm"
+                    className="border border-border bg-white hover:bg-slate-50 flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer"
                   >
-                    John
-                  </Badge>
-                </Button>
-                <Button
-                  onClick={() => handleQuickLogin("authority@resqnet.ai")}
-                  variant="outline"
-                  size="sm"
-                  className="border-border/80 hover:bg-card hover:text-destructive flex h-16 flex-col items-center justify-center px-1 py-2 text-center transition-all"
-                >
-                  <ShieldCheck className="text-muted-foreground mb-1 size-4" />
-                  <span className="text-[10px] font-bold">Authority</span>
-                  <Badge
+                    <Users className="text-muted-foreground size-4 mb-0.5" />
+                    <span className="text-[10px] font-bold text-foreground">Volunteer</span>
+                    <Badge
+                      variant="outline"
+                      className="border-border text-[8px] bg-slate-50 px-1 py-0 scale-90"
+                    >
+                      John
+                    </Badge>
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickLogin("authority@resqnet.ai")}
                     variant="outline"
-                    className="border-muted text-muted-foreground mt-0.5 h-3 px-1 py-0 text-[8px]"
+                    size="sm"
+                    className="border border-border bg-white hover:bg-slate-50 flex h-14 flex-col items-center justify-center p-1 text-center transition-all cursor-pointer"
                   >
-                    HQ
-                  </Badge>
-                </Button>
+                    <ShieldCheck className="text-muted-foreground size-4 mb-0.5" />
+                    <span className="text-[10px] font-bold text-foreground">Authority</span>
+                    <Badge
+                      variant="outline"
+                      className="border-border text-[8px] bg-slate-50 px-1 py-0 scale-90"
+                    >
+                      Command
+                    </Badge>
+                  </Button>
+                </div>
               </div>
-            </div>
-            <p className="text-muted-foreground text-center text-[10px]">
-              Mock logins run offline. Standard password is{" "}
-              <strong>password</strong>.
-            </p>
-          </CardFooter>
+              <p className="text-muted-foreground text-center text-[10px] leading-relaxed">
+                Mock logins bypass external API. Password is <strong className="font-semibold text-foreground">password</strong>.
+              </p>
+            </CardFooter>
+          )}
         </Card>
       </div>
     </div>

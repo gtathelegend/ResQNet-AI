@@ -32,12 +32,13 @@ const publicNavItems: NavItem[] = [
 ];
 
 const dashboardNavItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Live Map", href: "/dashboard/map" },
-  { label: "Analytics", href: "/dashboard/analytics" },
+  { label: "Overview", href: "/dashboard" },
   { label: "Incidents", href: "/dashboard#incidents" },
+  { label: "Live Map", href: "/dashboard/map" },
   { label: "Resources", href: "/dashboard/resources" },
   { label: "Volunteers", href: "/dashboard/volunteers" },
+  { label: "Shelters", href: "/dashboard/shelters" },
+  { label: "Analytics", href: "/dashboard/analytics" },
 ];
 
 export function Navbar() {
@@ -95,23 +96,33 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => {
-            // Filter deployments for citizen role
-            if (item.label === "Deployments" && role === "citizen") return null;
+        {/* Desktop Navigation / Breadcrumbs */}
+        {isDashboardRoute ? (
+          <div className="text-muted-foreground hidden items-center gap-2 text-xs md:flex select-none">
+            <span className="font-medium text-foreground/80">Command Center</span>
+            <span className="text-muted-foreground/40">/</span>
+            <span className="capitalize text-muted-foreground font-normal">
+              {pathname === "/dashboard" ? "Overview" : pathname.split("/").pop()?.replace(/-/g, " ") || "Overview"}
+            </span>
+          </div>
+        ) : (
+          <nav className="hidden items-center gap-1 md:flex">
+            {navItems.map((item) => {
+              // Filter deployments for citizen role
+              if (item.label === "Deployments" && role === "citizen") return null;
 
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md px-4 py-2 text-sm font-medium transition-all"
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md px-4 py-2 text-sm font-medium transition-all"
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
