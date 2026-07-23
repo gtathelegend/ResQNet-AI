@@ -1,6 +1,6 @@
 # ResQNet AI
 
-ResQNet AI is an enterprise-grade AI-Powered Disaster Response & Resource Coordination Platform. Built on Next.js 15, TypeScript, and a modern design system utilizing IBM Blue, Charcoal Dark, and Green Accent colors.
+ResQNet AI is an enterprise-grade AI-Powered Disaster Response & Resource Coordination Platform. Built on Next.js 16 (Turbopack), TypeScript, and a modern, high-contrast, light-themed design system utilizing Slate Gray, Deep Slate Blue, and Accessible Royal Blue colors.
 
 ---
 
@@ -42,15 +42,16 @@ ResQNet AI/
 
 ## 🎨 Design System Specifications
 
-| Element        | Reference Color           | Purpose                                                          |
-| :------------- | :------------------------ | :--------------------------------------------------------------- |
-| **Primary**    | `#0F62FE` (IBM Blue)      | Call-to-actions, brand presence, active highlights.              |
-| **Secondary**  | `#161616` (Charcoal Dark) | Dark mode backgrounds, high contrast texts.                      |
-| **Accent**     | `#24A148` (Green Accent)  | Success badges, online system indicators, unit dispatch actions. |
-| **Background** | `#F4F4F4` (Light Grey)    | Light mode layout backdrop.                                      |
-| **Typography** | `Inter`                   | Sans-serif standard font.                                        |
+| Element        | Reference Color                | Purpose                                                                |
+| :------------- | :----------------------------- | :--------------------------------------------------------------------- |
+| **Primary**    | `#2563EB` (Royal Blue)         | Call-to-actions, active indicators, primary highlight links.          |
+| **Text**       | `#0F172A` (Deep Slate Blue)    | High contrast text, card headers, form labels, and bold content.       |
+| **Secondary**  | `#475569` (Slate Gray)         | Secondary text descriptions, navigation controls, and secondary buttons.|
+| **Border**     | `#E2E8F0` / `#CBD5E1` (Slate)  | Clean layout lines, card frames, and input field outlines.              |
+| **Background** | `#F8FAFC` (Light Slate Background)| Calm operations center background.                                     |
+| **Typography** | `Inter`                        | Sans-serif standard font.                                              |
 
-Dark mode is built-in and respects both user system preferences and user manual toggle controls (manipulating class `.dark` on the document root).
+This platform enforces a clean, calm, light-mode-first operations dashboard designed for high readability, visual accessibility (WCAG AA compliance), and professional administrative control.
 
 ---
 
@@ -181,14 +182,15 @@ For development without external services, the app automatically falls back to m
 
 ## 🧩 Features
 
-- **Global Command Palette** — Press `Ctrl+K` or `Cmd+K` to search incidents, resources, volunteers, and navigate
-- **PWA Support** — Offline-capable with service worker caching
-- **Role-Based Dashboards** — Tailored views for Citizens, Volunteers, and Authorities
-- **Live Incident Map** — Real-time geographic visualization with Leaflet
-- **AI-Powered Analysis** — Gemini API for incident prioritization and resource recommendations
-- **Resource Allocation** — Track inventory, allocations, and history
-- **Volunteer Coordination** — Proximity-based dispatch and assignment tracking
-- **Dark Mode** — System-aware and manual theme toggling
+- **Global Command Palette** — Press `Ctrl+K` or `Cmd+K` to search incidents, resources, volunteers, and navigate.
+- **PWA Support** — Offline-capable with service worker caching.
+- **Role-Based Dashboards** — Tailored views for Citizens, Volunteers, and Authorities.
+- **Live Incident Map** — Real-time geographic visualization with Leaflet and heatmaps.
+- **AI-Powered Analysis** — Gemini API for incident prioritization and resource recommendations.
+- **Resource Allocation** — Track inventory, allocations, and history.
+- **Volunteer Coordination** — Proximity-based dispatch and assignment tracking.
+- **Shelters Directory** — Track shelters capacity, occupants, and coordinates.
+- **Light Theme Defaults** — Flat, minimal UI designed for high contrast and visual accessibility.
 
 ---
 
