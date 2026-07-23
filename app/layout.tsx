@@ -18,11 +18,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "ResQNet AI",
+    default: "ResQNet AI | AI-Powered Disaster Response Platform",
     template: "%s | ResQNet AI",
   },
   description:
-    "AI-Powered Disaster Response & Resource Coordination Platform. Real-time incident tracking, resource allocation, and volunteer management.",
+    "ResQNet AI is an AI-powered disaster response and resource coordination platform designed to support incident prioritization, relief allocation and emergency coordination.",
   keywords: [
     "disaster response",
     "emergency management",
@@ -45,15 +45,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://resqnet.ai",
     siteName: "ResQNet AI",
-    title: "ResQNet AI",
+    title: "ResQNet AI | AI-Powered Disaster Response Platform",
     description:
-      "AI-Powered Disaster Response & Resource Coordination Platform",
+      "ResQNet AI is an AI-powered disaster response and resource coordination platform designed to support incident prioritization, relief allocation and emergency coordination.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ResQNet AI",
+    title: "ResQNet AI | AI-Powered Disaster Response Platform",
     description:
-      "AI-Powered Disaster Response & Resource Coordination Platform",
+      "ResQNet AI is an AI-powered disaster response and resource coordination platform designed to support incident prioritization, relief allocation and emergency coordination.",
   },
   appleWebApp: {
     capable: true,

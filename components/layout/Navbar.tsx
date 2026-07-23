@@ -25,10 +25,13 @@ interface NavItem {
 }
 
 const publicNavItems: NavItem[] = [
-  { label: "Mission", href: "/#mission" },
+  { label: "Problem", href: "/#problem" },
+  { label: "Solution", href: "/#solution" },
   { label: "How It Works", href: "/#how-it-works" },
-  { label: "SDG Goals", href: "/#sdgs" },
+  { label: "AI System", href: "/#ai-system" },
   { label: "Features", href: "/#features" },
+  { label: "SDGs", href: "/#sdgs" },
+  { label: "Technology", href: "/#technology" },
 ];
 
 const dashboardNavItems: NavItem[] = [
@@ -41,7 +44,7 @@ const dashboardNavItems: NavItem[] = [
   { label: "Analytics", href: "/dashboard/analytics" },
 ];
 
-export function Navbar() {
+export function Navbar({ onReportClick }: { onReportClick?: () => void }) {
   const { theme, toggleTheme } = useTheme();
   const { user, role, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -186,11 +189,23 @@ export function Navbar() {
               )}
             </>
           ) : (
-            <Link href="/login" passHref>
-              <Button variant="default" size="sm" className="bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-semibold cursor-pointer">
-                Sign In
-              </Button>
-            </Link>
+            <div className="hidden sm:flex items-center gap-2">
+              <Link href="/login" passHref>
+                <Button variant="ghost" size="sm" className="text-[#475569] hover:text-[#0F172A] font-bold cursor-pointer">
+                  Sign In
+                </Button>
+              </Link>
+              {onReportClick && (
+                <Button
+                  onClick={onReportClick}
+                  variant="destructive"
+                  size="sm"
+                  className="font-bold cursor-pointer"
+                >
+                  Report Emergency
+                </Button>
+              )}
+            </div>
           )}
 
           {/* Mobile Menu Toggle */}
@@ -290,12 +305,24 @@ export function Navbar() {
                   </div>
                 </div>
               ) : (
-                <div className="border-border mt-4 border-t pt-4">
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="default" className="w-full">
+                <div className="border-border mt-4 border-t pt-4 flex flex-col gap-2">
+                  <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="outline" className="w-full font-bold">
                       Sign In to Platform
                     </Button>
                   </Link>
+                  {onReportClick && (
+                    <Button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        onReportClick();
+                      }}
+                      variant="destructive"
+                      className="w-full font-bold"
+                    >
+                      Report Emergency
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
